@@ -10,12 +10,39 @@ function Tileset:init()
     local w, h = ts * self.TILES, ts
 
     self.canvas = love.graphics.newCanvas(w, h)
-    self.canvas:setFilter("nearest", "nearest")
     self.quads = {}
     self.tiles = 0
 
     for i=1,self.TILES do
         self.quads[i] = love.graphics.newQuad((i - 1) * self.SIZE, 0, ts, ts, w, h)
+    end
+
+    self.snapshots = {}
+end
+
+function Tileset:snapshot(limit)
+    print("SNAP")
+    local snapshot = love.graphics.newCanvas(self.canvas:getDimensions())
+
+    snapshot:renderTo(function()
+        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.setBlendMode("premultiplied")
+        love.graphics.draw(self.canvas, 0, 0)
+    end)
+
+    if #self.snapshots == limit then
+        table.remove(self.snapshots, 1)
+    end
+
+    table.insert(self.snapshots, snapshot)
+
+    return snapshot
+end
+
+function Tileset:undo()
+    if #self.snapshots > 0 then
+        print("UNDO")
+        self.canvas = table.remove(self.snapshots)
     end
 end
 

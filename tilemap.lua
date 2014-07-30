@@ -39,6 +39,7 @@ function TileMap:draw()
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(255, 255, 255, 255)
     
+    self.batch:setTexture(self.tileset.canvas)
     love.graphics.draw(self.batch, 0, 0)
 end
 

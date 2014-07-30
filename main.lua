@@ -2,6 +2,7 @@ local Palette = require "palette"
 local Tileset = require "tileset"
 local TileMap = require "tilemap"
 local TileMapView = require "tilemapview"
+local Notebox = require "notebox"
 
 local bresenham = require "bresenham"
 
@@ -9,6 +10,7 @@ FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 love.graphics.setFont(FONT)
 
 function love.load()
+    love.graphics.setDefaultFilter("nearest", "nearest")
     love.filesystem.mount(".", "projects")
 
     tileset = Tileset()
@@ -53,6 +55,11 @@ function love.load()
     TEXT = "test"
 
     VIEW = TileMapView(tilemap)
+    BOX = Notebox(100, 100, [[this is a particularly
+difficut section of the
+game]])
+
+    love.keyboard.setKeyRepeat(true)
 end
 
 function love.update(dt)
@@ -111,6 +118,13 @@ function love.draw()
 
     VIEW:draw()
 
+    VIEW.camera:attach()
+    love.graphics.push()
+    love.graphics.scale(0.5)
+    BOX:draw()
+    love.graphics.pop()
+    VIEW.camera:detach()
+
     local mx, my = love.mouse.getPosition()
     local gx, gy, tx, ty = VIEW:grid_coords(VIEW.camera:mousepos())
 
@@ -160,7 +174,9 @@ local dirs = {
 }
 
 function love.mousepressed(x, y, button)
-    if button == "m" then
+    if button == "l" and TOOL == "pixel" then
+        tileset:snapshot(3)
+    elseif button == "m" then
         DRAG = {x, y, VIEW.camera.x, VIEW.camera.y}
     elseif button == "wu" then
         VIEW.camera.scale = VIEW.camera.scale * 2
@@ -169,25 +185,32 @@ function love.mousepressed(x, y, button)
     end
 end
 
-function love.keypressed(key)
+function love.keypressed(key, isrepeat)
+    if key == "escape" then TOOL = "pixel" end
+    if TOOL == "note" then 
+        BOX:keypressed(key)
+        return
+    end
+
     if key == " " then
-        PALETTE = Palette.generate(3)
-    elseif key == "lctrl" then
+        PALETTE = Palette.generate(5)
+    elseif key == "lctrl" and not isrepeat then
         nextclone = true
     end
 
     if key == "q" then TOOL = "pixel" end
     if key == "w" then TOOL = "tile" end
+    if key == "e" then TOOL = "note" end
     if key == "1" then BRUSHSIZE = 1 end
     if key == "2" then BRUSHSIZE = 2 end
     if key == "3" then BRUSHSIZE = 3 end
 
-    if key == "f11" then
+    if key == "f11" and not isrepeat then
         love.window.setFullscreen(not FULL, "desktop")
         FULL = not FULL
     end
 
-    if key == "s" then
+    if key == "s" and not isrepeat then
         love.filesystem.createDirectory("kooltooltestproject")
         local file = love.filesystem.newFile("kooltooltestproject/map1.txt", "w")
         file:write(tilemap:serialise())
@@ -197,6 +220,8 @@ function love.keypressed(key)
         data:encode("kooltooltestproject/tileset.png")
 
         love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+    elseif key == "z" and love.keyboard.isDown("lctrl") then
+        tileset:undo()
     end
 
     if key == "lshift" then
@@ -207,6 +232,14 @@ function love.keypressed(key)
         local vx, vy = unpack(dirs[key])
         VIEW.camera:move(vx * 32, vy * 32)
     end
+end
+
+function love.keyreleased(key)
+    if key == "lctrl" then nextclone = nil end
+end
+
+function love.textinput(character)
+    if TOOL == "note" then BOX:textinput(character) end
 end
 
 function draw_project_list()
