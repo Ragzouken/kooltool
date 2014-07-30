@@ -1,7 +1,7 @@
+local Camera = require "hump.camera"
 local Palette = require "palette"
 local Tileset = require "tileset"
-local TileMap = require "tilemap"
-local TileMapView = require "tilemapview"
+local TileLayer = require "tilelayer"
 local Notebox = require "notebox"
 
 local bresenham = require "bresenham"
@@ -41,20 +41,21 @@ function love.load()
             love.graphics.draw(tiles, 0, 0)
         end)
 
-        tilemap = TileMap.load(love.filesystem.read("projects/kooltooltestproject/map1.txt"))
+        tilelayer = TileLayer(tileset)
+        tilelayer:deserialise(love.filesystem.read("projects/kooltooltestproject/map1.txt"))
     else
-        tilemap = TileMap(tileset)
+        tilelayer = TileLayer(tileset)
 
         for y=0,7 do
             for x=0,7 do
-                tilemap:set(love.math.random(2), x, y)
+                tilelayer:set(love.math.random(2), x, y)
             end
         end
     end
 
     TEXT = "test"
 
-    VIEW = TileMapView(tilemap)
+    CAMERA = Camera(128, 128, 2)
     BOX = Notebox(100, 100, [[this is a particularly
 difficut section of the
 game]])
@@ -67,7 +68,7 @@ function love.update(dt)
 
     if love.mouse.isDown("l") then
         local mx, my = love.mouse.getPosition()
-        local gx, gy, tx, ty = VIEW:grid_coords(VIEW.camera:mousepos())
+        local gx, gy, tx, ty = tilelayer:gridCoords(CAMERA:mousepos())
 
         local index = tileset:click(mx, my)
 
@@ -75,9 +76,9 @@ function love.update(dt)
             TILE = index
         elseif TOOL == "pixel" then
             if love.keyboard.isDown("lalt") then
-                PALETTE.colours[3] = VIEW:sample(VIEW.camera:mousepos())
+                PALETTE.colours[3] = tilelayer:sample(CAMERA:mousepos())
             else
-                local mx, my = VIEW.camera:mousepos()
+                local mx, my = CAMERA:mousepos()
                 mx, my = math.floor(mx), math.floor(my)
 
                 local x1, y1, x2, y2 = mx, my, mx, my
@@ -89,9 +90,9 @@ function love.update(dt)
             end
         elseif TOOL == "tile" then
             if love.keyboard.isDown("lalt") then
-                TILE = tilemap:get(gx, gy) or TILE
+                TILE = tilelayer:get(gx, gy) or TILE
             else
-                tilemap:set(TILE, gx, gy)
+                tilelayer:set(TILE, gx, gy)
             end
         end
 
@@ -105,64 +106,42 @@ function love.update(dt)
         local x, y, cx, cy = unpack(DRAG)
 
         local dx, dy = mx - x, my - y
-        local s = VIEW.camera.scale
+        local s = CAMERA.scale
 
-        VIEW.camera:lookAt(cx - dx / s, cy - dy / s)
+        CAMERA:lookAt(cx - dx / s, cy - dy / s)
     end
 
     love.window.setTitle(love.timer.getFPS())
 end
 
 function love.draw()
-    --tilemap:draw()
+    --VIEW:draw()
 
-    VIEW:draw()
+    CAMERA:attach()
 
-    VIEW.camera:attach()
-    love.graphics.push()
-    love.graphics.scale(0.5)
-    BOX:draw()
-    love.graphics.pop()
-    VIEW.camera:detach()
-
-    local mx, my = love.mouse.getPosition()
-    local gx, gy, tx, ty = VIEW:grid_coords(VIEW.camera:mousepos())
+    tilelayer:draw()
 
     local function rando()
         return 128 + love.math.random() * 128, 128 + love.math.random() * 128, 128 + love.math.random() * 128, 255
     end
 
-    if TOOL == "pixel" then
-        local size = BRUSHSIZE
-        local le = math.floor(size / 2)
+    local mx, my = CAMERA:mousepos()
+    love.graphics.setColor(rando())
 
-        VIEW.camera:draw(function()
-            local x, y = VIEW.camera:worldCoords(mx, my)
-
-            love.graphics.setColor(rando())
-            --love.graphics.rectangle("fill", math.floor(x)-8, math.floor(y)-le, 16, size)
-            --love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-8, size, 16)
-            love.graphics.setColor(PALETTE.colours[3])
-            love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-le, size, size)
-        end)
-
-        if LOCK then
-            local gx, gy = unpack(LOCK)
-            love.graphics.setColor(rando())
-            VIEW:draw_tile_border(gx, gy)
-        end
+    if TOOL == "pixel" then     
+        tilelayer:drawBrushCursor(mx, my, BRUSHSIZE, PALETTE.colours[3], LOCK)
     elseif TOOL == "tile" then
-        local x, y = VIEW:pixel_coords(gx, gy)
-
-        love.graphics.setColor(rando())
-        VIEW:draw_tile_border(gx, gy)
-
-        love.graphics.setColor(255, 255, 255, 128)
-        VIEW:draw_tile_cursor(gx, gy, TILE)
+        tilelayer:drawTileCursor(mx, my)
     end
 
-    tileset:draw()
+    love.graphics.push()
+    love.graphics.scale(0.5)
+    BOX:draw()
+    love.graphics.pop()
+    
+    CAMERA:detach()
 
+    tileset:draw()
     love.graphics.print(TOOL, 3, 5)
 end
 
@@ -177,11 +156,11 @@ function love.mousepressed(x, y, button)
     if button == "l" and TOOL == "pixel" then
         tileset:snapshot(3)
     elseif button == "m" then
-        DRAG = {x, y, VIEW.camera.x, VIEW.camera.y}
+        DRAG = {x, y, CAMERA.x, CAMERA.y}
     elseif button == "wu" then
-        VIEW.camera.scale = VIEW.camera.scale * 2
+        CAMERA.scale = CAMERA.scale * 2
     elseif button == "wd" then
-        VIEW.camera.scale = VIEW.camera.scale / 2
+        CAMERA.scale = CAMERA.scale / 2
     end
 end
 
@@ -213,7 +192,7 @@ function love.keypressed(key, isrepeat)
     if key == "s" and not isrepeat then
         love.filesystem.createDirectory("kooltooltestproject")
         local file = love.filesystem.newFile("kooltooltestproject/map1.txt", "w")
-        file:write(tilemap:serialise())
+        file:write(tilelayer:serialise())
         file:close()
         
         local data = tileset.canvas:getImageData()
@@ -224,13 +203,13 @@ function love.keypressed(key, isrepeat)
         tileset:undo()
     end
 
-    if key == "lshift" then
-        LOCK = {VIEW:grid_coords(VIEW.camera:mousepos())}
+    if key == "lshift" and not isrepeat then
+        LOCK = {tilelayer:gridCoords(CAMERA:mousepos())}
     end
 
     if dirs[key] then
         local vx, vy = unpack(dirs[key])
-        VIEW.camera:move(vx * 32, vy * 32)
+        CAMERA:move(vx * 32, vy * 32)
     end
 end
 
@@ -281,5 +260,5 @@ function draw_line(x1, y1, x2, y2, size)
         love.graphics.pop()
     end)
 
-    VIEW:apply_brush(x-1-le, y-1-le, brush, LOCK, nextclone)
+    tilelayer:applyBrush(x-1-le, y-1-le, brush, LOCK, nextclone)
 end
