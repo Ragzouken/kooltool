@@ -2,8 +2,10 @@ local Camera = require "hump.camera"
 local Palette = require "palette"
 local Tileset = require "tileset"
 local TileLayer = require "tilelayer"
+local NoteLayer = require "notelayer"
 local Notebox = require "notebox"
 
+local json = require "json"
 local bresenham = require "bresenham"
 
 FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
@@ -34,31 +36,42 @@ function love.load()
 
     --love.mouse.setVisible(false)
 
-    if love.filesystem.exists("projects/kooltooltestproject") then
-        local tiles = love.graphics.newImage("projects/kooltooltestproject/tileset.png")
+    PROJECT = "projects/kooltooltestproject"
+
+    if love.filesystem.exists(PROJECT) then
+        local tiles = love.graphics.newImage(PROJECT .. "/tileset.png")
         tileset.canvas:renderTo(function()
             love.graphics.setColor(255, 255, 255, 255)
             love.graphics.draw(tiles, 0, 0)
         end)
 
+        local data = love.filesystem.read(PROJECT .. "/tilelayer.json")
         tilelayer = TileLayer(tileset)
-        tilelayer:deserialise(love.filesystem.read("projects/kooltooltestproject/map1.txt"))
+        tilelayer:deserialise(json.decode(data))
+
+        local data = love.filesystem.read(PROJECT .. "/notelayer.json")
+        notelayer = NoteLayer()
+        notelayer:deserialise(json.decode(data))
     else
         tilelayer = TileLayer(tileset)
+        notelayer = NoteLayer()
 
         for y=0,7 do
             for x=0,7 do
                 tilelayer:set(love.math.random(2), x, y)
             end
         end
+
+        BOX = Notebox(100, 100, [[this is a test notebox]])
+
+        notelayer.noteboxes[BOX] = true
     end
+
+    for notebox in pairs(notelayer.noteboxes) do BOX = notebox end
 
     TEXT = "test"
 
     CAMERA = Camera(128, 128, 2)
-    BOX = Notebox(100, 100, [[this is a particularly
-difficut section of the
-game]])
 
     love.keyboard.setKeyRepeat(true)
 end
@@ -136,9 +149,9 @@ function love.draw()
 
     love.graphics.push()
     love.graphics.scale(0.5)
-    BOX:draw()
+    notelayer:draw()
     love.graphics.pop()
-    
+
     CAMERA:detach()
 
     tileset:draw()
@@ -191,10 +204,14 @@ function love.keypressed(key, isrepeat)
 
     if key == "s" and not isrepeat then
         love.filesystem.createDirectory("kooltooltestproject")
-        local file = love.filesystem.newFile("kooltooltestproject/map1.txt", "w")
-        file:write(tilelayer:serialise())
+        local file = love.filesystem.newFile("kooltooltestproject/tilelayer.json", "w")
+        file:write(json.encode(tilelayer:serialise()))
         file:close()
         
+        local file = love.filesystem.newFile("kooltooltestproject/notelayer.json", "w")
+        file:write(json.encode(notelayer:serialise()))
+        file:close()
+
         local data = tileset.canvas:getImageData()
         data:encode("kooltooltestproject/tileset.png")
 

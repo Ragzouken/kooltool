@@ -6,22 +6,30 @@ local Notebox = Class {
 
 Notebox.font:setFilter("linear", "nearest")
 
+function Notebox:deserialise(data)
+    self.x, self.y, self.text = unpack(data)
+end
+
+function Notebox:serialise()
+    return {self.x, self.y, self.text}
+end
+
 function Notebox:init(x, y, text)
     self.x, self.y = x, y
     self.text = text or ""
 end
 
 function string:split(pat)
-   local fields = {}
-   local start = 1
-   self:gsub("()("..pat..")", 
-      function(c,d)
-         table.insert(fields,self:sub(start,c-1))
-         start = c + #d
-      end
-   )
-   table.insert(fields, self:sub(start))
-   return fields
+    local fields = {}
+    local start = 1
+    self:gsub("()("..pat..")", 
+        function(c,d)
+            table.insert(fields,self:sub(start,c-1))
+            start = c + #d
+        end
+    )
+    table.insert(fields, self:sub(start))
+    return fields
 end
 
 function Notebox:draw()

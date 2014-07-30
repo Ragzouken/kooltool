@@ -3,36 +3,23 @@ local SparseGrid = require "sparsegrid"
 
 local TileLayer = Class {}
 
-function TileLayer:deserialise(data)
-    local x, y = 0, 0
-
-    for row in string.gfind(data, "[^\n]+") do
-        for index in string.gfind(row, "%d+") do
-            local index = tonumber(index)
-
+function TileLayer:deserialise(rows)
+    for y, row in pairs(rows) do
+        for x, index in pairs(row) do
             if index > 0 then self:set(index, x, y) end
-
-            x = x + 1
         end
-
-        x = 0
-        y = y + 1
     end
 end
 
 function TileLayer:serialise()
     local rows = {}
-    for y=self.bounds[2],self.bounds[4] do
-        local row = {}
-        
-        for x=self.bounds[1],self.bounds[3] do
-            row[#row+1] = self:get(x, y) or 0
-        end
 
-        rows[#rows+1] = table.concat(row, ",")
+    for tile, x, y in self.tiles:items() do
+        rows[y] = rows[y] or {}
+        rows[y][x] = tile[1]
     end
 
-    return table.concat(rows, "\n")
+    return rows
 end
 
 function TileLayer:init(tileset)
@@ -40,7 +27,6 @@ function TileLayer:init(tileset)
     self.batch = love.graphics.newSpriteBatch(tileset.canvas)
 
     self.tiles = SparseGrid()
-    self.bounds = {0, 0, 0, 0}
 end
 
 function TileLayer:draw()
@@ -97,11 +83,6 @@ function TileLayer:set(index, gx, gy)
     end
 
     self.tiles:set({index, id}, gx, gy)
-
-    self.bounds[1] = math.min(self.bounds[1], gx)
-    self.bounds[2] = math.min(self.bounds[2], gy)
-    self.bounds[3] = math.max(self.bounds[3], gx)
-    self.bounds[4] = math.max(self.bounds[4], gy)
 end
 
 function TileLayer:gridCoords(x, y)
