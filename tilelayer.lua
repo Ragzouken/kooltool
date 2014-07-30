@@ -6,7 +6,7 @@ local TileLayer = Class {}
 function TileLayer:deserialise(rows)
     for y, row in pairs(rows) do
         for x, index in pairs(row) do
-            if index > 0 then self:set(index, x, y) end
+            if index > 0 then self:set(index, tonumber(x), tonumber(y)) end
         end
     end
 end
@@ -72,7 +72,7 @@ end
 function TileLayer:set(index, gx, gy)
     local quad = self.tileset.quads[index]
     local existing = self.tiles:get(gx, gy)
-    local id = existing and existing[2] or nil
+    local id = existing and existing[2]
 
     local size = 32
 
@@ -116,7 +116,7 @@ function TileLayer:applyBrush(bx, by, brush, lock, clone)
             if clone then
                 index = self.tileset:clone(index)
                 self:set(index, gx + x, gy + y)
-            end 
+            end
 
             if index and not locked then
                 self.tileset:renderTo(index, function()
