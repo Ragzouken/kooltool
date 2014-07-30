@@ -1,0 +1,72 @@
+Mattie Brice - In Tongues
+-------------------------
+
+"Unity, the Twine of indie games if you will"
+"problems with indie development culture" "Unity represents a lot of them"
+"buy-in to technological progression" "closes its gates to people outside of tech" "devalues aesthetic expression not associated with contemporary ideas of polish"
+
+-> be accessible to non-tech users
+-> be the least prescriptive you can with aesthetic expression
+-> state of the art is not necessary for expression
+
+"make games that others could feasibly make" "express myself after spending a short time with the tools"
+"Coding, modeling, animation, these aren’t analogues for typing on a keyboard to write, putting pencil to paper to draw"
+"the tools had a low enough barrier for me to get my design out of my mind and working in the game"
+"[coding] is the most unnatural thing for me to do" "would only be a means to an end" "not an active tool for expression"
+
+-> low barrier to entry, low skill ceiling?
+-> be an analogue to creative activity - sketching, doodling, writing, singing
+---> improvisation, spontaneity, scrappiness, expression
+-> be an active tool for expression
+-> be a blank canvas for an imagined design?
+-> be the sketch pad and notebook, be the design document
+
+"a common critique of the DIY movement" "by rejecting the need to code, aren’t I restricted in what I can express by those who could?"
+"When RPG Maker had a feature I didn’t want, I relied on community scripts to get rid of them"
+"If I wanted to use Unity in a new and interesting way, I’d need someone else to do it for me if I don’t learn to code"
+
+-> try to avoid coding be necessary for innovation? make everything possible without literally typing computer code?
+
+"instead of spreading the need to code, he thought instead we should be teaching people to hack" "more approachable and broad version of pleas for systems thinking education" "encompasses a lot of what play is about"
+"Hacking is a mentality instead of another language" "a way of understanding and relation instead of a whole other artform"
+
+-> encourage hacking - playful experimentation
+---> provide working code that can be mutated safely and easily
+
+"there is a call for analyzing the code of games to extrapolate meaning" "[not] what the tools themselves are saying" "the conversation a creator is having with it"
+"Coding aims to be total" "to create everything in its entirety" "brute-force functionality into an already existent engine"
+"from-scratch tools many creators use for their games" "completely utilitarian and specific to that game" "[reported as] a mess and not meant for anyone besides the creator"
+"[Hacking instead focuses on] the partnership between a creator and their tools as separate agents with their own agendas"
+"Like choosing a particular kind of brush for painting, a particular kind of lens for filming"
+
+-> be the right tool for a job, not a jack of all trades
+
+"more weird, personal, accessible game-making tools" "broaden our artistic culture to include people who make tools and give room for expression through them"
+"focus on being expressive of the tool author’s perspective"
+"RPG Maker implies you will be making a very specific kind of RPG" "features that were common in popular 90s JRPGs easy to implement" "Game Maker, creating a textbox is not a one-click affair" "In Mainichi, I was able to speak to these JRPG conventions, but I don’t find commenting on genre the most interesting thing tool authors can do"
+
+-> be weird, be personal, be accessible, be expressive
+-> be expressive of my (tool author) perspective
+-> pay attention to what types of things are easier to express
+
+"wouldn’t be all-purpose" "not organized by genre" "creating a world and seeing how other minds inhabit it"
+"the tools are a set of rules" "the designer will express themselves through those rules that the tool maker could approximate to some degree, but overall wouldn’t dictate"
+"we’re already having conversations with our tools" "not very interesting ones"
+"tools could start informing game design choices on a more visible level"
+"games like Become a Great Artist in Just 10 Seconds and Patatap have inspired me on how to move away from the usual controls we give players without being completely arcane about it"
+
+ * great artist / patatap both assign functions arbitrarily (but consistently) to all the keys on the keyboard
+
+-> (again) not a jack of all trades
+-> tools provide a grain but that doesn't mean you have to cut planks
+
+"added layer of communication and interpretation" "[choice of tool] isn’t purely utilitarian anymore" "players could also view the tools to understand the game and its creation process" "Implied by that is also accessibility, and it’s an important value" "Ease of access is necessary both for the applicability for DIY artists and the players of those games" "People wouldn’t need to know how to code in order to understand what happened, rather their hacking sensibilities would reverse engineer, toy with, and bend both game and tools to derive meaning"
+
+-> choosing this tool should say something about the kind of game you want to create
+-> a player should be able to understand what is happening in terms of the tools
+
+"I want to encourage the tool makers out there to jump in and participate in the DIY culture shift that is going on"
+"Not even just participate, but help it grow and sustain itself"
+"tools as a means to an end instead of another avenue for self-expression"
+
+-> be expressive, facilitate expression

@@ -1,0 +1,10 @@
+tools to look at
+----------------
+
+sunvox - music tracker, clean interface
+OHRRPGCE - rpg maker, graphic editor, multiple interfaces, clean interface
+become a great artist - experimental graphics, experimental interface
+patatap - experimental audio, experimental interface
+icosa - experimental graphics
+rose creator - experimental graphics
+twine - hypertext fiction, accessible interface

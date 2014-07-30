@@ -1,0 +1,51 @@
+Kid Pix - The Early Years
+-------------------------
+
+"fun and surprising"
+
+1. "extremely easy to use" "no manual needed" "features explain themselves through use" "all tasks should be able to be performed in the simplest, most straightforward way" "go out of its way to meet the user"
+
+2. "every opportunity should be taken to make the program surprising and satisfying to use" "the process of making a picture should be as important as the picture produced"
+
+3. "expand the concept of what computer paint programs are"
+
+4. The program should be "open ended". "premade graphics should be modifiable"
+
+5. "large number of options" "[but not] overwhelmed with options" "didn't want to use pull-down menus" "displaying a selection of 14 options for each tool in a window at the bottom of the screen"
+
+6. "is essential to see your whole picture at the same time"
+
+* i will ignore this, i want a virtual page (the game is played over multiple screens)
+
+7. "include tools that would be surprising and visually unusual" "the computer can make marks in a variety of interesting ways that traditional tools can't"
+
+-> play to the strengths rather than blindly emulating traditional methods (my tile editing is a good example)
+
+8. "undo is an extremely important function" "deserves a button of its own"
+
+9. "children love stickers and rubber stamps" "allow for some pre-made iconic art"
+
+10. "a poor program gets dull very soon no matter how trendy the interface is"
+
+11. "enjoyed knocking his structure down almost as much as he did building it" "getting rid of the picture should be fun"
+
+12. "why not have an eraser that erases your picture but displays a hidden picture as you erase?"
+
+13. "when small children are using the program, a parent should be able to hide the menu bar so desk accessories, etc. can't be selected accidentally"
+
+-> fullscreen mode
+
+14. "act like a standard program and have a standard user interface so users new to the computer learn basic principles"
+
+15. "while on the surface the program should seem to be for children, open minded adults should get a kick out of using it too"
+
+"I would try them out on Ben. Anything he had trouble with would be changed. The customer was always right. One day I took a number of computers to Ben's pre-school and tried it out on the children there, most of whom had not used computers before. Within ten minutes of having the children use the program I had accumulated a long list of small user interface changes for the program"
+
+1. The program adjusts to compensate for monitor size and displayable colors. You can make really big Kid Pix pictures if you have a large monitor, and all aspects of the program are customized to work in either black and white or color depending on the computer used.
+2. Sounds added to the user interface make a more satisfying experience. The Alphabet tool now reads the letters.
+3. There are twice as many wacky brushes.
+4. A new category of tool called "mixer" effects makes changes that affect the entire picture.
+5. New, more interesting hidden pictures are added.
+6. More rubber stamps are added.
+7. Since my wife speaks Spanish, Kid Pix’s spoken Alphabet and menus become bilingual. 
+8. There is now a manual.
