@@ -3,4 +3,5 @@ guiding principles
 1. edit everything - any asset you use must be editable within kooltool
 2. in context - everything should be editable in context where possible
 3. workspace - kooltool can be your entire workspace, you can annotate maps and object behaviours, sketch on top of things, etc` 
-4? generator - every type should have a generator (though it may be extremely scrappy)
+?. generator - every type should have a generator (though it may be extremely scrappy)
+?. examples - examples shape how people use tools for a long time, make some good ones

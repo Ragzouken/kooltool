@@ -62,12 +62,46 @@ function love.load()
             end
         end
 
-        BOX = Notebox(100, 100, [[this is a test notebox]])
+        local defaultnotes = {
+[[
+welcome to kooltool
+please have fun]],
+[[
+in pixel mode (q) draw you can 
+create a set of beautiful tiles
+as building blocks for a world]],
+[[
+in tile mode (w) you can build your
+own landscape from your tiles]],
+[[
+in note mode (e) you can keep notes
+on your project for planning and
+commentary (escape to leave mode)]],
+[[
+press alt to copy the tile or
+colour currently under the mouse]],
+[[
+you can drag notes
+around in note mode]],
+[[
+you can delete notes with
+right click in note mode]],
+[[
+hold the middle click and drag
+to move around the world]],
+[[
+use the mouse wheel
+to zoom in and out]],
+[[
+press s to save]],
+        }
 
-        notelayer.noteboxes[BOX] = true
+        for i, note in ipairs(defaultnotes) do
+            local x = love.math.random(256-128, 512-128)
+            local y = (i - 1) * (512 / #defaultnotes) + 32
+            notelayer:addNotebox(Notebox(notelayer, x, y, note))
+        end
     end
-
-    for notebox in pairs(notelayer.noteboxes) do BOX = notebox end
 
     TEXT = "test"
 
@@ -77,6 +111,8 @@ function love.load()
 end
 
 function love.update(dt)
+    notelayer:update(dt)
+
     if not love.keyboard.isDown("lshift") then LOCK = nil end
 
     if love.mouse.isDown("l") then
@@ -166,6 +202,11 @@ local dirs = {
 }
 
 function love.mousepressed(x, y, button)
+    if TOOL == "note" then
+        local mx, my = CAMERA:worldCoords(x, y)
+        notelayer:mousepressed(mx*2, my*2, button)
+    end
+
     if button == "l" and TOOL == "pixel" then
         tileset:snapshot(3)
     elseif button == "m" then
@@ -177,10 +218,17 @@ function love.mousepressed(x, y, button)
     end
 end
 
+function love.mousereleased(x, y, button)
+    if TOOL == "note" then
+        local mx, my = CAMERA:worldCoords(x, y)
+        notelayer:mousereleased(mx*2, my*2, button)
+    end
+end
+
 function love.keypressed(key, isrepeat)
     if key == "escape" then TOOL = "pixel" end
     if TOOL == "note" then 
-        BOX:keypressed(key)
+        notelayer:keypressed(key)
         return
     end
 
@@ -235,7 +283,7 @@ function love.keyreleased(key)
 end
 
 function love.textinput(character)
-    if TOOL == "note" then BOX:textinput(character) end
+    if TOOL == "note" then notelayer:textinput(character) end
 end
 
 function draw_project_list()
