@@ -2,6 +2,7 @@ local Class = require "hump.class"
 local SparseGrid = require "sparsegrid"
 local EditMode = require "editmode"
 local Tileset = require "tileset"
+local Palette = require "palette"
 
 local brush = require "brush"
 local colour = require "colour"
@@ -111,7 +112,7 @@ function TileLayer:gridCoords(x, y)
     return self.tiles:gridCoords(x, y)
 end
 
-function TileLayer:applyBrush(bx, by, brush, lock)
+function TileLayer:applyBrush(bx, by, brush, lock, cloning)
     local gx, gy, tx, ty = self:gridCoords(bx, by)
     bx, by = math.floor(bx), math.floor(by)
 
@@ -132,10 +133,10 @@ function TileLayer:applyBrush(bx, by, brush, lock)
             local locked = lock and (lock[1] ~= x+gx or lock[2] ~= y+gy)
             local key = tostring(gx + x) .. "," .. tostring(gy + y)
 
-            if self.state.cloning and not self.state.cloning[key] then
+            if cloning and not cloning[key] then
                 index = self.tileset:clone(index)
                 self:set(index, gx + x, gy + y)
-                self.state.cloning[key] = true
+                cloning[key] = true
             end
 
             if index and not locked then
@@ -159,7 +160,7 @@ function PixelMode:hover(x, y, dt)
         local dx, dy = unpack(self.state.draw)
 
         local brush, ox, oy = brush.line(dx, dy, x, y, BRUSHSIZE, PALETTE.colours[3])
-        self.layer:applyBrush(ox, oy, brush, self.state.lock)
+        self.layer:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)
 
         self.state.draw = {x, y}
     end
