@@ -5,10 +5,58 @@ local Notebox = require "notebox"
 
 local colour = require "colour"
 local brush = require "brush"
+local common = require "common"
 
 local NoteLayer = Class {
     BLOCK_SIZE = 256,
 }
+
+function NoteLayer.default()
+    local layer = NoteLayer()
+    local defaultnotes = {
+[[
+welcome to kooltool
+please have fun]],
+[[
+in pixel mode (q) draw you can 
+create a set of beautiful tiles
+as building blocks for a world]],
+[[
+in tile mode (w) you can build your
+own landscape from your tiles]],
+[[
+in note mode (e) you can keep notes
+and make annotations on your project
+for planning and commentary]],
+[[
+press alt to copy the tile or
+colour currently under the mouse]],
+[[
+you can drag notes
+around in note mode]],
+[[
+you can delete notes with
+right click in note mode]],
+[[
+hold the middle click and drag
+to move around the world]],
+[[
+use the mouse wheel
+to zoom in and out]],
+[[
+press s to save]],
+[[
+hold control to erase annotations]],
+    }
+
+    for i, note in ipairs(defaultnotes) do
+        local x = love.math.random(256-128, 512-128)
+        local y = (i - 1) * (512 / #defaultnotes) + 32
+        layer:addNotebox(Notebox(layer, x, y, note))
+    end
+
+    return layer
+end
 
 function NoteLayer:deserialise(data, saves)
     local noteboxes = data.notes
@@ -25,12 +73,8 @@ function NoteLayer:deserialise(data, saves)
     love.graphics.setColor(255, 255, 255, 255)
     for y, row in pairs(blocks) do
         for x, path in pairs(row) do
-            local block = love.graphics.newCanvas(self.BLOCK_SIZE, self.BLOCK_SIZE)
             local image = love.graphics.newImage(annotations .. "/" .. path)
-
-            block:renderTo(function()
-                love.graphics.draw(image, 0, 0)
-            end)
+            local block = common.canvasFromImage(image)
 
             self.blocks:set(block, tonumber(x), tonumber(y))
         end
@@ -209,13 +253,28 @@ end
 function NoteLayer:keypressed(key)
     local selected = self.input_state.selected
 
-    if selected then selected:keypressed(key) end
+    if selected then
+        if key == "escape" then
+            self.input_state.selected = nil
+        else
+            selected:keypressed(key)
+        end
+
+        return true
+    end
+
+    return false
 end
 
 function NoteLayer:textinput(text)
     local selected = self.input_state.selected
 
-    if selected then selected:textinput(text) end
+    if selected then
+        selected:textinput(text)
+        return true
+    end
+
+    return false
 end
 
 function NoteLayer:mousepressed(x, y, button)
@@ -230,16 +289,24 @@ function NoteLayer:mousepressed(x, y, button)
             self.input_state.selected = notebox
         else
             self.input_state.draw = {x / 2, y / 2}
+            self.input_state.selected = nil
         end
+
+        return true
     elseif button == "r" then
         if notebox then
             self:removeNotebox(notebox)
+            self.input_state.selected = nil
         else
             notebox = Notebox(self, x, y)
             self:addNotebox(notebox)
             self.input_state.selected = notebox
         end
+
+        return true
     end
+
+    return false
 end
 
 function NoteLayer:mousereleased(x, y, button)

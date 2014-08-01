@@ -1,9 +1,30 @@
 local Class = require "hump.class"
 
+local common = require "common"
+
 local Tileset = Class {
     SIZE = 32,
     TILES = 16,
 }
+
+function Tileset:deserialise(data, saves)
+    self.tiles = data.tiles
+    self.SIZE = data.tilesize
+
+    local image = love.graphics.newImage(saves .. "/" .. data.file)
+    self.canvas = common.canvasFromImage(image)
+end
+
+function Tileset:serialise(saves)
+    local file = "tileset.png"
+    self.canvas:getImageData():encode(saves .. "/" .. file)
+
+    return {
+        file = file,
+        tiles = self.tiles,
+        tilesize = self.SIZE,
+    }
+end
 
 function Tileset:init()
     local ts = self.SIZE
@@ -48,6 +69,7 @@ end
 
 function Tileset:draw()
     love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setBlendMode("alpha")
     love.graphics.rectangle("fill", 512-32-4-1, 4-1, 32+2, self.tiles*(32+1)+1)
 
     for i, quad in ipairs(self.quads) do
@@ -72,6 +94,10 @@ end
 
 function Tileset:add_tile()
     self.tiles = self.tiles + 1
+
+    local ts = 32
+    --local quad = love.graphics.newQuad((self.tiles - 1) * self.SIZE, 0, ts, ts, w, h)
+    --self.quads[self.tiles] = quad
 
     return self.tiles
 end

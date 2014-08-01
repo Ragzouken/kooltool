@@ -1,6 +1,6 @@
 local Class = require "hump.class"
 
-local hsv = require "hsv"
+local colour = require "colour"
 
 local Palette = Class {}
 
@@ -14,7 +14,7 @@ function Palette.generate(colour_count)
         local sat = love.math.random() * 128 + 127
         local val = love.math.random() * 128 + 127
 
-        colours[i] = {hsv(hue, sat, val)}
+        colours[i] = {colour.hsv(hue, sat, val)}
     end
 
     return Palette(colours)

@@ -1,12 +1,8 @@
 local Camera = require "hump.camera"
 local Palette = require "palette"
-local Notebox = require "notebox"
 local Project = require "project"
 
-local json = require "json"
-local bresenham = require "bresenham"
 local colour = require "colour"
-local brush = require "brush"
 
 FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 love.graphics.setFont(FONT)
@@ -30,12 +26,12 @@ function love.load()
     else
         PROJECT = Project.default()
     end
+
+    TILESOUND = love.audio.newSource("sounds/marker pen.wav")
 end
 
 function love.update(dt)
     PROJECT:update(dt)
-
-    if not love.keyboard.isDown("lshift") then LOCK = nil end
 
     if love.mouse.isDown("l") then
         local mx, my = love.mouse.getPosition()
@@ -45,32 +41,17 @@ function love.update(dt)
 
         if index then
             TILE = index
-        elseif TOOL == "pixel" then
-            if love.keyboard.isDown("lalt") then
-                PALETTE.colours[3] = PROJECT.tilelayer:sample(CAMERA:mousepos())
-            else
-                local mx, my = CAMERA:mousepos()
-                mx, my = math.floor(mx), math.floor(my)
-
-                local x1, y1, x2, y2 = mx, my, mx, my
-                if lastdraw then x2, y2 = unpack(lastdraw) end
-
-                local brush, ox, oy = brush.line(x1, y1, x2, y2, BRUSHSIZE, PALETTE.colours[3])
-                PROJECT.tilelayer:applyBrush(ox, oy, brush, LOCK, lastclone)
-
-                lastdraw = {mx, my}
-            end
         elseif TOOL == "tile" then
+            local tile = PROJECT.tilelayer:get(gx, gy)
+
             if love.keyboard.isDown("lalt") then
-                TILE = PROJECT.tilelayer:get(gx, gy) or TILE
-            else
+                TILE = tile or TILE
+            elseif tile ~= TILE then
+                TILESOUND:stop()
+                TILESOUND:play()
                 PROJECT.tilelayer:set(TILE, gx, gy)
             end
         end
-
-        nextclone = nil
-    else
-        lastdraw = nil
     end
 
     if love.mouse.isDown("m") and DRAG then
@@ -87,8 +68,6 @@ function love.update(dt)
 end
 
 function love.draw()
-    --VIEW:draw()
-
     CAMERA:attach()
 
     PROJECT.tilelayer:draw()
@@ -121,7 +100,10 @@ local dirs = {
 }
 
 function love.mousepressed(x, y, button)
-    if TOOL == "note" then
+    if TOOL == "pixel" then
+        local mx, my = CAMERA:worldCoords(x, y)
+        PROJECT.tilelayer:mousepressed(mx, my, button)
+    elseif TOOL == "note" then
         local mx, my = CAMERA:worldCoords(x, y)
         PROJECT.notelayer:mousepressed(mx*2, my*2, button)
     end
@@ -138,31 +120,25 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
-    if TOOL == "note" then
+    if TOOL == "pixel" then
+        local mx, my = CAMERA:worldCoords(x, y)
+        PROJECT.tilelayer:mousereleased(mx, my, button)
+    elseif TOOL == "note" then
         local mx, my = CAMERA:worldCoords(x, y)
         PROJECT.notelayer:mousereleased(mx*2, my*2, button)
     end
 end
 
 function love.keypressed(key, isrepeat)
-    if key == "escape" then TOOL = "pixel" end
-    if TOOL == "note" then 
-        PROJECT.notelayer:keypressed(key)
-        return
-    end
-
-    if key == " " then
-        PALETTE = Palette.generate(5)
-    elseif key == "lctrl" and not isrepeat then
-        nextclone = true
+    if TOOL == "pixel" then
+        PROJECT.tilelayer:keypressed(key, isrepeat)
+    elseif TOOL == "note" then
+        if PROJECT.notelayer:keypressed(key, isrepeat) then return end
     end
 
     if key == "q" then TOOL = "pixel" end
     if key == "w" then TOOL = "tile" end
     if key == "e" then TOOL = "note" end
-    if key == "1" then BRUSHSIZE = 1 end
-    if key == "2" then BRUSHSIZE = 2 end
-    if key == "3" then BRUSHSIZE = 3 end
 
     if key == "f11" and not isrepeat then
         love.window.setFullscreen(not FULL, "desktop")
@@ -176,10 +152,6 @@ function love.keypressed(key, isrepeat)
         PROJECT.tileset:undo()
     end
 
-    if key == "lshift" and not isrepeat then
-        LOCK = {PROJECT.tilelayer:gridCoords(CAMERA:mousepos())}
-    end
-
     if dirs[key] then
         local vx, vy = unpack(dirs[key])
         CAMERA:move(vx * 32, vy * 32)
@@ -187,7 +159,7 @@ function love.keypressed(key, isrepeat)
 end
 
 function love.keyreleased(key)
-    if key == "lctrl" then nextclone = nil end
+    if TOOL == "pixel" then PROJECT.tilelayer:keyreleased(key) end
 end
 
 function love.textinput(character)
