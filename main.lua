@@ -27,32 +27,18 @@ function love.load()
         PROJECT = Project.default()
     end
 
+    MODE = PROJECT.tilelayer.modes.pixel
+
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
 end
 
 function love.update(dt)
     PROJECT:update(dt)
 
-    if love.mouse.isDown("l") then
-        local mx, my = love.mouse.getPosition()
-        local gx, gy, tx, ty = PROJECT.tilelayer:gridCoords(CAMERA:mousepos())
+    local mx, my = CAMERA:mousepos()
+    mx, my = math.floor(mx), math.floor(my)
 
-        local index = PROJECT.tileset:click(mx, my)
-
-        if index then
-            TILE = index
-        elseif TOOL == "tile" then
-            local tile = PROJECT.tilelayer:get(gx, gy)
-
-            if love.keyboard.isDown("lalt") then
-                TILE = tile or TILE
-            elseif tile ~= TILE then
-                TILESOUND:stop()
-                TILESOUND:play()
-                PROJECT.tilelayer:set(TILE, gx, gy)
-            end
-        end
-    end
+    MODE:hover(mx, my, dt)
 
     if love.mouse.isDown("m") and DRAG then
         local mx, my = love.mouse.getPosition()
@@ -75,16 +61,12 @@ function love.draw()
     local mx, my = CAMERA:mousepos()
     love.graphics.setColor(colour.random())
 
-    if TOOL == "pixel" then     
-        PROJECT.tilelayer:drawBrushCursor(mx, my, BRUSHSIZE, PALETTE.colours[3], LOCK)
-    elseif TOOL == "tile" then
-        PROJECT.tilelayer:drawTileCursor(mx, my)
-    end
-
     love.graphics.push()
     love.graphics.scale(0.5)
     PROJECT.notelayer:draw()
     love.graphics.pop()
+
+    MODE:draw(mx, my)
 
     CAMERA:detach()
 
@@ -100,13 +82,10 @@ local dirs = {
 }
 
 function love.mousepressed(x, y, button)
-    if TOOL == "pixel" then
-        local mx, my = CAMERA:worldCoords(x, y)
-        PROJECT.tilelayer:mousepressed(mx, my, button)
-    elseif TOOL == "note" then
-        local mx, my = CAMERA:worldCoords(x, y)
-        PROJECT.notelayer:mousepressed(mx*2, my*2, button)
-    end
+    local mx, my = CAMERA:worldCoords(x, y)
+    mx, my = math.floor(mx), math.floor(my)
+
+    if MODE:mousepressed(mx, my, button) then return end
 
     if button == "l" and TOOL == "pixel" then
         PROJECT.tileset:snapshot(3)
@@ -120,25 +99,24 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
-    if TOOL == "pixel" then
-        local mx, my = CAMERA:worldCoords(x, y)
-        PROJECT.tilelayer:mousereleased(mx, my, button)
-    elseif TOOL == "note" then
-        local mx, my = CAMERA:worldCoords(x, y)
-        PROJECT.notelayer:mousereleased(mx*2, my*2, button)
-    end
+    local mx, my = CAMERA:worldCoords(x, y)
+    mx, my = math.floor(mx), math.floor(my)
+        
+    MODE:mousereleased(mx, my, button)
 end
 
 function love.keypressed(key, isrepeat)
-    if TOOL == "pixel" then
-        PROJECT.tilelayer:keypressed(key, isrepeat)
-    elseif TOOL == "note" then
-        if PROJECT.notelayer:keypressed(key, isrepeat) then return end
+    if MODE:keypressed(key, isrepeat) then return end
+
+    local function switch(mode)
+        MODE:defocus()
+        MODE = mode
+        MODE:focus()
     end
 
-    if key == "q" then TOOL = "pixel" end
-    if key == "w" then TOOL = "tile" end
-    if key == "e" then TOOL = "note" end
+    if key == "q" then TOOL = "pixel" switch(PROJECT.tilelayer.modes.pixel)    end
+    if key == "w" then TOOL = "tile"  switch(PROJECT.tilelayer.modes.tile)     end
+    if key == "e" then TOOL = "note"  switch(PROJECT.notelayer.modes.annotate) end
 
     if key == "f11" and not isrepeat then
         love.window.setFullscreen(not FULL, "desktop")
@@ -159,11 +137,11 @@ function love.keypressed(key, isrepeat)
 end
 
 function love.keyreleased(key)
-    if TOOL == "pixel" then PROJECT.tilelayer:keyreleased(key) end
+    MODE:keyreleased(key)
 end
 
 function love.textinput(character)
-    if TOOL == "note" then PROJECT.notelayer:textinput(character) end
+    MODE:textinput(character)
 end
 
 function draw_project_list()

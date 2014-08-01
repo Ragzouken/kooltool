@@ -1,9 +1,13 @@
 local Class = require "hump.class"
 local SparseGrid = require "sparsegrid"
+local EditMode = require "editmode"
 local Tileset = require "tileset"
 
 local brush = require "brush"
 local colour = require "colour"
+
+local TileMode = Class { __includes = EditMode, }
+local PixelMode = Class { __includes = EditMode, }
 
 local TileLayer = Class {}
 
@@ -62,7 +66,15 @@ function TileLayer:init()
 
     self.tiles = SparseGrid(32)
 
-    self.input_state = {}
+    self.state = {}
+
+    self.modes = {
+        tile = TileMode(self),
+        pixel = PixelMode(self),
+    }
+end
+
+function TileLayer:update(dt)
 end
 
 function TileLayer:draw()
@@ -71,35 +83,6 @@ function TileLayer:draw()
     
     self.batch:setTexture(self.tileset.canvas)
     love.graphics.draw(self.batch, 0, 0)
-
-    if self.input_state.lock then
-        love.graphics.setColor(colour.random(128, 255))
-
-        local tsize = 32
-        local lx, ly = unpack(self.input_state.lock)
-        love.graphics.rectangle("line", lx*tsize-0.5, ly*tsize-0.5, tsize+1, tsize+1)
-    end
-end
-
-function TileLayer:drawBrushCursor(x, y, size, colour)
-    local gx, gy, ox, oy = self:gridCoords(x, y)
-    local tsize = 32
-
-    local le = math.floor(size / 2)
-
-    love.graphics.setColor(colour)
-    love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-le, size, size)
-end
-
-function TileLayer:drawTileCursor(x, y, index)
-    local gx, gy, ox, oy = self:gridCoords(x, y)
-    local size = 32
-
-    local quad = self.tileset.quads[TILE]
-
-    love.graphics.rectangle("line", gx*size-0.5, gy*size-0.5, size+1, size+1)
-    love.graphics.setColor(255, 255, 255, 128)
-    love.graphics.draw(self.tileset.canvas, quad, gx * size, gy * size)
 end
 
 function TileLayer:get(gx, gy)
@@ -149,10 +132,10 @@ function TileLayer:applyBrush(bx, by, brush, lock)
             local locked = lock and (lock[1] ~= x+gx or lock[2] ~= y+gy)
             local key = tostring(gx + x) .. "," .. tostring(gy + y)
 
-            if self.input_state.cloning and not self.input_state.cloning[key] then
+            if self.state.cloning and not self.state.cloning[key] then
                 index = self.tileset:clone(index)
                 self:set(index, gx + x, gy + y)
-                self.input_state.cloning[key] = true
+                self.state.cloning[key] = true
             end
 
             if index and not locked then
@@ -171,27 +154,62 @@ function TileLayer:sample(x, y)
     return index and self.tileset:sample(index, ox, oy) or {0, 0, 0, 255}
 end
 
-function TileLayer:update(dt)
-    if self.input_state.draw then
-        local mx, my = CAMERA:mousepos()
-        mx, my = math.floor(mx), math.floor(my)
-        local dx, dy = unpack(self.input_state.draw)
-        dx, dy = math.floor(dx), math.floor(dy)
+function PixelMode:hover(x, y, dt)
+    if self.state.draw then
+        local dx, dy = unpack(self.state.draw)
 
-        local brush, ox, oy = brush.line(dx, dy, mx, my, BRUSHSIZE, PALETTE.colours[3])
-        self:applyBrush(ox, oy, brush, self.input_state.lock)
+        local brush, ox, oy = brush.line(dx, dy, x, y, BRUSHSIZE, PALETTE.colours[3])
+        self.layer:applyBrush(ox, oy, brush, self.state.lock)
 
-        self.input_state.draw = {mx, my}
+        self.state.draw = {x, y}
     end
 end
 
-function TileLayer:keypressed(key, isrepeat)
+function PixelMode:draw(x, y)
+    local gx, gy, ox, oy = self.layer.tiles:gridCoords(x, y)
+    local tsize = 32
+
+    local size = BRUSHSIZE
+    local le = math.floor(size / 2)
+
+    love.graphics.setColor(PALETTE.colours[3])
+    love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-le, size, size)
+
+    if self.state.lock then
+        love.graphics.setColor(colour.random(128, 255))
+
+        local lx, ly = unpack(self.state.lock)
+        love.graphics.rectangle("line", lx*tsize-0.5, ly*tsize-0.5, tsize+1, tsize+1)
+    end
+end
+
+function PixelMode:mousepressed(x, y, button)
+    if button == "l" then
+        if love.keyboard.isDown("lalt") then
+            PALETTE.colours[3] = self.layer:sample(x, y)
+        else
+            self.state.draw = {x, y} 
+        end
+
+        return true
+    end
+
+    return false
+end
+
+function PixelMode:mousereleased(x, y, button)
+    if button == "l" then
+        self.state.draw = nil
+    end
+end
+
+function PixelMode:keypressed(key, isrepeat)
     if not isrepeat then
         if key == "lshift" then
             local mx, my = CAMERA:mousepos()
-            self.input_state.lock = {self.tiles:gridCoords(mx, my)}
+            self.state.lock = {self.layer.tiles:gridCoords(mx, my)}
         elseif key == "lctrl" then
-            self.input_state.cloning = {}
+            self.state.cloning = {}
         end
 
         if key == "1" then BRUSHSIZE = 1 end
@@ -204,34 +222,64 @@ function TileLayer:keypressed(key, isrepeat)
     end
 end
 
-function TileLayer:keyreleased(key)
+function PixelMode:keyreleased(key)
     if key == "lshift" then
-        self.input_state.lock = nil 
+        self.state.lock = nil 
     elseif key == "lctrl" then
-        self.input_state.cloning = nil
+        self.state.cloning = nil
     end
 end
 
-function TileLayer:textinput(text)
+function TileMode:hover(x, y, dt)
+    if self.state.draw then
+        local gx, gy = self.layer:gridCoords(x, y)
+        local tile = PROJECT.tilelayer:get(gx, gy)
+
+        if tile ~= TILE then
+            self.layer:set(TILE, gx, gy)
+
+            TILESOUND:stop()
+            TILESOUND:play()
+        end
+    end
 end
 
-function TileLayer:mousepressed(x, y, button)
+function TileMode:draw(x, y)
+    local gx, gy, ox, oy = self.layer:gridCoords(x, y)
+    local size = 32
+
+    local quad = self.layer.tileset.quads[TILE]
+
+    love.graphics.rectangle("line", gx*size-0.5, gy*size-0.5, size+1, size+1)
+    love.graphics.setColor(255, 255, 255, 128)
+    love.graphics.draw(self.layer.tileset.canvas, quad, gx * size, gy * size)
+end
+
+function TileMode:mousepressed(x, y, button)
     if button == "l" then
         if love.keyboard.isDown("lalt") then
-            PALETTE.colours[3] = self:sample(x, y)
+            local gx, gy = self.layer.tiles:gridCoords(x, y)
+            TILE = self.layer:get(gx, gy) or TILE
         else
-            self.input_state.draw = {x, y}
-            return true
+            self.state.draw = true
         end
+
+        return true
     end
 
     return false
 end
 
-function TileLayer:mousereleased(x, y, button)
+function TileMode:mousereleased(x, y, button)
     if button == "l" then
-        self.input_state.draw = nil
+        self.state.draw = nil
     end
+end
+
+function TileMode:keypressed(key, isrepeat)
+end
+
+function TileMode:keyreleased(key)
 end
 
 return TileLayer

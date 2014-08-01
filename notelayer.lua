@@ -1,11 +1,14 @@
 local Class = require "hump.class"
 local Collider = require "collider"
 local SparseGrid = require "sparsegrid"
+local EditMode = require "editmode"
 local Notebox = require "notebox"
 
 local colour = require "colour"
 local brush = require "brush"
 local common = require "common"
+
+local Annotate = Class { __includes = EditMode, }
 
 local NoteLayer = Class {
     BLOCK_SIZE = 256,
@@ -120,40 +123,14 @@ function NoteLayer:init()
         shape_two.notebox:move(-dx/2, -dy/2)
     end)
 
-    self.input_state = {}
+    self.modes = {
+        annotate = Annotate(self),
+    }
 end
 
 function NoteLayer:update(dt)
     for i=1,5 do
         self.collider:update(dt * 0.2)
-    end
-
-    if self.input_state.drag then
-        local notebox, dx, dy = unpack(self.input_state.drag)
-        local mx, my = CAMERA:mousepos()
-
-        notebox:moveTo(mx*2 + dx, my*2 + dy)
-    elseif self.input_state.draw then
-        local mx, my = CAMERA:mousepos()
-        mx, my = math.floor(mx), math.floor(my)
-        local dx, dy = unpack(self.input_state.draw)
-        dx, dy = math.floor(dx), math.floor(dy)
-
-        if not love.keyboard.isDown("lctrl") then
-            local brush, ox, oy = brush.line(dx, dy, mx, my, 2, {255, 255, 255, 255})
-            self:applyBrush(ox, oy, brush)
-        else
-            local brush, ox, oy = brush.line(dx, dy, mx, my, 7)
-            self:eraseBrush(ox, oy, brush)
-        end
-
-        self.input_state.draw = {mx, my}
-    end
-
-    for notebox in pairs(self.noteboxes) do
-        if notebox.text == "" and notebox ~= self.input_state.selected then
-            self:removeNotebox(notebox)
-        end
     end
 end
 
@@ -250,12 +227,77 @@ function NoteLayer:eraseBrush(bx, by, brush)
     love.graphics.setBlendMode("alpha")
 end
 
-function NoteLayer:keypressed(key)
-    local selected = self.input_state.selected
+function Annotate:hover(x, y, dt)
+    if self.state.drag then
+        local notebox, dx, dy = unpack(self.state.drag)
+
+        notebox:moveTo(x*2 + dx, y*2 + dy)
+    elseif self.state.draw then
+        local dx, dy = unpack(self.state.draw)
+
+        if not love.keyboard.isDown("lctrl") then
+            local brush, ox, oy = brush.line(dx, dy, x, y, 2, {255, 255, 255, 255})
+            self.layer:applyBrush(ox, oy, brush)
+        else
+            local brush, ox, oy = brush.line(dx, dy, x, y, 7)
+            self.layer:eraseBrush(ox, oy, brush)
+        end
+
+        self.state.draw = {x, y}
+    end
+
+    for notebox in pairs(self.layer.noteboxes) do
+        if notebox.text == "" and notebox ~= self.state.selected then
+            self.layer:removeNotebox(notebox)
+        end
+    end
+end
+
+function Annotate:mousepressed(x, y, button)
+    local shape = self.layer.collider:shapesAt(x*2, y*2)[1]
+    local notebox = shape and shape.notebox
+
+    if button == "l" then
+        if notebox then
+            local dx, dy = notebox.x - x*2, notebox.y - y*2
+        
+            self.state.drag = {notebox, dx, dy}
+            self.state.selected = notebox
+        else
+            self.state.draw = {x, y}
+            self.state.selected = nil
+        end
+
+        return true
+    elseif button == "r" then
+        if notebox then
+            self.layer:removeNotebox(notebox)
+            self.state.selected = nil
+        else
+            notebox = Notebox(self.layer, x, y)
+            self.layer:addNotebox(notebox)
+            self.state.selected = notebox
+        end
+
+        return true
+    end
+
+    return false
+end
+
+function Annotate:mousereleased(x, y, button)
+    if button == "l" then
+        self.state.drag = nil
+        self.state.draw = nil
+    end
+end
+
+function Annotate:keypressed(key)
+    local selected = self.state.selected
 
     if selected then
         if key == "escape" then
-            self.input_state.selected = nil
+            self.state.selected = nil
         else
             selected:keypressed(key)
         end
@@ -266,8 +308,8 @@ function NoteLayer:keypressed(key)
     return false
 end
 
-function NoteLayer:textinput(text)
-    local selected = self.input_state.selected
+function Annotate:textinput(text)
+    local selected = self.state.selected
 
     if selected then
         selected:textinput(text)
@@ -275,45 +317,6 @@ function NoteLayer:textinput(text)
     end
 
     return false
-end
-
-function NoteLayer:mousepressed(x, y, button)
-    local shape = self.collider:shapesAt(x, y)[1]
-    local notebox = shape and shape.notebox
-
-    if button == "l" then
-        if notebox then
-            local dx, dy = notebox.x - x, notebox.y - y
-        
-            self.input_state.drag = {notebox, dx, dy}
-            self.input_state.selected = notebox
-        else
-            self.input_state.draw = {x / 2, y / 2}
-            self.input_state.selected = nil
-        end
-
-        return true
-    elseif button == "r" then
-        if notebox then
-            self:removeNotebox(notebox)
-            self.input_state.selected = nil
-        else
-            notebox = Notebox(self, x, y)
-            self:addNotebox(notebox)
-            self.input_state.selected = notebox
-        end
-
-        return true
-    end
-
-    return false
-end
-
-function NoteLayer:mousereleased(x, y, button)
-    if button == "l" then
-        self.input_state.drag = nil
-        self.input_state.draw = nil
-    end
 end
 
 return NoteLayer
