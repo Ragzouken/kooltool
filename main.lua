@@ -85,6 +85,11 @@ function love.mousepressed(x, y, button)
     local mx, my = CAMERA:worldCoords(x, y)
     mx, my = math.floor(mx), math.floor(my)
 
+    if button == "l" and TOOL == "tile" then
+        local index = PROJECT.tilelayer.tileset:click(x, y)
+        if index then TILE = index return true end
+    end
+
     if MODE:mousepressed(mx, my, button) then return end
 
     if button == "l" and TOOL == "pixel" then
