@@ -7,7 +7,7 @@ local json = require "json"
 
 local Project = Class {}
 
-function Project.blank()
+function Project.default()
     local project = Project()
 
     project.tileset = Tileset()
@@ -43,8 +43,9 @@ in tile mode (w) you can build your
 own landscape from your tiles]],
 [[
 in note mode (e) you can keep notes
-on your project for planning and
-commentary (escape to leave mode)]],
+and make annotations on your project
+for planning and commentary
+     (escape to leave mode)]],
 [[
 press alt to copy the tile or
 colour currently under the mouse]],
@@ -62,12 +63,14 @@ use the mouse wheel
 to zoom in and out]],
 [[
 press s to save]],
+[[
+hold control to erase annotations]],
     }
 
     for i, note in ipairs(defaultnotes) do
         local x = love.math.random(256-128, 512-128)
         local y = (i - 1) * (512 / #defaultnotes) + 32
-        project.notelayer:addNotebox(Notebox(notelayer, x, y, note))
+        project.notelayer:addNotebox(Notebox(project.notelayer, x, y, note))
     end
 
     return project
@@ -87,11 +90,11 @@ function Project:load(folder_path)
 
     local data = love.filesystem.read(folder_path .. "/tilelayer.json")
     self.tilelayer = TileLayer(self.tileset)
-    self.tilelayer:deserialise(json.decode(data))
+    self.tilelayer:deserialise(json.decode(data), folder_path)
 
     local data = love.filesystem.read(folder_path .. "/notelayer.json")
     self.notelayer = NoteLayer()
-    self.notelayer:deserialise(json.decode(data))
+    self.notelayer:deserialise(json.decode(data), folder_path)
 end
 
 function Project:save(folder_path)
@@ -99,9 +102,9 @@ function Project:save(folder_path)
     local file = love.filesystem.newFile(folder_path .. "/tilelayer.json", "w")
     file:write(json.encode(self.tilelayer:serialise()))
     file:close()
-    
+
     local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
-    file:write(json.encode(self.notelayer:serialise()))
+    file:write(json.encode(self.notelayer:serialise(folder_path)))
     file:close()
 
     local data = self.tileset.canvas:getImageData()

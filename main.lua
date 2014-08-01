@@ -5,6 +5,8 @@ local Project = require "project"
 
 local json = require "json"
 local bresenham = require "bresenham"
+local colour = require "colour"
+local brush = require "brush"
 
 FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 love.graphics.setFont(FONT)
@@ -53,7 +55,8 @@ function love.update(dt)
                 local x1, y1, x2, y2 = mx, my, mx, my
                 if lastdraw then x2, y2 = unpack(lastdraw) end
 
-                draw_line(x1, y1, x2, y2, BRUSHSIZE)
+                local brush, ox, oy = brush.line(x1, y1, x2, y2, BRUSHSIZE, PALETTE.colours[3])
+                PROJECT.tilelayer:applyBrush(ox, oy, brush, LOCK, lastclone)
 
                 lastdraw = {mx, my}
             end
@@ -90,12 +93,8 @@ function love.draw()
 
     PROJECT.tilelayer:draw()
 
-    local function rando()
-        return 128 + love.math.random() * 128, 128 + love.math.random() * 128, 128 + love.math.random() * 128, 255
-    end
-
     local mx, my = CAMERA:mousepos()
-    love.graphics.setColor(rando())
+    love.graphics.setColor(colour.random())
 
     if TOOL == "pixel" then     
         PROJECT.tilelayer:drawBrushCursor(mx, my, BRUSHSIZE, PALETTE.colours[3], LOCK)
@@ -178,7 +177,7 @@ function love.keypressed(key, isrepeat)
     end
 
     if key == "lshift" and not isrepeat then
-        LOCK = {tilelayer:gridCoords(CAMERA:mousepos())}
+        LOCK = {PROJECT.tilelayer:gridCoords(CAMERA:mousepos())}
     end
 
     if dirs[key] then
@@ -208,31 +207,4 @@ function draw_project_list()
 
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.printf(list, 1, 4, 512)
-end
-
-function draw_line(x1, y1, x2, y2, size)
-    local le = math.floor(size / 2)
-    local re = size - le
-
-    local w, h = math.abs(x2 - x1), math.abs(y2 - y1)
-    local x, y = math.min(x1, x2), math.min(y1, y2)
-
-    local brush = love.graphics.newCanvas(w+2+1+size, h+2+1+size)
-
-    brush:renderTo(function()
-        love.graphics.push()
-        love.graphics.translate(1-x, 1-y)
-
-        love.graphics.setColor(PALETTE.colours[3])
-        local sx, sy = x1+le, y1+le
-        local ex, ey = x2+le, y2+le
-
-        for x, y in bresenham.line(sx, sy, ex, ey) do
-            love.graphics.rectangle("fill", x - le, y - le, size, size)
-        end
-
-        love.graphics.pop()
-    end)
-
-    PROJECT.tilelayer:applyBrush(x-1-le, y-1-le, brush, LOCK, nextclone)
 end

@@ -26,7 +26,7 @@ function TileLayer:init(tileset)
     self.tileset = tileset
     self.batch = love.graphics.newSpriteBatch(tileset.canvas)
 
-    self.tiles = SparseGrid()
+    self.tiles = SparseGrid(32)
 end
 
 function TileLayer:draw()
@@ -86,11 +86,7 @@ function TileLayer:set(index, gx, gy)
 end
 
 function TileLayer:gridCoords(x, y)
-    local size = 32
-    local gx, gy = math.floor(x / size), math.floor(y / size)
-    local ox, oy = math.floor(x % size), math.floor(y % size)
-
-    return gx, gy, ox, oy
+    return self.tiles:gridCoords(x, y)
 end
 
 function TileLayer:applyBrush(bx, by, brush, lock, clone)

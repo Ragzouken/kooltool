@@ -1,30 +1,73 @@
 local Class = require "hump.class"
 local Collider = require "collider"
+local SparseGrid = require "sparsegrid"
 local Notebox = require "notebox"
 
-local NoteLayer = Class {}
+local colour = require "colour"
+local brush = require "brush"
 
-function NoteLayer:deserialise(data)
-    local noteboxes = data[1]
+local NoteLayer = Class {
+    BLOCK_SIZE = 256,
+}
+
+function NoteLayer:deserialise(data, saves)
+    local noteboxes = data.notes
 
     for i, notebox in pairs(noteboxes) do
         local notebox = Notebox(self, unpack(notebox))
         self:addNotebox(notebox)
     end
+
+    local blocks = data.blocks
+    local annotations = saves .. "/annotations"
+
+    love.graphics.setBlendMode("premultiplied")
+    love.graphics.setColor(255, 255, 255, 255)
+    for y, row in pairs(blocks) do
+        for x, path in pairs(row) do
+            local block = love.graphics.newCanvas(self.BLOCK_SIZE, self.BLOCK_SIZE)
+            local image = love.graphics.newImage(annotations .. "/" .. path)
+
+            block:renderTo(function()
+                love.graphics.draw(image, 0, 0)
+            end)
+
+            self.blocks:set(block, tonumber(x), tonumber(y))
+        end
+    end
+    love.graphics.setBlendMode("alpha")
 end
 
-function NoteLayer:serialise()
+function NoteLayer:serialise(saves)
     local noteboxes = {}
 
     for notebox in pairs(self.noteboxes) do
         table.insert(noteboxes, notebox:serialise())
     end
 
-    return {noteboxes}
+    local annotations = saves .. "/annotations"
+    love.filesystem.createDirectory(annotations)
+
+    local blocks = {}
+
+    for block, x, y in self.blocks:items() do
+        local file = x .. "," .. y .. ".png"
+
+        blocks[y] = blocks[y] or {}
+        blocks[y][x] = file
+
+        block:getImageData():encode(annotations .. "/" .. file)
+    end
+
+    return {
+        notes = noteboxes,
+        blocks = blocks,
+    }
 end
 
 function NoteLayer:init()
     self.noteboxes = {}
+    self.blocks = SparseGrid(self.BLOCK_SIZE)
 
     self.collider = Collider(256)
 
@@ -37,13 +80,30 @@ function NoteLayer:init()
 end
 
 function NoteLayer:update(dt)
-    self.collider:update(dt)
+    for i=1,5 do
+        self.collider:update(dt * 0.2)
+    end
 
     if self.input_state.drag then
         local notebox, dx, dy = unpack(self.input_state.drag)
         local mx, my = CAMERA:mousepos()
 
         notebox:moveTo(mx*2 + dx, my*2 + dy)
+    elseif self.input_state.draw then
+        local mx, my = CAMERA:mousepos()
+        mx, my = math.floor(mx), math.floor(my)
+        local dx, dy = unpack(self.input_state.draw)
+        dx, dy = math.floor(dx), math.floor(dy)
+
+        if not love.keyboard.isDown("lctrl") then
+            local brush, ox, oy = brush.line(dx, dy, mx, my, 2, {255, 255, 255, 255})
+            self:applyBrush(ox, oy, brush)
+        else
+            local brush, ox, oy = brush.line(dx, dy, mx, my, 7)
+            self:eraseBrush(ox, oy, brush)
+        end
+
+        self.input_state.draw = {mx, my}
     end
 
     for notebox in pairs(self.noteboxes) do
@@ -55,6 +115,16 @@ end
 
 function NoteLayer:draw()
     love.graphics.setBlendMode("alpha")
+    
+    love.graphics.setColor(colour.random(128, 255))
+
+    for block, x, y in self.blocks:items() do
+        love.graphics.draw(block, 
+                           x * self.BLOCK_SIZE * 2, 
+                           y * self.BLOCK_SIZE * 2,
+                           0, 2, 2)
+    end
+
     love.graphics.setColor(255, 255, 255, 255)
 
     for notebox in pairs(self.noteboxes) do
@@ -77,6 +147,65 @@ function NoteLayer:swapShapes(old, new)
     self.collider:addShape(new)
 end
 
+function NoteLayer:applyBrush(bx, by, brush)
+    local gx, gy, tx, ty = self.blocks:gridCoords(bx, by)
+    bx, by = math.floor(bx), math.floor(by)
+
+    -- split canvas into quads
+    -- draw each quad to the corresponding tile
+    local bw, bh = brush:getDimensions()
+    local size = self.BLOCK_SIZE
+
+    local gw, gh = math.ceil((bw + tx) / size), math.ceil((bh + ty) / size)
+    local quad = love.graphics.newQuad(0, 0, size, size, bw, bh)
+
+    love.graphics.setColor(255, 255, 255, 255)
+    for y=0,gh-1 do
+        for x=0,gw-1 do
+            local block = self.blocks:get(gx + x, gy + y)
+            quad:setViewport(-tx + x * size, -ty + y * size, size, size)
+
+            if not block then
+                block = love.graphics.newCanvas(self.BLOCK_SIZE, self.BLOCK_SIZE)
+                self.blocks:set(block, gx + x, gy + y)
+            end
+
+            block:renderTo(function()
+                love.graphics.draw(brush, quad, 0, 0)
+            end)
+        end
+    end
+end
+
+function NoteLayer:eraseBrush(bx, by, brush)
+    local gx, gy, tx, ty = self.blocks:gridCoords(bx, by)
+    bx, by = math.floor(bx), math.floor(by)
+
+    -- split canvas into quads
+    -- draw each quad to the corresponding tile
+    local bw, bh = brush:getDimensions()
+    local size = self.BLOCK_SIZE
+
+    local gw, gh = math.ceil((bw + tx) / size), math.ceil((bh + ty) / size)
+    local quad = love.graphics.newQuad(0, 0, size, size, bw, bh)
+
+    love.graphics.setBlendMode("multiplicative")
+    love.graphics.setColor(255, 255, 255, 255)
+    for y=0,gh-1 do
+        for x=0,gw-1 do
+            local block = self.blocks:get(gx + x, gy + y)
+            quad:setViewport(-tx + x * size, -ty + y * size, size, size)
+
+            if block then
+                block:renderTo(function()
+                    love.graphics.draw(brush, quad, 0, 0)
+                end)
+            end
+        end
+    end
+    love.graphics.setBlendMode("alpha")
+end
+
 function NoteLayer:keypressed(key)
     local selected = self.input_state.selected
 
@@ -94,25 +223,29 @@ function NoteLayer:mousepressed(x, y, button)
     local notebox = shape and shape.notebox
 
     if button == "l" then
-        local dx, dy = 0, 0
-
         if notebox then
-            dx, dy = notebox.x - x, notebox.y - y
+            local dx, dy = notebox.x - x, notebox.y - y
+        
+            self.input_state.drag = {notebox, dx, dy}
+            self.input_state.selected = notebox
+        else
+            self.input_state.draw = {x / 2, y / 2}
+        end
+    elseif button == "r" then
+        if notebox then
+            self:removeNotebox(notebox)
         else
             notebox = Notebox(self, x, y)
             self:addNotebox(notebox)
+            self.input_state.selected = notebox
         end
-
-        self.input_state.drag = {notebox, dx, dy}
-        self.input_state.selected = notebox
-    elseif button == "r" and notebox then
-        self:removeNotebox(notebox)
     end
 end
 
 function NoteLayer:mousereleased(x, y, button)
     if button == "l" then
         self.input_state.drag = nil
+        self.input_state.draw = nil
     end
 end
 

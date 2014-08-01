@@ -2,11 +2,15 @@ local Class = require "hump.class"
 
 local SparseGrid = Class {}
 
-function SparseGrid:init()
+function SparseGrid:init(cell_width, cell_height)
     self.grid = {}
+    self.cell_width = cell_width or 0
+    self.cell_height = cell_height or cell_width or 0
 end
 
-SparseGrid.clear = SparseGrid.init
+function SparseGrid:clear()
+    self.grid = {}
+end
 
 function SparseGrid:set(item, x, y, z)
     local layer = self.grid[z or 1] or {}
@@ -42,6 +46,13 @@ function SparseGrid:items(...)
             end
         end
     end)
+end
+
+function SparseGrid:gridCoords(x, y)
+    local gx, gy = math.floor(x / self.cell_width), math.floor(y / self.cell_height)
+    local ox, oy = math.floor(x % self.cell_width), math.floor(y % self.cell_height)
+
+    return gx, gy, ox, oy
 end
 
 return SparseGrid
