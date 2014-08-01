@@ -60,7 +60,7 @@ function TileLayer:drawTileCursor(x, y, index)
 
     love.graphics.rectangle("line", gx*size-0.5, gy*size-0.5, size+1, size+1)
     love.graphics.setColor(255, 255, 255, 128)
-    love.graphics.draw(tileset.canvas, quad, gx * size, gy * size)
+    love.graphics.draw(self.tileset.canvas, quad, gx * size, gy * size)
 end
 
 function TileLayer:get(gx, gy)

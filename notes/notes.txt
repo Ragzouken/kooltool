@@ -6,8 +6,6 @@ the project is an infinite sheet of paper
 * gui for editing entity behaviour should be within the map world (scrolls with the map, can be opened/closed)
 * tool selectors aren't
 
-there needs to be a list of 
-
 specific implementation detail:
 drawing on tilemaps:
 * preview layer (effort tho) - use quads->index from apply_brush to temporary tileset that renders over the map

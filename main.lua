@@ -1,9 +1,7 @@
 local Camera = require "hump.camera"
 local Palette = require "palette"
-local Tileset = require "tileset"
-local TileLayer = require "tilelayer"
-local NoteLayer = require "notelayer"
 local Notebox = require "notebox"
+local Project = require "project"
 
 local json = require "json"
 local bresenham = require "bresenham"
@@ -14,118 +12,40 @@ love.graphics.setFont(FONT)
 function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")
     love.filesystem.mount(".", "projects")
-
-    tileset = Tileset()
+    love.keyboard.setKeyRepeat(true)
 
     PALETTE = Palette.generate(3)
-
-    tileset:renderTo(tileset:add_tile(), function()
-        love.graphics.setColor(PALETTE.colours[1])
-        love.graphics.rectangle("fill", 0, 0, 32, 32)
-    end)
-
-    tileset:renderTo(tileset:add_tile(), function()
-        love.graphics.setColor(PALETTE.colours[2])
-        love.graphics.rectangle("fill", 0, 0, 32, 32)
-    end)
-
     TOOL = "pixel"
     TILE = 1
     FULL = false
     BRUSHSIZE = 1
-
-    --love.mouse.setVisible(false)
-
-    PROJECT = "projects/kooltooltestproject"
-
-    if love.filesystem.exists(PROJECT) then
-        local tiles = love.graphics.newImage(PROJECT .. "/tileset.png")
-        tileset.canvas:renderTo(function()
-            love.graphics.setColor(255, 255, 255, 255)
-            love.graphics.draw(tiles, 0, 0)
-        end)
-
-        local data = love.filesystem.read(PROJECT .. "/tilelayer.json")
-        tilelayer = TileLayer(tileset)
-        tilelayer:deserialise(json.decode(data))
-
-        local data = love.filesystem.read(PROJECT .. "/notelayer.json")
-        notelayer = NoteLayer()
-        notelayer:deserialise(json.decode(data))
-    else
-        tilelayer = TileLayer(tileset)
-        notelayer = NoteLayer()
-
-        for y=0,7 do
-            for x=0,7 do
-                tilelayer:set(love.math.random(2), x, y)
-            end
-        end
-
-        local defaultnotes = {
-[[
-welcome to kooltool
-please have fun]],
-[[
-in pixel mode (q) draw you can 
-create a set of beautiful tiles
-as building blocks for a world]],
-[[
-in tile mode (w) you can build your
-own landscape from your tiles]],
-[[
-in note mode (e) you can keep notes
-on your project for planning and
-commentary (escape to leave mode)]],
-[[
-press alt to copy the tile or
-colour currently under the mouse]],
-[[
-you can drag notes
-around in note mode]],
-[[
-you can delete notes with
-right click in note mode]],
-[[
-hold the middle click and drag
-to move around the world]],
-[[
-use the mouse wheel
-to zoom in and out]],
-[[
-press s to save]],
-        }
-
-        for i, note in ipairs(defaultnotes) do
-            local x = love.math.random(256-128, 512-128)
-            local y = (i - 1) * (512 / #defaultnotes) + 32
-            notelayer:addNotebox(Notebox(notelayer, x, y, note))
-        end
-    end
-
-    TEXT = "test"
-
     CAMERA = Camera(128, 128, 2)
+    PROJECTP = "projects/kooltooltestproject"
 
-    love.keyboard.setKeyRepeat(true)
+    if love.filesystem.exists(PROJECTP) then
+        PROJECT = Project()
+        PROJECT:load(PROJECTP)
+    else
+        PROJECT = Project.default()
+    end
 end
 
 function love.update(dt)
-    notelayer:update(dt)
+    PROJECT:update(dt)
 
     if not love.keyboard.isDown("lshift") then LOCK = nil end
 
     if love.mouse.isDown("l") then
         local mx, my = love.mouse.getPosition()
-        local gx, gy, tx, ty = tilelayer:gridCoords(CAMERA:mousepos())
+        local gx, gy, tx, ty = PROJECT.tilelayer:gridCoords(CAMERA:mousepos())
 
-        local index = tileset:click(mx, my)
+        local index = PROJECT.tileset:click(mx, my)
 
         if index then
             TILE = index
         elseif TOOL == "pixel" then
             if love.keyboard.isDown("lalt") then
-                PALETTE.colours[3] = tilelayer:sample(CAMERA:mousepos())
+                PALETTE.colours[3] = PROJECT.tilelayer:sample(CAMERA:mousepos())
             else
                 local mx, my = CAMERA:mousepos()
                 mx, my = math.floor(mx), math.floor(my)
@@ -139,9 +59,9 @@ function love.update(dt)
             end
         elseif TOOL == "tile" then
             if love.keyboard.isDown("lalt") then
-                TILE = tilelayer:get(gx, gy) or TILE
+                TILE = PROJECT.tilelayer:get(gx, gy) or TILE
             else
-                tilelayer:set(TILE, gx, gy)
+                PROJECT.tilelayer:set(TILE, gx, gy)
             end
         end
 
@@ -168,7 +88,7 @@ function love.draw()
 
     CAMERA:attach()
 
-    tilelayer:draw()
+    PROJECT.tilelayer:draw()
 
     local function rando()
         return 128 + love.math.random() * 128, 128 + love.math.random() * 128, 128 + love.math.random() * 128, 255
@@ -178,19 +98,19 @@ function love.draw()
     love.graphics.setColor(rando())
 
     if TOOL == "pixel" then     
-        tilelayer:drawBrushCursor(mx, my, BRUSHSIZE, PALETTE.colours[3], LOCK)
+        PROJECT.tilelayer:drawBrushCursor(mx, my, BRUSHSIZE, PALETTE.colours[3], LOCK)
     elseif TOOL == "tile" then
-        tilelayer:drawTileCursor(mx, my)
+        PROJECT.tilelayer:drawTileCursor(mx, my)
     end
 
     love.graphics.push()
     love.graphics.scale(0.5)
-    notelayer:draw()
+    PROJECT.notelayer:draw()
     love.graphics.pop()
 
     CAMERA:detach()
 
-    tileset:draw()
+    PROJECT.tileset:draw()
     love.graphics.print(TOOL, 3, 5)
 end
 
@@ -204,11 +124,11 @@ local dirs = {
 function love.mousepressed(x, y, button)
     if TOOL == "note" then
         local mx, my = CAMERA:worldCoords(x, y)
-        notelayer:mousepressed(mx*2, my*2, button)
+        PROJECT.notelayer:mousepressed(mx*2, my*2, button)
     end
 
     if button == "l" and TOOL == "pixel" then
-        tileset:snapshot(3)
+        PROJECT.tileset:snapshot(3)
     elseif button == "m" then
         DRAG = {x, y, CAMERA.x, CAMERA.y}
     elseif button == "wu" then
@@ -221,14 +141,14 @@ end
 function love.mousereleased(x, y, button)
     if TOOL == "note" then
         local mx, my = CAMERA:worldCoords(x, y)
-        notelayer:mousereleased(mx*2, my*2, button)
+        PROJECT.notelayer:mousereleased(mx*2, my*2, button)
     end
 end
 
 function love.keypressed(key, isrepeat)
     if key == "escape" then TOOL = "pixel" end
     if TOOL == "note" then 
-        notelayer:keypressed(key)
+        PROJECT.notelayer:keypressed(key)
         return
     end
 
@@ -251,21 +171,10 @@ function love.keypressed(key, isrepeat)
     end
 
     if key == "s" and not isrepeat then
-        love.filesystem.createDirectory("kooltooltestproject")
-        local file = love.filesystem.newFile("kooltooltestproject/tilelayer.json", "w")
-        file:write(json.encode(tilelayer:serialise()))
-        file:close()
-        
-        local file = love.filesystem.newFile("kooltooltestproject/notelayer.json", "w")
-        file:write(json.encode(notelayer:serialise()))
-        file:close()
-
-        local data = tileset.canvas:getImageData()
-        data:encode("kooltooltestproject/tileset.png")
-
+        PROJECT:save(PROJECTP)
         love.system.openURL("file://"..love.filesystem.getSaveDirectory())
     elseif key == "z" and love.keyboard.isDown("lctrl") then
-        tileset:undo()
+        PROJECT.tileset:undo()
     end
 
     if key == "lshift" and not isrepeat then
@@ -283,7 +192,7 @@ function love.keyreleased(key)
 end
 
 function love.textinput(character)
-    if TOOL == "note" then notelayer:textinput(character) end
+    if TOOL == "note" then PROJECT.notelayer:textinput(character) end
 end
 
 function draw_project_list()
@@ -325,5 +234,5 @@ function draw_line(x1, y1, x2, y2, size)
         love.graphics.pop()
     end)
 
-    tilelayer:applyBrush(x-1-le, y-1-le, brush, LOCK, nextclone)
+    PROJECT.tilelayer:applyBrush(x-1-le, y-1-le, brush, LOCK, nextclone)
 end

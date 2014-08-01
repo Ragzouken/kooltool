@@ -1,6 +1,13 @@
 tools to look at
 ----------------
 
+novashell - game creation, seamless between edit/play, similar to kool tool in some aspects
+gamesalad
+sandbox game maker
+dreampath - cyoa in rich text
+
+http://ambrosine.com/resource.php
+
 sunvox - music tracker, clean interface
 OHRRPGCE - rpg maker, graphic editor, multiple interfaces, clean interface
 become a great artist - experimental graphics, experimental interface
