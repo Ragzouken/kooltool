@@ -39,6 +39,8 @@ function Project:save(folder_path)
     local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
     file:write(json.encode(self.notelayer:serialise(folder_path)))
     file:close()
+
+    self.tilelayer:exportRegions(folder_path)
 end
 
 function Project:update(dt)

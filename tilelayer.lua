@@ -61,6 +61,35 @@ function TileLayer:serialise(saves)
     }
 end
 
+function TileLayer:exportRegions(folder_path)
+    local regions = self.tiles:regions()
+
+    love.filesystem.createDirectory(folder_path .. "/regions")
+
+    for i, region in ipairs(regions) do
+        local text = ""
+        local lasty
+
+        for item, x, y in region:rectangle() do
+            if lasty and lasty ~= y then
+                text = text .. "\n"
+            elseif lasty then
+                text = text .. ","
+            end
+
+            lasty = y
+
+            text = text .. (item and item[1] or 0)
+        end
+
+        text = text .. "\n"
+
+        local file = love.filesystem.newFile(folder_path .. "/regions/" .. i .. ".txt", "w")
+        file:write(text)
+        file:close()
+    end
+end
+
 function TileLayer:init()
     self.tileset = Tileset()
     self.batch = love.graphics.newSpriteBatch(love.graphics.newCanvas(32, 32))
@@ -93,19 +122,27 @@ function TileLayer:get(gx, gy)
 end
 
 function TileLayer:set(index, gx, gy)
-    local quad = self.tileset.quads[index]
     local existing = self.tiles:get(gx, gy)
     local id = existing and existing[2]
-
     local size = 32
 
-    if id then
-        self.batch:set(id, quad, gx * size, gy * size)
-    else
-        id = self.batch:add(quad, gx * size, gy * size)
-    end
+    if index and index ~= 0 then
+        local quad = self.tileset.quads[index]
 
-    self.tiles:set({index, id}, gx, gy)
+        if id then
+            self.batch:set(id, quad, gx * size, gy * size)
+        else
+            id = self.batch:add(quad, gx * size, gy * size)
+        end
+
+        self.tiles:set({index, id}, gx, gy)
+    else
+        if id then
+            self.batch:set(id, gx * size, gy * size, 0, 0, 0)
+        end
+
+        self.tiles:set(nil, gx, gy)
+    end
 end
 
 function TileLayer:gridCoords(x, y)
@@ -189,6 +226,7 @@ function PixelMode:mousepressed(x, y, button)
         if love.keyboard.isDown("lalt") then
             PALETTE.colours[3] = self.layer:sample(x, y)
         else
+            self.layer.tileset:snapshot(7)
             self.state.draw = {x, y} 
         end
 
@@ -232,16 +270,18 @@ function PixelMode:keyreleased(key)
 end
 
 function TileMode:hover(x, y, dt)
+    local gx, gy = self.layer:gridCoords(x, y)
+    local tile = PROJECT.tilelayer:get(gx, gy)
+
     if self.state.draw then
-        local gx, gy = self.layer:gridCoords(x, y)
-        local tile = PROJECT.tilelayer:get(gx, gy)
+        self.layer:set(TILE, gx, gy)
+    elseif self.state.erase then
+        self.layer:set(0, gx, gy)
+    end
 
-        if tile ~= TILE then
-            self.layer:set(TILE, gx, gy)
-
-            TILESOUND:stop()
-            TILESOUND:play()
-        end
+    if tile ~= PROJECT.tilelayer:get(gx, gy) then
+        TILESOUND:stop()
+        TILESOUND:play()
     end
 end
 
@@ -266,6 +306,10 @@ function TileMode:mousepressed(x, y, button)
         end
 
         return true
+    elseif button == "r" then
+        self.state.erase = true
+
+        return true
     end
 
     return false
@@ -274,6 +318,8 @@ end
 function TileMode:mousereleased(x, y, button)
     if button == "l" then
         self.state.draw = nil
+    elseif button == "r" then
+        self.state.erase = nil
     end
 end
 

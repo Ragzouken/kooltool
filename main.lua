@@ -1,4 +1,5 @@
 local Camera = require "hump.camera"
+local Timer = require "hump.timer"
 local Palette = require "palette"
 local Project = require "project"
 
@@ -30,9 +31,12 @@ function love.load()
     MODE = PROJECT.tilelayer.modes.pixel
 
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
+    TIMER = Timer()
+    ZOOM = 1
 end
 
 function love.update(dt)
+    TIMER:update(dt)
     PROJECT:update(dt)
 
     local mx, my = CAMERA:mousepos()
@@ -92,14 +96,16 @@ function love.mousepressed(x, y, button)
 
     if MODE:mousepressed(mx, my, button) then return end
 
-    if button == "l" and TOOL == "pixel" then
-        PROJECT.tileset:snapshot(3)
-    elseif button == "m" then
+    if button == "m" then
         DRAG = {x, y, CAMERA.x, CAMERA.y}
     elseif button == "wu" then
-        CAMERA.scale = CAMERA.scale * 2
+        if TWEEN then TIMER:cancel(TWEEN) end
+        ZOOM = math.min(ZOOM * 2, 16) 
+        TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
     elseif button == "wd" then
-        CAMERA.scale = CAMERA.scale / 2
+        if TWEEN then TIMER:cancel(TWEEN) end
+        ZOOM = math.max(ZOOM / 2, 1 / 16)
+        TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
     end
 end
 
