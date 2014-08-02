@@ -1,8 +1,8 @@
 local Class = require "hump.class"
 
-local EditMode = Class {}
+local EditMode = Class { name = "[mode name]", }
 
-function EditMode:init(layer)
+function EditMode:init(layer, name)
     self.layer = layer
     self.state = {}
 end

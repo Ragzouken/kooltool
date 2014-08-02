@@ -14,12 +14,11 @@ function love.load()
     love.keyboard.setKeyRepeat(true)
 
     PALETTE = Palette.generate(3)
-    TOOL = "pixel"
     TILE = 1
     FULL = false
     BRUSHSIZE = 1
     CAMERA = Camera(128, 128, 2)
-    PROJECTP = "projects/kooltooltestproject"
+    PROJECTP = "kooltooltestproject"
 
     if love.filesystem.exists(PROJECTP) then
         PROJECT = Project()
@@ -32,7 +31,7 @@ function love.load()
 
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
     TIMER = Timer()
-    ZOOM = 1
+    ZOOM = 2
 end
 
 function love.update(dt)
@@ -53,8 +52,6 @@ function love.update(dt)
 
         CAMERA:lookAt(cx - dx / s, cy - dy / s)
     end
-
-    love.window.setTitle(love.timer.getFPS())
 end
 
 function love.draw()
@@ -75,7 +72,7 @@ function love.draw()
     CAMERA:detach()
 
     PROJECT.tileset:draw()
-    love.graphics.print(TOOL, 3, 5)
+    love.graphics.print(MODE.name, 3, 5)
 end
 
 local dirs = {
@@ -89,7 +86,7 @@ function love.mousepressed(x, y, button)
     local mx, my = CAMERA:worldCoords(x, y)
     mx, my = math.floor(mx), math.floor(my)
 
-    if button == "l" and TOOL == "tile" then
+    if button == "l" and MODE == PROJECT.tilelayer.modes.tile then
         local index = PROJECT.tilelayer.tileset:click(x, y)
         if index then TILE = index return true end
     end
@@ -100,8 +97,23 @@ function love.mousepressed(x, y, button)
         DRAG = {x, y, CAMERA.x, CAMERA.y}
     elseif button == "wu" then
         if TWEEN then TIMER:cancel(TWEEN) end
-        ZOOM = math.min(ZOOM * 2, 16) 
-        TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
+        ZOOM = math.min(ZOOM * 2, 16)
+        
+        local ox, oy, oz = CAMERA.x, CAMERA.y, CAMERA.scale
+        local dx, dy, dz = CAMERA.x - mx, CAMERA.y - my, ZOOM - oz
+        local t = 0
+
+        local oscale = CAMERA.scale
+        local factor = ZOOM / CAMERA.scale
+
+        TWEEN = TIMER:do_for(0.25, function(dt)
+            t = t + dt
+            local u = t / 0.25
+            local du = factor - 1
+
+            CAMERA.scale = oscale*factor - (1 - u) * dz
+            CAMERA.x, CAMERA.y = mx + dx / (1 + du*u), my + dy / (1 + du*u)
+        end)
     elseif button == "wd" then
         if TWEEN then TIMER:cancel(TWEEN) end
         ZOOM = math.max(ZOOM / 2, 1 / 16)
@@ -125,9 +137,10 @@ function love.keypressed(key, isrepeat)
         MODE:focus()
     end
 
-    if key == "q" then TOOL = "pixel" switch(PROJECT.tilelayer.modes.pixel)    end
-    if key == "w" then TOOL = "tile"  switch(PROJECT.tilelayer.modes.tile)     end
-    if key == "e" then TOOL = "note"  switch(PROJECT.notelayer.modes.annotate) end
+    if key == "q" then switch(PROJECT.tilelayer.modes.pixel)    end
+    if key == "w" then switch(PROJECT.tilelayer.modes.tile)     end
+    if key == "e" then switch(PROJECT.notelayer.modes.annotate) end
+    if key == "r" then switch(PROJECT.tilelayer.modes.walls)    end
 
     if key == "f11" and not isrepeat then
         love.window.setFullscreen(not FULL, "desktop")

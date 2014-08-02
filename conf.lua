@@ -1,7 +1,7 @@
 function love.conf(t)
     t.identity = "kooltool"
 
-	t.title = "kooltool"
+	t.title = "kooltool sketch"
 	t.author = "mark wonnacott"
 	t.url = "https://twitter.com/ragzouken"
 	

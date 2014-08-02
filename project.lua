@@ -10,7 +10,6 @@ function Project.default()
 
     project.tilelayer = TileLayer.default()
     project.notelayer = NoteLayer.default()
-    project.tileset = project.tilelayer.tileset
 
     return project
 end

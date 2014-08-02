@@ -7,8 +7,9 @@ local Palette = require "palette"
 local brush = require "brush"
 local colour = require "colour"
 
-local TileMode = Class { __includes = EditMode, }
-local PixelMode = Class { __includes = EditMode, }
+local TileMode = Class { __includes = EditMode, name = "tile placement" }
+local PixelMode = Class { __includes = EditMode, name = "edit tiles" }
+local WallsMode = Class { __includes = EditMode, name = "tile passability" }
 
 local TileLayer = Class {}
 
@@ -45,19 +46,33 @@ function TileLayer:deserialise(data, saves)
             if index > 0 then self:set(index, tonumber(x), tonumber(y)) end
         end
     end
+
+    for y, row in pairs(data.walls or {}) do
+        for x, wall in pairs(row) do
+            self.walls:set(wall or nil, tonumber(x), tonumber(y))
+        end
+    end
 end
 
 function TileLayer:serialise(saves)
-    local tiles = {}
+    local tiles = {[0]={}}
 
     for tile, x, y in self.tiles:items() do
-        tiles[y] = tiles[y] or {}
+        tiles[y] = tiles[y] or {[0]=0}
         tiles[y][x] = tile[1]
+    end
+
+    local walls = {[0]={}}
+
+    for wall, x, y in self.walls:items() do
+        walls[y] = walls[y] or {[0]=false}
+        walls[y][x] = wall
     end
 
     return {
         tileset = self.tileset:serialise(saves),
         tiles = tiles,
+        walls = walls,
     }
 end
 
@@ -95,12 +110,14 @@ function TileLayer:init()
     self.batch = love.graphics.newSpriteBatch(love.graphics.newCanvas(32, 32))
 
     self.tiles = SparseGrid(32)
+    self.walls = SparseGrid(32)
 
     self.state = {}
 
     self.modes = {
         tile = TileMode(self),
         pixel = PixelMode(self),
+        walls = WallsMode(self),
     }
 end
 
@@ -323,10 +340,56 @@ function TileMode:mousereleased(x, y, button)
     end
 end
 
-function TileMode:keypressed(key, isrepeat)
+function WallsMode:hover(x, y, dt)
+    local gx, gy = self.layer:gridCoords(x, y)
+    local wall = PROJECT.tilelayer.walls:get(gx, gy)
+
+    if self.state.draw then
+        self.layer.walls:set(true, gx, gy)
+    elseif self.state.erase then
+        self.layer.walls:set(nil, gx, gy)
+    end
+
+    if (self.state.draw and not wall) or (self.state.erase and wall) then
+        TILESOUND:stop()
+        TILESOUND:play()
+    end
 end
 
-function TileMode:keyreleased(key)
+function WallsMode:draw(x, y)
+    local size = 32
+
+    for wall, x, y in self.layer.walls:items() do
+        love.graphics.setColor(255, 0, 0, 128)
+        love.graphics.rectangle("fill", x * size, y * size, size, size)
+    end
+
+    local gx, gy, ox, oy = self.layer:gridCoords(x, y)
+
+    love.graphics.setColor(colour.random(128, 255))
+    love.graphics.rectangle("line", gx*size-0.5, gy*size-0.5, size+1, size+1)
+end
+
+function WallsMode:mousepressed(x, y, button)
+    if button == "l" then
+        self.state.draw = true
+
+        return true
+    elseif button == "r" then
+        self.state.erase = true
+
+        return true
+    end
+
+    return false
+end
+
+function WallsMode:mousereleased(x, y, button)
+    if button == "l" then
+        self.state.draw = nil
+    elseif button == "r" then
+        self.state.erase = nil
+    end
 end
 
 return TileLayer

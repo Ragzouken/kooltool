@@ -8,7 +8,7 @@ local colour = require "colour"
 local brush = require "brush"
 local common = require "common"
 
-local Annotate = Class { __includes = EditMode, }
+local Annotate = Class { __includes = EditMode, name = "annotate project" }
 
 local NoteLayer = Class {
     BLOCK_SIZE = 256,
@@ -21,35 +21,32 @@ function NoteLayer.default()
 welcome to kooltool
 please have fun]],
 [[
-in pixel mode (q) draw you can 
-create a set of beautiful tiles
-as building blocks for a world]],
-[[
-in tile mode (w) you can build your
-own landscape from your tiles]],
-[[
-in note mode (e) you can keep notes
-and make annotations on your project
-for planning and commentary]],
-[[
-press alt to copy the tile or
-colour currently under the mouse]],
-[[
-you can drag notes
-around in note mode]],
-[[
-you can delete notes with
-right click in note mode]],
-[[
 hold the middle click and drag
 to move around the world]],
 [[
 use the mouse wheel
 to zoom in and out]],
 [[
-press s to save]],
+in tile edit mode (q) draw you can 
+create a set of beautiful tiles as
+building blocks for a world]],
 [[
-hold control to erase annotations]],
+in tile placement mode (w) you can build
+your own landscape from your tiles]],
+[[
+in annotate project mode (e) you can keep
+notes and make annotations on your project
+for planning and developer commentary]],
+[[
+press alt and click to copy the tile
+or colour currently under the mouse]],
+[[
+in annotate project mode right click
+to add and remove text notes]],
+[[
+drag or select notes for editing with left click]],
+[[
+press s to save]],
     }
 
     for i, note in ipairs(defaultnotes) do
