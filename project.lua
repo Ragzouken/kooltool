@@ -25,8 +25,6 @@ function Project:load(folder_path)
     local data = love.filesystem.read(folder_path .. "/notelayer.json")
     self.notelayer = NoteLayer()
     self.notelayer:deserialise(json.decode(data), folder_path)
-
-    self.tileset = self.tilelayer.tileset
 end
 
 function Project:save(folder_path)

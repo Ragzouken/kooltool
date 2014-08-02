@@ -71,7 +71,7 @@ function love.draw()
 
     CAMERA:detach()
 
-    PROJECT.tileset:draw()
+    PROJECT.tilelayer.tileset:draw()
     love.graphics.print(MODE.name, 3, 5)
 end
 
@@ -137,17 +137,22 @@ function love.keypressed(key, isrepeat)
         MODE:focus()
     end
 
-    if key == "q" then switch(PROJECT.tilelayer.modes.pixel)    end
-    if key == "w" then switch(PROJECT.tilelayer.modes.tile)     end
-    if key == "e" then switch(PROJECT.notelayer.modes.annotate) end
-    if key == "r" then switch(PROJECT.tilelayer.modes.walls)    end
+    local modes = {
+        q = PROJECT.tilelayer.modes.pixel,
+        w = PROJECT.tilelayer.modes.tile,
+        e = PROJECT.notelayer.modes.annotate,
+        r = PROJECT.tilelayer.modes.walls,
+        --a = PROJECT.entitylayer.modes.pixel,
+    }
+
+    if modes[key] then switch(modes[key]) end
 
     if key == "f11" and not isrepeat then
         love.window.setFullscreen(not FULL, "desktop")
         FULL = not FULL
     end
 
-    if key == "s" and not isrepeat then
+    if key == "f12" and not isrepeat then
         PROJECT:save(PROJECTP)
         love.system.openURL("file://"..love.filesystem.getSaveDirectory())
     elseif key == "z" and love.keyboard.isDown("lctrl") then
