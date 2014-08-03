@@ -299,7 +299,7 @@ function Annotate:keypressed(key)
         if key == "escape" then
             self.state.selected = nil
         else
-            selected:keypressed(key)
+            return selected:keypressed(key)
         end
 
         return true

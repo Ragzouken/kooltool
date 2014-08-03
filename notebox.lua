@@ -96,7 +96,14 @@ end
 function Notebox:keypressed(key)
     if key == "backspace" then self.text = string.sub(self.text, 1, #self.text-1) end
     if key == "return" then self.text = self.text .. "\n" end
+    
     self:refresh()
+
+    if key == "backspace" or key == "return" then
+        return true
+    end
+
+    return false
 end
 
 function Notebox:textinput(character)
