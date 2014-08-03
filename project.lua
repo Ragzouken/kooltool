@@ -23,8 +23,8 @@ function Project.default(name)
     local project = Project(name)
 
     project.tilelayer = TileLayer.default()
-    project.notelayer = NoteLayer.default()
-    project.entitylayer = EntityLayer.default()
+    project.notelayer = NoteLayer()
+    project.entitylayer = EntityLayer()
 
     return project
 end
