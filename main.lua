@@ -37,6 +37,10 @@ function love.load()
         end
     end)
 
+    local tutorial = Project("tutorial")
+    tutorial:loadIcon("tutorial")
+    table.insert(projects, 1, tutorial)
+
     INTERFACE = Interface(projects)
     MODE = INTERFACE.modes.select_project
 end
@@ -44,7 +48,8 @@ end
 function SETPROJECT(project)
     if project then
         PROJECT = project
-        PROJECT:load("projects/" .. project.name)
+        local path = project.name == "tutorial" and "tutorial" or "projects/" .. project.name
+        PROJECT:load(path)
     else
         PROJECT = Project.default(Project.name_generator:generate())
     end
@@ -100,11 +105,12 @@ function love.draw()
 
         PROJECT.tilelayer.tileset:draw()
         love.graphics.print(MODE.name, 3, 5)
+
+        INTERFACE:draw()
     else
+        INTERFACE:draw()
         MODE:draw()
     end
-
-    INTERFACE:draw()
 end
 
 local dirs = {
@@ -176,13 +182,24 @@ function love.keypressed(key, isrepeat)
     if PROJECT then
         local modes = {
             q = PROJECT.tilelayer.modes.pixel,
-            w = PROJECT.tilelayer.modes.tile,
-            e = PROJECT.notelayer.modes.annotate,
-            r = PROJECT.tilelayer.modes.walls,
-            --a = PROJECT.entitylayer.modes.pixel,
-        }
+            a = PROJECT.tilelayer.modes.tile,
 
-        if modes[key] then switch(modes[key]) end
+            w = PROJECT.entitylayer.modes.pixel,
+            s = PROJECT.entitylayer.modes.place,
+
+            e = PROJECT.tilelayer.modes.walls,
+
+            r = PROJECT.notelayer.modes.annotate,
+        } 
+
+        if modes[key] then
+            if love.keyboard.isDown("tab") then
+                modes[key].layer.active = not modes[key].layer.active
+            else
+                switch(modes[key])
+                modes[key].layer.active = true
+            end
+        end
 
         if key == "f11" and not isrepeat then
             love.window.setFullscreen(not FULL, "desktop")

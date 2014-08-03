@@ -55,14 +55,14 @@ function TileLayer:deserialise(data, saves)
 end
 
 function TileLayer:serialise(saves)
-    local tiles = {[0]={}}
+    local tiles = {[0]={[0]=0}}
 
     for tile, x, y in self.tiles:items() do
         tiles[y] = tiles[y] or {[0]=0}
         tiles[y][x] = tile[1]
     end
 
-    local walls = {[0]={}}
+    local walls = {[0]={[0]=false}}
 
     for wall, x, y in self.walls:items() do
         walls[y] = walls[y] or {[0]=false}
@@ -111,8 +111,8 @@ function TileLayer:init()
 
     self.tiles = SparseGrid(32)
     self.walls = SparseGrid(32)
-
-    self.state = {}
+    
+    self.active = true
 
     self.modes = {
         tile = TileMode(self),
@@ -126,7 +126,7 @@ end
 
 function TileLayer:draw()
     love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(255, 255, 255, self.active and 255 or 64)
     
     self.batch:setTexture(self.tileset.canvas)
     love.graphics.draw(self.batch, 0, 0)

@@ -1,6 +1,7 @@
 local Class = require "hump.class"
 local TileLayer = require "tilelayer"
 local NoteLayer = require "notelayer"
+local EntityLayer = require "entitylayer"
 local StringGenerator = require "stringgenerator"
 
 local common = require "common"
@@ -23,6 +24,7 @@ function Project.default(name)
 
     project.tilelayer = TileLayer.default()
     project.notelayer = NoteLayer.default()
+    project.entitylayer = EntityLayer.default()
 
     return project
 end
@@ -39,6 +41,10 @@ function Project:load(folder_path)
     local data = love.filesystem.read(folder_path .. "/notelayer.json")
     self.notelayer = NoteLayer()
     self.notelayer:deserialise(json.decode(data), folder_path)
+
+    local data = love.filesystem.read(folder_path .. "/entitylayer.json")
+    self.entitylayer = EntityLayer()
+    self.entitylayer:deserialise(json.decode(data), folder_path)
 end
 
 function Project:save(folder_path)
@@ -49,6 +55,10 @@ function Project:save(folder_path)
 
     local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
     file:write(json.encode(self.notelayer:serialise(folder_path)))
+    file:close()
+
+    local file = love.filesystem.newFile(folder_path .. "/entitylayer.json", "w")
+    file:write(json.encode(self.entitylayer:serialise(folder_path)))
     file:close()
 
     self.tilelayer:exportRegions(folder_path)

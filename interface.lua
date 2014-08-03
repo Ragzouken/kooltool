@@ -27,6 +27,17 @@ function Interface:init(projects)
 end
 
 function Interface:draw()
+    love.graphics.setBlendMode("additive")
+    for i=1,8 do
+        local angle = math.pi * 2 / 8 * i
+        local radius = 128
+        local dx, dy = radius * math.cos(angle), radius * math.sin(angle)
+
+        love.graphics.setColor(PALETTE.colours[i % 3 + 1])
+        love.graphics.circle("fill", 256+dx, 256+dy, 128, 32)
+        love.graphics.circle("fill", 256+dx*2, 256+dy*2, 128, 32)
+    end
+
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(255, 255, 255, 255)
 
@@ -58,12 +69,18 @@ function Interface:draw()
         love.graphics.printf(text, lx + 64 + 8, ly + oy + 8 + 24, 512 - 64 - 64)
     end
 
+     local lx, ly = self.x, self.y + #self.projects * 64
+    love.graphics.setColor(PALETTE.colours[1])
+    love.graphics.rectangle("fill", lx + 64, ly, 512 - 64 - 64, 32-4)
+    love.graphics.setColor(PALETTE.colours[2])
+    love.graphics.rectangle("fill", lx + 64, ly + 32-4, 512 - 64 - 64, 32+4)
+
+    love.graphics.setColor(255, 255, 255, 255)
     local font = self.fonts.medium
     local height = font:getHeight()
     local oy = font:getAscent() - font:getBaseline()
     love.graphics.setFont(font)
 
-    local lx, ly = self.x, self.y + #self.projects * 64
     love.graphics.draw(self.images.new_project, lx, ly, 0, 2, 2)
     love.graphics.print("start new project", lx + 64 + 8, ly + oy + 8)
 

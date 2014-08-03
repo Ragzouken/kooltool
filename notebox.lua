@@ -50,10 +50,10 @@ function Notebox:draw()
 
     local x, y = self.x - math.ceil(width / 2), self.y - math.ceil(height / 2)
 
-    love.graphics.setColor(0, 0, 0, 255)
+    love.graphics.setColor(0, 0, 0, self.layer.active and 255 or 64)
     love.graphics.rectangle("fill", x-1, y-1, width+2, height+2)
 
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(255, 255, 255, self.layer.active and 255 or 64)
     for i, line in ipairs(lines) do
         love.graphics.print(line, x, y + oy + (i - 1) * self.font:getHeight())
     end

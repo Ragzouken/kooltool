@@ -120,6 +120,8 @@ function NoteLayer:init()
         shape_two.notebox:move(-dx/2, -dy/2)
     end)
 
+    self.active = true
+
     self.modes = {
         annotate = Annotate(self),
     }
@@ -134,7 +136,8 @@ end
 function NoteLayer:draw()
     love.graphics.setBlendMode("alpha")
     
-    love.graphics.setColor(colour.random(128, 255))
+    local r, g, b, a = colour.random(128, 255)
+    love.graphics.setColor(r, g, b, self.active and 255 or 64)
 
     for block, x, y in self.blocks:items() do
         love.graphics.draw(block, 
@@ -143,7 +146,7 @@ function NoteLayer:draw()
                            0, 2, 2)
     end
 
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(255, 255, 255, self.active and 255 or 64)
 
     for notebox in pairs(self.noteboxes) do
         notebox:draw()
