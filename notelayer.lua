@@ -46,7 +46,7 @@ to add and remove text notes]],
 [[
 drag or select notes for editing with left click]],
 [[
-press s to save]],
+press f12 to save]],
     }
 
     for i, note in ipairs(defaultnotes) do
@@ -271,7 +271,7 @@ function Annotate:mousepressed(x, y, button)
             self.layer:removeNotebox(notebox)
             self.state.selected = nil
         else
-            notebox = Notebox(self.layer, x, y)
+            notebox = Notebox(self.layer, x*2, y*2)
             self.layer:addNotebox(notebox)
             self.state.selected = notebox
         end

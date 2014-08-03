@@ -1,12 +1,25 @@
 local Class = require "hump.class"
 local TileLayer = require "tilelayer"
 local NoteLayer = require "notelayer"
+local StringGenerator = require "stringgenerator"
+
+local common = require "common"
 local json = require "json"
 
 local Project = Class {}
 
-function Project.default()
-    local project = Project()
+do
+    local names = {}
+
+    for line in love.filesystem.lines("texts/names.txt") do
+        names[#names+1] = line
+    end
+
+    Project.name_generator = StringGenerator(names)
+end
+
+function Project.default(name)
+    local project = Project(name)
 
     project.tilelayer = TileLayer.default()
     project.notelayer = NoteLayer.default()
@@ -14,7 +27,8 @@ function Project.default()
     return project
 end
 
-function Project:init()
+function Project:init(name)
+    self.name = name
 end
 
 function Project:load(folder_path)
@@ -38,6 +52,14 @@ function Project:save(folder_path)
     file:close()
 
     self.tilelayer:exportRegions(folder_path)
+end
+
+function Project:loadIcon(folder_path)
+    local file = folder_path .. "/icon.png"
+
+    if not pcall(function() self.icon = common.loadCanvas(file) end) then
+        self.icon = love.graphics.newCanvas(32, 32)
+    end
 end
 
 function Project:update(dt)

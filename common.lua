@@ -11,5 +11,11 @@ local function canvasFromImage(image)
 end
 
 return {
+    textbox = textbox,
+
     canvasFromImage = canvasFromImage,
+    
+    loadCanvas = function(...) 
+        return canvasFromImage(love.graphics.newImage(...))
+    end,
 }
