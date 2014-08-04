@@ -107,7 +107,7 @@ end
 
 function TileLayer:init()
     self.tileset = Tileset()
-    self.batch = love.graphics.newSpriteBatch(love.graphics.newCanvas(32, 32))
+    self.batch = love.graphics.newSpriteBatch(love.graphics.newCanvas(32, 32), 7500)
 
     self.tiles = SparseGrid(32)
     self.walls = SparseGrid(32)
@@ -162,6 +162,12 @@ function TileLayer:set(index, gx, gy)
     end
 end
 
+function TileLayer:refresh()
+    for tile, x, y in self.tiles:items() do
+        self:set(tile[1], x, y)
+    end
+end
+
 function TileLayer:gridCoords(x, y)
     return self.tiles:gridCoords(x, y)
 end
@@ -200,6 +206,8 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
             end
         end
     end
+
+    if cloning then self:refresh() end
 end
 
 function TileLayer:sample(x, y)

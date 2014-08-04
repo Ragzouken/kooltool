@@ -7,7 +7,12 @@ local Palette = require "palette"
 local Project = require "project"
 local EditMode = require "editmode"
 
+local TileLayer = require "tilelayer"
+local NoteLayer = require "notelayer"
+local NoteBox = require "notebox"
+
 local colour = require "colour"
+local probe = require "probe"
 
 FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 love.graphics.setFont(FONT)
@@ -43,6 +48,14 @@ function love.load()
 
     INTERFACE = Interface(projects)
     MODE = INTERFACE.modes.select_project
+
+    GPROFILER = probe.new()
+    --GPROFILER:hookAll(_G, "draw", {love})
+    --GPROFILER:hook(TileLayer, "draw", "TileLayer")
+    --GPROFILER:hook(NoteLayer, "draw", "NoteLayer")
+    --GPROFILER:hook(NoteBox, "draw", "NoteBox")
+    CPROFILER = probe.new()
+    --CPROFILER:hookAll(_G, "update", {love})
 end
 
 function SETPROJECT(project)
@@ -61,6 +74,8 @@ function SETPROJECT(project)
 end
 
 function love.update(dt)
+    CPROFILER:startCycle()
+
     --require("lovebird").update()
 
     TIMER:update(dt)
@@ -83,9 +98,13 @@ function love.update(dt)
             CAMERA:lookAt(cx - dx / s, cy - dy / s)
         end
     end
+
+    CPROFILER:endCycle()
 end
 
 function love.draw()
+    GPROFILER:startCycle()
+
     if PROJECT then
         CAMERA:attach()
 
@@ -111,6 +130,11 @@ function love.draw()
         INTERFACE:draw()
         MODE:draw()
     end
+
+    GPROFILER:endCycle()
+    love.graphics.setColor(colour.random(128, 255))
+    --GPROFILER:draw(16, 16, 192, 512-32, "DRAW CYCLE")
+    --CPROFILER:draw(512-16-192, 16, 192, 512-32, "UPDATE CYCLE")
 end
 
 local dirs = {
@@ -140,12 +164,10 @@ function love.mousepressed(x, y, button)
             if TWEEN then TIMER:cancel(TWEEN) end
             ZOOM = math.min(ZOOM * 2, 16)
             
-            local ox, oy, oz = CAMERA.x, CAMERA.y, CAMERA.scale
-            local dx, dy, dz = CAMERA.x - mx, CAMERA.y - my, ZOOM - oz
-            local t = 0
-
+            local dx, dy, dz = CAMERA.x - mx, CAMERA.y - my, ZOOM - CAMERA.scale
             local oscale = CAMERA.scale
             local factor = ZOOM / CAMERA.scale
+            local t = 0
 
             TWEEN = TIMER:do_for(0.25, function(dt)
                 t = t + dt
@@ -201,7 +223,11 @@ function love.keypressed(key, isrepeat)
             end
         end
 
-        if key == "f11" and not isrepeat then
+        if key == "f10" and not isrepeat then
+            local w, h, flags = love.window.getMode()
+            flags.vsync = not flags.vsync
+            love.window.setMode(w, h, flags)
+        elseif key == "f11" and not isrepeat then
             love.window.setFullscreen(not FULL, "desktop")
             FULL = not FULL
         elseif key == "f12" and not isrepeat then

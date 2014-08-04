@@ -8,11 +8,12 @@ local Tileset = Class {
 }
 
 function Tileset:deserialise(data, saves)
-    self.tiles = data.tiles
     self.SIZE = data.tilesize
 
     local image = love.graphics.newImage(saves .. "/" .. data.file)
     self.canvas = common.canvasFromImage(image)
+
+    self:add_tile(data.tiles)
 end
 
 function Tileset:serialise(saves)
@@ -28,15 +29,11 @@ end
 
 function Tileset:init()
     local ts = self.SIZE
-    local w, h = ts * self.TILES, ts
+    local w, h = ts * 1, ts
 
     self.canvas = love.graphics.newCanvas(w, h)
     self.quads = {}
     self.tiles = 0
-
-    for i=1,self.TILES do
-        self.quads[i] = love.graphics.newQuad((i - 1) * self.SIZE, 0, ts, ts, w, h)
-    end
 
     self.snapshots = {}
 end
@@ -92,12 +89,30 @@ function Tileset:click(x, y)
     end
 end
 
-function Tileset:add_tile()
-    self.tiles = self.tiles + 1
+function Tileset:refresh()
+    self.quads = {}
 
-    local ts = 32
-    --local quad = love.graphics.newQuad((self.tiles - 1) * self.SIZE, 0, ts, ts, w, h)
-    --self.quads[self.tiles] = quad
+    local w, h = self.SIZE * self.tiles, self.SIZE
+    local canvas = love.graphics.newCanvas(w, h)
+    
+    canvas:renderTo(function()
+        love.graphics.setBlendMode("premultiplied")
+        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.draw(self.canvas, 0, 0)
+    end)
+
+    self.canvas = canvas
+
+    for i=1,self.tiles do
+        self.quads[i] = love.graphics.newQuad((i - 1) * self.SIZE, 0, 
+            self.SIZE, self.SIZE, w, h)
+    end
+end
+
+function Tileset:add_tile(count)
+    self.tiles = self.tiles + (count or 1)
+
+    self:refresh()
 
     return self.tiles
 end

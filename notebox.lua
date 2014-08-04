@@ -29,6 +29,7 @@ end
 function Notebox:init(layer, x, y, text)
     self.layer = layer
     self.x, self.y = x, y
+    
     self.text = text or ""
 
     self:refresh()
@@ -37,15 +38,10 @@ end
 function Notebox:draw()
     love.graphics.setFont(self.font)
 
-    local lines = {}
-    local width = 0
+    local lines, width = self.memo.lines, self.memo.width
 
-    for i, line in ipairs(self.text:split("\n")) do
-        lines[#lines+1] = line
-        width = math.max(width, self.font:getWidth(line))
-    end
-
-    local height = self.font:getHeight() * #lines
+    local font_height = self.font:getHeight()
+    local height = font_height * #lines
     local oy = self.font:getAscent() - self.font:getBaseline()
 
     local x, y = self.x - math.ceil(width / 2), self.y - math.ceil(height / 2)
@@ -55,7 +51,7 @@ function Notebox:draw()
 
     love.graphics.setColor(255, 255, 255, self.layer.active and 255 or 64)
     for i, line in ipairs(lines) do
-        love.graphics.print(line, x, y + oy + (i - 1) * self.font:getHeight())
+        love.graphics.printf(line, x, y + oy + (i - 1) * font_height, self.memo.width)
     end
 end
 
@@ -77,6 +73,8 @@ function Notebox:refresh()
         lines[#lines+1] = line
         width = math.max(width, self.font:getWidth(line))
     end
+
+    self.memo = {lines = lines, width = width}
 
     local height = self.font:getHeight() * #lines
     local oy = self.font:getAscent() - self.font:getBaseline()
