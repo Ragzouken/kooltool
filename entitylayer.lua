@@ -17,7 +17,7 @@ function EntityLayer:deserialise(data, saves)
     local sprite_path = saves .. "/sprites"
 
     -- HACK: to support old saves for now TODO remove
-    if data.sprites_index then
+    if data.sprites_id then
         self.sprites_index.id = data.sprites_id
 
         for id, sprite_data in pairs(data.sprites) do
@@ -34,6 +34,7 @@ function EntityLayer:deserialise(data, saves)
             local entity = Entity(self)
             entity:deserialise(entity_data)
             self:addEntity(entity)
+            print("hello")
         end
     end
 end
