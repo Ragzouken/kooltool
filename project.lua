@@ -82,4 +82,7 @@ function Project:draw()
     self.notelayer:draw()
 end
 
+function Project:sample()
+end
+
 return Project

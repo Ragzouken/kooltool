@@ -118,6 +118,8 @@ function love.draw()
         PROJECT.notelayer:draw()
         love.graphics.pop()
 
+        PROJECT.entitylayer:draw()
+
         MODE:draw(mx, my)
 
         CAMERA:detach()

@@ -14,50 +14,6 @@ local NoteLayer = Class {
     BLOCK_SIZE = 256,
 }
 
-function NoteLayer.default()
-    local layer = NoteLayer()
-    local defaultnotes = {
-[[
-welcome to kooltool
-please have fun]],
-[[
-hold the middle click and drag
-to move around the world]],
-[[
-use the mouse wheel
-to zoom in and out]],
-[[
-in tile edit mode (q) draw you can 
-create a set of beautiful tiles as
-building blocks for a world]],
-[[
-in tile placement mode (w) you can build
-your own landscape from your tiles]],
-[[
-in annotate project mode (e) you can keep
-notes and make annotations on your project
-for planning and developer commentary]],
-[[
-press alt and click to copy the tile
-or colour currently under the mouse]],
-[[
-in annotate project mode right click
-to add and remove text notes]],
-[[
-drag or select notes for editing with left click]],
-[[
-press f12 to save]],
-    }
-
-    for i, note in ipairs(defaultnotes) do
-        local x = love.math.random(256-128, 512-128)
-        local y = (i - 1) * (512 / #defaultnotes) + 32
-        layer:addNotebox(Notebox(layer, x, y, note))
-    end
-
-    return layer
-end
-
 function NoteLayer:deserialise(data, saves)
     local noteboxes = data.notes
 

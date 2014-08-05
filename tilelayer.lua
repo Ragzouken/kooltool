@@ -4,6 +4,7 @@ local EditMode = require "editmode"
 local Tileset = require "tileset"
 local Palette = require "palette"
 
+local bresenham = require "bresenham"
 local brush = require "brush"
 local colour = require "colour"
 
@@ -299,13 +300,19 @@ function TileMode:hover(x, y, dt)
     local tile = PROJECT.tilelayer:get(gx, gy)
 
     if self.state.draw then
-        self.layer:set(TILE, gx, gy)
+        local ox, oy = unpack(self.state.draw)
+
+        for lx, ly in bresenham.line(ox, oy, gx, gy) do
+            self.layer:set(TILE, lx, ly)
+        end
+
+        self.state.draw = {gx, gy}
     elseif self.state.erase then
         self.layer:set(0, gx, gy)
     end
 
     if tile ~= PROJECT.tilelayer:get(gx, gy) then
-        TILESOUND:stop()
+        --TILESOUND:stop()
         TILESOUND:play()
     end
 end
@@ -323,11 +330,12 @@ end
 
 function TileMode:mousepressed(x, y, button)
     if button == "l" then
+        local gx, gy = self.layer.tiles:gridCoords(x, y)
+
         if love.keyboard.isDown("lalt") then
-            local gx, gy = self.layer.tiles:gridCoords(x, y)
             TILE = self.layer:get(gx, gy) or TILE
         else
-            self.state.draw = true
+            self.state.draw = {gx, gy}
         end
 
         return true
