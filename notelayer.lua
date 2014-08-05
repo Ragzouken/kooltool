@@ -183,6 +183,14 @@ function NoteLayer:eraseBrush(bx, by, brush)
     love.graphics.setBlendMode("alpha")
 end
 
+function Annotate:update(dt)
+    if self.state.selected then
+        self.name = "annotate project (typing)"
+    else
+        self.name = "annotate project"
+    end
+end
+
 function Annotate:hover(x, y, dt)
     if self.state.drag then
         local notebox, dx, dy = unpack(self.state.drag)

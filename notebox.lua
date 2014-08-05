@@ -101,7 +101,7 @@ function Notebox:keypressed(key)
         return true
     end
 
-    return false
+    return key ~= "escape"
 end
 
 function Notebox:textinput(character)

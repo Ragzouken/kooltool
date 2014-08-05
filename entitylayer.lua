@@ -16,22 +16,25 @@ local EntityLayer = Class {}
 function EntityLayer:deserialise(data, saves)
     local sprite_path = saves .. "/sprites"
 
-    self.sprites_index.id = data.sprites_id
+    -- HACK: to support old saves for now TODO remove
+    if data.sprites_index then
+        self.sprites_index.id = data.sprites_id
 
-    for id, sprite_data in pairs(data.sprites) do
-        local file = sprite_path .. "/" .. id .. ".png"
-        local sprite = Sprite()
-        sprite.canvas = common.loadCanvas(file)
+        for id, sprite_data in pairs(data.sprites) do
+            local file = sprite_path .. "/" .. id .. ".png"
+            local sprite = Sprite()
+            sprite.canvas = common.loadCanvas(file)
 
-        sprite.pivot = sprite_data.pivot
+            sprite.pivot = sprite_data.pivot
 
-        self:addSprite(sprite, id)
-    end
+            self:addSprite(sprite, id)
+        end
 
-    for i, entity_data in ipairs(data.entities) do
-        local entity = Entity(self)
-        entity:deserialise(entity_data)
-        self:addEntity(entity)
+        for i, entity_data in ipairs(data.entities) do
+            local entity = Entity(self)
+            entity:deserialise(entity_data)
+            self:addEntity(entity)
+        end
     end
 end
 
@@ -214,7 +217,7 @@ function PixelMode:mousepressed(x, y, button)
             PALETTE.colours[3] = self.layer:sample(x, y)
 
             print(unpack(PALETTE.colours[3]))
-        else
+        elseif entity then
             self.state.draw = {x, y, entity}
         end
 

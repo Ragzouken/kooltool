@@ -82,6 +82,7 @@ function love.update(dt)
     
     if PROJECT then
         PROJECT:update(dt)
+        MODE:update(dt)
 
         local mx, my = CAMERA:mousepos()
         mx, my = math.floor(mx), math.floor(my)

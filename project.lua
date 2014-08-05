@@ -42,9 +42,14 @@ function Project:load(folder_path)
     self.notelayer = NoteLayer()
     self.notelayer:deserialise(json.decode(data), folder_path)
 
-    local data = love.filesystem.read(folder_path .. "/entitylayer.json")
     self.entitylayer = EntityLayer()
-    self.entitylayer:deserialise(json.decode(data), folder_path)
+    
+    local entitylayer_path = folder_path .. "/entitylayer.json"
+
+    if love.filesystem.exists(entitylayer_path) then
+        local data = love.filesystem.read(entitylayer_path)
+        self.entitylayer:deserialise(json.decode(data), folder_path)
+    end
 end
 
 function Project:save(folder_path)
