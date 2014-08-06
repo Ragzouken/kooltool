@@ -302,8 +302,11 @@ function love.keypressed(key, isrepeat)
             FULL = not FULL
         elseif key == "f12" and not isrepeat then
             PROJECT:save("projects/" .. PROJECT.name)
-            PROJECT:export()
-            love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+            
+            if love.keyboard.isDown("lshift") then
+                PROJECT:export()
+                love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases")
+            end
         elseif key == "z" and love.keyboard.isDown("lctrl") then
             PROJECT.tilelayer.tileset:undo()
         end

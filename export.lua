@@ -101,9 +101,11 @@ function exporters.Windows(name)
 end
 
 exporters["OS X"] = function(release)
+    love.filesystem.write("releases/export-not-supported-on-osx-yet.txt", "sorry")
 end
 
 function exporters.Linux(name)
+    love.filesystem.write("releases/export-not-supported-on-linux-yet.txt", "sorry")
 end
 
 local function export(project)
