@@ -312,7 +312,7 @@ function TileMode:hover(x, y, dt)
     end
 
     if tile ~= PROJECT.tilelayer:get(gx, gy) then
-        --TILESOUND:stop()
+        TILESOUND:stop()
         TILESOUND:play()
     end
 end

@@ -1,5 +1,12 @@
 love.graphics.setDefaultFilter("nearest", "nearest")
 
+if not love.graphics.isSupported("canvas") then
+    function love.load() image = love.graphics.newImage("images/nocanvas.png") end
+    function love.update(dt) end
+    function love.draw() love.graphics.draw(image, 0, 0) end
+    return
+end
+
 local Camera = require "hump.camera"
 local Timer = require "hump.timer"
 local Interface = require "interface"
@@ -69,8 +76,6 @@ function SETPROJECT(project)
 
     MODE = PROJECT.tilelayer.modes.pixel
     INTERFACE.draw = function() end
-
-    print(PROJECT.name)
 end
 
 function love.update(dt)
@@ -148,6 +153,9 @@ local dirs = {
 }
 
 function love.mousepressed(x, y, button)
+    local w, h = love.window.getDimensions()
+    if x <= 0 or y <= 0 or x >= w or y >= w then return end
+
     local mx, my = CAMERA:worldCoords(x, y)
     mx, my = math.floor(mx), math.floor(my)
 
@@ -253,4 +261,7 @@ end
 
 function love.textinput(character)
     MODE:textinput(character)
+end
+
+function love.focus()
 end

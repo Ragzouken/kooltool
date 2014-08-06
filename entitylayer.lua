@@ -34,7 +34,6 @@ function EntityLayer:deserialise(data, saves)
             local entity = Entity(self)
             entity:deserialise(entity_data)
             self:addEntity(entity)
-            print("hello")
         end
     end
 end
@@ -132,6 +131,8 @@ function PlaceMode:draw()
         for entity in pairs(self.layer.entities) do
             entity:border()
         end
+    elseif self.state.selected then
+        self.state.selected:border()
     end
 end
 
@@ -153,10 +154,15 @@ function PlaceMode:mousepressed(x, y, button)
         
             self.state.drag = {entity, dx, dy}
             self.state.selected = entity
+        else
+            self.state.selected = nil
         end
     elseif button == "r" then
         if entity then
             self.layer:removeEntity(entity)
+            if self.state.selected == entity then
+                self.state.selected = nil
+            end
         else
             local entity = Entity(self.layer)
             entity:blank(x, y)
@@ -207,6 +213,10 @@ function PixelMode:draw(x, y)
             end
         end
     end
+
+    if self.state.draw then
+        self.state.draw[3]:border()
+    end
 end
 
 function PixelMode:mousepressed(x, y, button)
@@ -216,8 +226,6 @@ function PixelMode:mousepressed(x, y, button)
     if button == "l" then
         if love.keyboard.isDown("lalt") then
             PALETTE.colours[3] = self.layer:sample(x, y)
-
-            print(unpack(PALETTE.colours[3]))
         elseif entity then
             self.state.draw = {x, y, entity}
         end
