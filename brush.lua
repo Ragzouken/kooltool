@@ -1,4 +1,8 @@
+local Class = require "hump.class"
+
 local bresenham = require "bresenham"
+
+local Brush = Class {}
 
 local function line(x1, y1, x2, y2, size, colour)
     local le = math.floor(size / 2)

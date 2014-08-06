@@ -4,7 +4,12 @@ if not love.graphics.isSupported("canvas") then
     function love.load() image = love.graphics.newImage("images/nocanvas.png") end
     function love.update(dt) end
     function love.draw() love.graphics.draw(image, 0, 0) end
-    return
+    do return end
+
+    local broken = love.graphics.newImage("images/broken.png")
+    local common = require "common"
+    love.graphics.newCanvas = function() return broken end
+    common.canvasFromImage = function(...) return ... end
 end
 
 local Camera = require "hump.camera"
@@ -18,8 +23,11 @@ local TileLayer = require "tilelayer"
 local NoteLayer = require "notelayer"
 local NoteBox = require "notebox"
 
+local Player = require "player"
+
 local colour = require "colour"
 local probe = require "probe"
+local export = require "export"
 
 FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 love.graphics.setFont(FONT)
@@ -32,11 +40,57 @@ function love.load()
     TILE = 1
     FULL = false
     BRUSHSIZE = 1
-    CAMERA = Camera(128, 128, 2)
+    CAMERA = Camera(0, 0, 2)
 
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
     TIMER = Timer()
     ZOOM = 2
+
+    GPROFILER = probe.new()
+    --GPROFILER:hookAll(_G, "draw", {love})
+    --GPROFILER:hook(TileLayer, "draw", "TileLayer")
+    --GPROFILER:hook(NoteLayer, "draw", "NoteLayer")
+    --GPROFILER:hook(NoteBox, "draw", "NoteBox")
+    CPROFILER = probe.new()
+    --CPROFILER:hookAll(_G, "update", {love})
+
+    if love.filesystem.isDirectory("embedded") then
+        INTERFACE = Interface({})
+        SETPROJECT(Project("embedded"))
+
+        for entity in pairs(PROJECT.entitylayer.entities) do
+            PLAYER = Player(entity, PROJECT.tilelayer.walls)
+        end
+
+        function love.update(dt)
+            PLAYER:update(dt)
+            CAMERA.x, CAMERA.y = PLAYER.entity.x, PLAYER.entity.y
+        end
+
+        function love.draw() 
+            CAMERA:attach()
+            PROJECT:draw()
+            CAMERA:detach()
+        end
+
+        function love.mousepressed(x, y, button)
+        end
+
+        function love.mousereleased(x, y, button)
+        end
+
+        function love.keypressed(key, isrepeat)
+            PLAYER:keypressed(key)
+        end
+
+        function love.keyreleased(key)
+        end
+
+        function love.textinput(character)
+        end
+
+        return
+    end
 
     local projects = {}
 
@@ -56,19 +110,22 @@ function love.load()
     INTERFACE = Interface(projects)
     MODE = INTERFACE.modes.select_project
 
-    GPROFILER = probe.new()
-    --GPROFILER:hookAll(_G, "draw", {love})
-    --GPROFILER:hook(TileLayer, "draw", "TileLayer")
-    --GPROFILER:hook(NoteLayer, "draw", "NoteLayer")
-    --GPROFILER:hook(NoteBox, "draw", "NoteBox")
-    CPROFILER = probe.new()
-    --CPROFILER:hookAll(_G, "update", {love})
+    love.filesystem.createDirectory("export_test")
+    export.export()
+    --os.execute("copy texts ..\\poo /s ")
 end
 
 function SETPROJECT(project)
     if project then
         PROJECT = project
-        local path = project.name == "tutorial" and "tutorial" or "projects/" .. project.name
+        local path
+
+        if project.name == "tutorial" or project.name == "embedded" then
+            path = project.name
+        else
+            path = "projects/" .. project.name
+        end
+
         PROJECT:load(path)
     else
         PROJECT = Project.default(Project.name_generator:generate())

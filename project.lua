@@ -84,7 +84,8 @@ end
 
 function Project:draw()
     self.tilelayer:draw()
-    self.notelayer:draw()
+    self.entitylayer:draw()
+    --self.notelayer:draw()
 end
 
 function Project:sample()
