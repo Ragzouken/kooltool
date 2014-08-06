@@ -33,14 +33,14 @@ FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 love.graphics.setFont(FONT)
 
 function love.load()
-    love.filesystem.mount(".", "projects")
+    --love.filesystem.mount("projects", "saved_projects")
     love.keyboard.setKeyRepeat(true)
 
     PALETTE = Palette.generate(3)
     TILE = 1
     FULL = false
     BRUSHSIZE = 1
-    CAMERA = Camera(0, 0, 2)
+    CAMERA = Camera(128, 128, 2)
 
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
     TIMER = Timer()
@@ -94,10 +94,14 @@ function love.load()
 
     local projects = {}
 
-    local items = love.filesystem.getDirectoryItems("projects", function(filename)
-        if love.filesystem.isDirectory(filename) then
-            local project = Project(filename)
-            project:loadIcon(filename)
+    local proj_path = "projects"
+
+    local items = love.filesystem.getDirectoryItems(proj_path, function(filename)
+        local path = proj_path .. "/" .. filename
+
+        if love.filesystem.isDirectory(path) then
+            local project = Project(path)
+            project:loadIcon(path)
 
             projects[#projects+1] = project
         end
@@ -110,9 +114,7 @@ function love.load()
     INTERFACE = Interface(projects)
     MODE = INTERFACE.modes.select_project
 
-    love.filesystem.createDirectory("export_test")
-    export.export()
-    --os.execute("copy texts ..\\poo /s ")
+    --love.filesystem.createDirectory("export_test", "kooltooltestproject1")
 end
 
 function SETPROJECT(project)
@@ -292,14 +294,15 @@ function love.keypressed(key, isrepeat)
         end
 
         if key == "f10" and not isrepeat then
-            local w, h, flags = love.window.getMode()
-            flags.vsync = not flags.vsync
-            love.window.setMode(w, h, flags)
+            --local w, h, flags = love.window.getMode()
+            --flags.vsync = not flags.vsync
+            --love.window.setMode(w, h, flags)
         elseif key == "f11" and not isrepeat then
             love.window.setFullscreen(not FULL, "desktop")
             FULL = not FULL
         elseif key == "f12" and not isrepeat then
-            PROJECT:save(PROJECT.name)
+            PROJECT:save("projects/" .. PROJECT.name)
+            PROJECT:export()
             love.system.openURL("file://"..love.filesystem.getSaveDirectory())
         elseif key == "z" and love.keyboard.isDown("lctrl") then
             PROJECT.tilelayer.tileset:undo()

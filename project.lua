@@ -6,6 +6,7 @@ local StringGenerator = require "stringgenerator"
 
 local common = require "common"
 local json = require "json"
+local export = require "export"
 
 local Project = Class {}
 
@@ -30,7 +31,7 @@ function Project.default(name)
 end
 
 function Project:init(name)
-    self.name = name
+    self.name = name:match("[^/]+$")
 end
 
 function Project:load(folder_path)
@@ -90,5 +91,7 @@ end
 
 function Project:sample()
 end
+
+Project.export = export.export
 
 return Project
