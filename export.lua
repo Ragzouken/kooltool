@@ -4,6 +4,8 @@ local function copyFile(source, destination)
 end
 
 local function copyDirectory(source, destination, blacklist)
+    love.filesystem.createDirectory(destination)
+
     local writing = {}
 
     love.filesystem.getDirectoryItems(source or "", function(filename)
@@ -14,8 +16,6 @@ local function copyDirectory(source, destination, blacklist)
         else
             path = filename
         end
-
-        if filename == "bresenham.lua" then print("FOUND IT THO") end
 
         if blacklist and blacklist[path] then
         elseif love.filesystem.isDirectory(path) then
@@ -39,8 +39,8 @@ local function copyDirectory(source, destination, blacklist)
 
         for file, contents in pairs(writing) do
             print("missed ", file, #contents)
-            local wrote = love.filesystem.write(file, contents)
-            if not wrote then missing[file] = contents end
+            local wrote, error = love.filesystem.write(file, contents)
+            if not wrote then missed[file] = contents print(error) end
             missing = true
         end
 
@@ -64,38 +64,12 @@ end
 
 local exporters = {}
 
-function exporters.Windows(name)
-    local saves = love.filesystem.getSaveDirectory()
-    local release = saves .. "/releases/" .. name
+function exporters.Windows(saves, name)
+    saves = saves:gsub("/", "\\")
 
-    local full = saves .. "/releases"
-    local relative = "releases"
-
-    local _7zip = full .. "/7za.exe"
-
-    local zip = _7zip:gsub("/", "\\") .. " -tzip a " .. full .. "/" .. name .. "-love.zip " .. full .. "/" .. name .. "-love/*"
-    local compile = "copy /b " .. full:gsub("/", "\\") .. "\\" .. name .. "\\love.exe+" .. full:gsub("/", "\\") .. "\\" .. name .. "-love.zip " .. full:gsub("/", "\\") .. "\\" .. name .. "\\" .. name .. ".exe"
-    local bundle_win = _7zip:gsub("/", "\\") .. " -tzip a " .. full .. "/" .. name .. ".zip " .. full .. "/" .. name
-    local bundle_osx = _7zip:gsub("/", "\\") .. " -tzip a " .. full .. "/" .. name .. ".app.zip " .. full .. "/" .. name .. ".app"
-
-    copyFile("7za.exe", relative .. "/7za.exe")    
-    os.execute(zip .. " 1> nul")
-    copyFile(relative .. "/" .. name .. "-love.zip", relative .. "/" .. name .. ".love")
-    love.filesystem.createDirectory("releases/" .. name)
-    copyDirectory("love-binary-win", "releases/" .. name)
-    os.execute(compile)
-    love.filesystem.remove(relative .. "/" .. name .. "/love.exe")
-    os.execute(bundle_win .. " 1> nul")
-
-    copyDirectory("love-binary-osx", "releases/" .. name .. ".app")
-    copyFile(relative .. "/" .. name .. "-love.zip", relative .. "/" .. name .. ".app/Contents/Resources/kooltool.love")
-    os.execute(bundle_osx .. " 1> nul")
-    removeDirectory(relative .. "/" .. name .. ".app")
-    
-    removeDirectory(relative .. "/" .. name)
-    removeDirectory(relative .. "/" .. name .. "-love")
-    love.filesystem.remove(relative .. "/7za.exe")
-    love.filesystem.remove(relative .. "/" .. name .. "-love.zip")
+    copyFile("export-resources/export-windows.bat", "releases/export-windows.bat")
+    copyFile("export-resources/7za.exe", "releases/7za.exe")
+    os.execute(saves .. "\\releases\\export-windows.bat " .. name .. " " .. saves)
 end
 
 exporters["OS X"] = function(release)
@@ -113,18 +87,20 @@ local function export(project)
         [".git"] = true,
         ["projects"] = true,
         ["releases"] = true,
-        ["love-binary-win"] = true,
-        ["love-binary-osx"] = true,
-        ["7za.exe"] = true
+        ["export-resources"] = true,
     }
 
-    local name = project.name:gsub(" ", "_")
+    -- FAILS TO EMBED
 
     love.filesystem.createDirectory("releases")
-    copyDirectory(nil, "releases/" .. name .. "-love", blacklist)
-    copyDirectory("projects/" .. name, "releases/" .. name .. "-love/embedded")
 
-    exporters[love.system.getOS()](name)
+    copyDirectory(nil, "releases/kooltool-player-love", blacklist)
+    copyDirectory("export-resources/love-binary-win", "releases/love-binary-win")
+    copyDirectory("export-resources/love-binary-osx", "releases/love-binary-osx")
+
+    local saves = love.filesystem.getSaveDirectory()
+
+    exporters[love.system.getOS()](saves, project.name)
 end
 
 return {

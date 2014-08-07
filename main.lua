@@ -58,12 +58,26 @@ function love.load()
         INTERFACE = Interface({})
         SETPROJECT(Project("embedded"))
 
+        local players = {}
+
         for entity in pairs(PROJECT.entitylayer.entities) do
-            PLAYER = Player(entity, PROJECT.tilelayer.walls)
+            local player = Player(entity, PROJECT.tilelayer.walls)
+            players[player] = true
+            PLAYER = player
+            player.speed = 0.75
         end
 
+        PLAYER.speed = 0.25
+
         function love.update(dt)
-            PLAYER:update(dt)
+            for player in pairs(players) do
+                player:update(dt)
+
+                if player ~= PLAYER then
+                    player:rando()
+                end
+            end
+
             CAMERA.x, CAMERA.y = PLAYER.entity.x, PLAYER.entity.y
         end
 
@@ -130,7 +144,7 @@ function SETPROJECT(project)
 
         PROJECT:load(path)
     else
-        PROJECT = Project.default(Project.name_generator:generate())
+        PROJECT = Project.default(Project.name_generator:generate():gsub(" ", "_"))
     end
 
     MODE = PROJECT.tilelayer.modes.pixel
@@ -357,7 +371,7 @@ function love.keypressed(key, isrepeat)
             
             if love.keyboard.isDown("lshift") then
                 PROJECT:export()
-                love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases")
+                love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
             end
         elseif key == "z" and love.keyboard.isDown("lctrl") then
             PROJECT.tilelayer.tileset:undo()
