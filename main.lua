@@ -137,6 +137,13 @@ function SETPROJECT(project)
     INTERFACE.draw = function() end
 end
 
+local dirs = {
+    up = {0, -1},
+    left = {-1, 0},
+    down = {0, 1},
+    right = {1, 0},
+}
+
 function love.update(dt)
     CPROFILER:startCycle()
 
@@ -153,7 +160,7 @@ function love.update(dt)
 
         MODE:hover(mx, my, dt)
 
-        if love.mouse.isDown("m") and DRAG then
+        if DRAG then
             local mx, my = love.mouse.getPosition()
             local x, y, cx, cy = unpack(DRAG)
 
@@ -161,6 +168,22 @@ function love.update(dt)
             local s = CAMERA.scale
 
             CAMERA:lookAt(cx - dx / s, cy - dy / s)
+        end
+    end
+
+    if not love.keyboard.isDown("lshift") then
+        for key, vector in pairs(dirs) do
+            if love.keyboard.isDown(key) then
+                local vx, vy = unpack(vector)
+                local speed = 256 / CAMERA.scale
+                CAMERA:move(vx * speed * dt, vy * speed * dt)
+            end
+        end
+    else
+        if love.keyboard.isDown("down") then
+            CAMERA.scale = CAMERA.scale - CAMERA.scale * dt
+        elseif love.keyboard.isDown("up") then
+            CAMERA.scale = CAMERA.scale + CAMERA.scale * dt
         end
     end
 
@@ -204,14 +227,36 @@ function love.draw()
     --CPROFILER:draw(512-16-192, 16, 192, 512-32, "UPDATE CYCLE")
 end
 
-local dirs = {
-    up = {0, -1},
-    left = {-1, 0},
-    down = {0, 1},
-    right = {1, 0},
-}
-
 function love.mousepressed(x, y, button)
+    if love.keyboard.isDown("tab") then
+        local mx, my = CAMERA:mousepos()
+
+        if love.mouse.isDown("l") then
+            if TWEEN then TIMER:cancel(TWEEN) end
+            ZOOM = math.min(ZOOM * 2, 16)
+            
+            local dx, dy, dz = CAMERA.x - mx, CAMERA.y - my, ZOOM - CAMERA.scale
+            local oscale = CAMERA.scale
+            local factor = ZOOM / CAMERA.scale
+            local t = 0
+
+            TWEEN = TIMER:do_for(0.25, function(dt)
+                t = t + dt
+                local u = t / 0.25
+                local du = factor - 1
+
+                CAMERA.scale = oscale*factor - (1 - u) * dz
+                CAMERA.x, CAMERA.y = mx + dx / (1 + du*u), my + dy / (1 + du*u)
+            end)
+        elseif love.mouse.isDown("r") then
+            if TWEEN then TIMER:cancel(TWEEN) end
+            ZOOM = math.max(ZOOM / 2, 1 / 16)
+            TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
+        end
+
+        return
+    end
+
     local w, h = love.window.getDimensions()
     if x <= 0 or y <= 0 or x >= w or y >= w then return end
 
@@ -256,6 +301,8 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
+    if button == "m" and not DRAG[5] then DRAG = nil end
+
     local mx, my = CAMERA:worldCoords(x, y)
     mx, my = math.floor(mx), math.floor(my)
         
@@ -263,6 +310,11 @@ function love.mousereleased(x, y, button)
 end
 
 function love.keypressed(key, isrepeat)
+    if key == "tab" then
+        local x, y = love.mouse.getPosition()
+        DRAG = {x, y, CAMERA.x, CAMERA.y, "tab"}
+        return
+    end
     if MODE:keypressed(key, isrepeat) then return end
 
     local function switch(mode)
@@ -310,15 +362,12 @@ function love.keypressed(key, isrepeat)
         elseif key == "z" and love.keyboard.isDown("lctrl") then
             PROJECT.tilelayer.tileset:undo()
         end
-
-        if dirs[key] then
-            local vx, vy = unpack(dirs[key])
-            CAMERA:move(vx * 32, vy * 32)
-        end
     end
 end
 
 function love.keyreleased(key)
+    if key == "tab" and DRAG[5] == "tab" then DRAG = nil return end
+
     MODE:keyreleased(key)
 end
 

@@ -1,6 +1,4 @@
 local function copyFile(source, destination)
-    print(source, destination)
-
     local contents = love.filesystem.read(source)
     love.filesystem.write(destination, contents)
 end
@@ -8,7 +6,7 @@ end
 local function copyDirectory(source, destination, blacklist)
     local writing = {}
 
-    love.filesystem.getDirectoryItems(source or ".", function(filename)
+    love.filesystem.getDirectoryItems(source or "", function(filename)
         local path
 
         if source then
@@ -81,17 +79,17 @@ function exporters.Windows(name)
     local bundle_osx = _7zip:gsub("/", "\\") .. " -tzip a " .. full .. "/" .. name .. ".app.zip " .. full .. "/" .. name .. ".app"
 
     copyFile("7za.exe", relative .. "/7za.exe")    
-    os.execute(zip)
+    os.execute(zip .. " 1> nul")
     copyFile(relative .. "/" .. name .. "-love.zip", relative .. "/" .. name .. ".love")
     love.filesystem.createDirectory("releases/" .. name)
     copyDirectory("love-binary-win", "releases/" .. name)
     os.execute(compile)
     love.filesystem.remove(relative .. "/" .. name .. "/love.exe")
-    os.execute(bundle_win)
+    os.execute(bundle_win .. " 1> nul")
 
     copyDirectory("love-binary-osx", "releases/" .. name .. ".app")
     copyFile(relative .. "/" .. name .. "-love.zip", relative .. "/" .. name .. ".app/Contents/Resources/kooltool.love")
-    os.execute(bundle_osx)
+    os.execute(bundle_osx .. " 1> nul")
     removeDirectory(relative .. "/" .. name .. ".app")
     
     removeDirectory(relative .. "/" .. name)
@@ -122,6 +120,7 @@ local function export(project)
 
     local name = project.name:gsub(" ", "_")
 
+    love.filesystem.createDirectory("releases")
     copyDirectory(nil, "releases/" .. name .. "-love", blacklist)
     copyDirectory("projects/" .. name, "releases/" .. name .. "-love/embedded")
 
