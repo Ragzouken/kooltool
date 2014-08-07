@@ -30,7 +30,6 @@ rename %2\releases\%1\love-binary-osx\ %1.app
 rmdir /s/q %2\releases\%1\%1.app\
 
 :: clean up
-::rmdir /s/q %2\releases\%1\kooltool-player-love\
 del %2\releases\%1\7za.exe
 del %2\releases\%1\%1-love.zip
 del %2\releases\export-windows.bat
