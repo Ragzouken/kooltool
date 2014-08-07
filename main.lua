@@ -67,7 +67,7 @@ function love.load()
             player.speed = 0.75
         end
 
-        PLAYER.speed = 0.25
+        if PLAYER then PLAYER.speed = 0.25 end
 
         function love.update(dt)
             for player in pairs(players) do
@@ -78,7 +78,9 @@ function love.load()
                 end
             end
 
-            CAMERA.x, CAMERA.y = PLAYER.entity.x, PLAYER.entity.y
+            if PLAYER then
+                CAMERA.x, CAMERA.y = PLAYER.entity.x, PLAYER.entity.y
+            end
         end
 
         function love.draw() 
@@ -94,7 +96,7 @@ function love.load()
         end
 
         function love.keypressed(key, isrepeat)
-            PLAYER:keypressed(key)
+            if PLAYER then PLAYER:keypressed(key) end
         end
 
         function love.keyreleased(key)
@@ -243,7 +245,7 @@ end
 
 function love.mousepressed(x, y, button)
     if love.keyboard.isDown("tab") then
-        local mx, my = CAMERA:mousepos()
+        local mx, my = x, y --CAMERA:mousepos()
 
         if love.mouse.isDown("l") then
             if TWEEN then TIMER:cancel(TWEEN) end
@@ -366,9 +368,9 @@ function love.keypressed(key, isrepeat)
         elseif key == "f11" and not isrepeat then
             love.window.setFullscreen(not FULL, "desktop")
             FULL = not FULL
-        elseif key == "f12" and not isrepeat then
+        elseif (key == "f12" or (key == "s" and love.keyboard.isDown("lctrl"))) and not isrepeat then
             PROJECT:save("projects/" .. PROJECT.name)
-            
+
             if love.keyboard.isDown("lshift") then
                 PROJECT:export()
                 love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)

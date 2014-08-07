@@ -72,13 +72,18 @@ function exporters.Windows(saves, name)
     os.execute(saves .. "\\releases\\export-windows.bat " .. name .. " " .. saves)
 end
 
-exporters["OS X"] = function(release)
-    love.filesystem.write("releases/export-not-supported-on-osx-yet.txt", "sorry")
+exporters["OS X"] = function(saves, name)
+    copyFile("export-resources/export-osx.sh", "releases/export-osx.sh")
+    os.execute("chmod +x \"" .. saves .. "/releases/export-osx.sh\"")
+    os.execute("sh \"" .. saves .. "/releases/export-osx.sh\" \"" .. name .. "\" \"" .. saves .. "\"")
 end
 
-function exporters.Linux(name)
-    love.filesystem.write("releases/export-not-supported-on-linux-yet.txt", "sorry")
+function exporters.Linux(saves, name)
+    copyFile("export-resources/export-linux.sh", "releases/export-linux.sh")
+    os.execute("chmod +x \"" .. saves .. "/releases/export-linux.sh\"")
+    os.execute("sh \"" .. saves .. "/releases/export-linux.sh\" \"" .. name .. "\" \"" .. saves .. "\"")
 end
+
 
 local function export(project)
     local blacklist = {
@@ -93,6 +98,7 @@ local function export(project)
     -- FAILS TO EMBED
 
     love.filesystem.createDirectory("releases")
+    love.filesystem.createDirectory("releases/" .. project.name)
 
     copyDirectory(nil, "releases/kooltool-player-love", blacklist)
     copyDirectory("export-resources/love-binary-win", "releases/love-binary-win")

@@ -101,7 +101,7 @@ function Notebox:keypressed(key)
         return true
     end
 
-    return key ~= "escape" and key ~= "f12"
+    return key ~= "escape" and not love.keyboard.isDown("lctrl")
 end
 
 function Notebox:textinput(character)
