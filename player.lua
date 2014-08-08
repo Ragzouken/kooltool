@@ -44,6 +44,7 @@ function Player:move(vector)
 
             self.entity.x, self.entity.y = x + vx * 32 * u, y + vy * 32 * u
         end, function()
+            self.entity.x, self.entity.y = x + vx * 32, y + vy * 32
             self.movement = nil
         end)
     end

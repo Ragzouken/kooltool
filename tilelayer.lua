@@ -129,7 +129,12 @@ function TileLayer:draw()
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(255, 255, 255, self.active and 255 or 64)
     
-    self.batch:setTexture(self.tileset.canvas)
+    if not self.tileset.canvas.fakecanvas then
+        self.batch:setTexture(self.tileset.canvas)
+    else
+        self.batch:setTexture(self.tileset.canvas.image)
+    end
+
     love.graphics.draw(self.batch, 0, 0)
 end
 

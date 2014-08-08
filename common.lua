@@ -1,4 +1,6 @@
-local function canvasFromImage(image)
+local common = {}
+
+function common.canvasFromImage(image)
     local canvas = love.graphics.newCanvas(image:getDimensions())
 
     canvas:renderTo(function()
@@ -10,7 +12,7 @@ local function canvasFromImage(image)
     return canvas
 end
 
-local function resizeCanvas(image, w, h, ox, oy)
+function common.resizeCanvas(image, w, h, ox, oy)
     local canvas = love.graphics.newCanvas(w, h)
 
     canvas:renderTo(function()
@@ -22,7 +24,7 @@ local function resizeCanvas(image, w, h, ox, oy)
     return canvas
 end
 
-local function expandRectangle(rect_a, rect_b)
+function common.expandRectangle(rect_a, rect_b)
     local ax, ay, aw, ah = unpack(rect_a)
     local bx, by, bw, bh = unpack(rect_b)
 
@@ -34,16 +36,8 @@ local function expandRectangle(rect_a, rect_b)
     return {cx, cy, cw, ch}
 end
 
-return {
-    textbox = textbox,
+function common.loadCanvas(...)
+    return common.canvasFromImage(love.graphics.newImage(...))
+end
 
-    canvasFromImage = canvasFromImage,
-    
-    loadCanvas = function(...) 
-        return canvasFromImage(love.graphics.newImage(...))
-    end,
-
-    cloneCanvas = canvasFromImage,
-    resizeCanvas = resizeCanvas,
-    expandRectangle = expandRectangle,
-}
+return common

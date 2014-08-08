@@ -32,7 +32,7 @@ rm -rf "$releases/$1/$1/"
 # .app.zip (osx)
 cp -f "$releases/$1/$1.love" "$releases/$1/love-binary-osx/Contents/Resources/$1.love"
 mv "$releases/$1/love-binary-osx" "$releases/$1/$1.app"
-chmod +x "$release/$1/$1.app/Contents/Resources/MacOS/love"
+chmod +x "$releases/$1/$1.app/Contents/MacOS/love"
 cd "$releases/$1"
 zip -r "$releases/$1/$1.app.zip" "$1.app"
 cd ..
@@ -41,6 +41,6 @@ rm -rf "$releases/$1/$1.app"
 # clean up
 rm "$releases/$1/$1-love.zip"
 rm "$releases/export-osx.sh"
-rm "$releases/kooltool-player-love"
-rm "$releases/love-binary-win"
-rm "$releases/love-binary-osx"
+rm -rf "$releases/kooltool-player-love"
+rm -rf "$releases/love-binary-win"
+rm -rf "$releases/love-binary-osx"

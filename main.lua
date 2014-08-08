@@ -1,15 +1,49 @@
 love.graphics.setDefaultFilter("nearest", "nearest")
 
 if not love.graphics.isSupported("canvas") then
-    function love.load() image = love.graphics.newImage("images/nocanvas.png") end
-    function love.update(dt) end
-    function love.draw() love.graphics.draw(image, 0, 0) end
-    do return end
+    --function love.load() image = love.graphics.newImage("images/nocanvas.png") end
+    --function love.update(dt) end
+    --function love.draw() love.graphics.draw(image, 0, 0) end
+    --do return end
 
     local broken = love.graphics.newImage("images/broken.png")
     local common = require "common"
-    love.graphics.newCanvas = function() return broken end
-    common.canvasFromImage = function(...) return ... end
+    love.graphics.newCanvas = function(w, h)
+        return {
+            fakecanvas=true,
+            image=broken,
+            renderTo=function()end,
+            getDimensions=function() return w, h end,
+        }
+    end
+    common.canvasFromImage = function(image)
+        return {
+            fakecanvas=true,
+            image=image.fakecanvas and image.image or image,
+            renderTo=function()end,
+            getDimensions=function() return image:getDimensions() end,
+        }
+    end
+    
+    local draw = love.graphics.draw
+    love.graphics.draw = function(image, ...)
+        if not image.fakecanvas then
+            draw(image, ...)
+        else
+            draw(image.image, ...)
+        end
+    end
+
+    local newSB = love.graphics.newSpriteBatch
+    love.graphics.newSpriteBatch = function(texture, ...)
+        if not texture.fakecanvas then
+            return newSB(texture, ...)
+        else
+            return newSB(texture.image, ...)
+        end
+    end
+
+    NOCANVAS = true
 end
 
 local Camera = require "hump.camera"
@@ -206,6 +240,8 @@ function love.update(dt)
     CPROFILER:endCycle()
 end
 
+local large = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
+
 function love.draw()
     GPROFILER:startCycle()
 
@@ -235,6 +271,15 @@ function love.draw()
     else
         INTERFACE:draw()
         MODE:draw()
+    end
+
+    if NOCANVAS then
+        love.graphics.setColor(255, 0, 0, 255)
+        love.graphics.rectangle("fill", 0, 17, 512, 19)
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.setFont(large)
+        love.graphics.print("ERROR: cannot edit due to lack of OpenGL framebuffer support", 1, 4+16)
+        love.graphics.print("       please report to ragzouken@gmail.com or tweet @ragzouken", 1, 4+16+9)
     end
 
     GPROFILER:endCycle()
@@ -317,12 +362,14 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
-    if button == "m" and not DRAG[5] then DRAG = nil end
+    if PROJECT then
+        if button == "m" and not DRAG[5] then DRAG = nil end
 
-    local mx, my = CAMERA:worldCoords(x, y)
-    mx, my = math.floor(mx), math.floor(my)
-        
-    MODE:mousereleased(mx, my, button)
+        local mx, my = CAMERA:worldCoords(x, y)
+        mx, my = math.floor(mx), math.floor(my)
+            
+        MODE:mousereleased(mx, my, button)
+    end
 end
 
 function love.keypressed(key, isrepeat)

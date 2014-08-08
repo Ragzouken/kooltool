@@ -93,16 +93,8 @@ function Tileset:refresh()
     self.quads = {}
 
     local w, h = self.SIZE * self.tiles, self.SIZE
-    local canvas = love.graphics.newCanvas(w, h)
-    
-    canvas:renderTo(function()
-        love.graphics.setBlendMode("premultiplied")
-        love.graphics.setColor(255, 255, 255, 255)
-        love.graphics.draw(self.canvas, 0, 0)
-    end)
 
-    self.canvas = canvas
-
+    self.canvas = common.canvasFromImage(self.canvas)
     for i=1,self.tiles do
         self.quads[i] = love.graphics.newQuad((i - 1) * self.SIZE, 0, 
             self.SIZE, self.SIZE, w, h)
