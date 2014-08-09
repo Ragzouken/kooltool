@@ -199,7 +199,7 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
             local locked = lock and (lock[1] ~= x+gx or lock[2] ~= y+gy)
             local key = tostring(gx + x) .. "," .. tostring(gy + y)
 
-            if cloning and not cloning[key] then
+            if cloning and not cloning[key] and not locked then
                 index = self.tileset:clone(index)
                 self:set(index, gx + x, gy + y)
                 cloning[key] = true
@@ -209,6 +209,8 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
                 self.tileset:renderTo(index, function()
                     love.graphics.draw(brush, quad, 0, 0)
                 end)
+
+                self.tileset:refresh()
             end
         end
     end

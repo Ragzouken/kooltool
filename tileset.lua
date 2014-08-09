@@ -94,7 +94,7 @@ function Tileset:refresh()
 
     local w, h = self.SIZE * self.tiles, self.SIZE
 
-    self.canvas = common.canvasFromImage(self.canvas)
+    self.canvas = common.resizeCanvas(self.canvas, w, h)
     for i=1,self.tiles do
         self.quads[i] = love.graphics.newQuad((i - 1) * self.SIZE, 0, 
             self.SIZE, self.SIZE, w, h)
