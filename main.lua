@@ -298,75 +298,58 @@ function love.draw()
     --CPROFILER:draw(512-16-192, 16, 192, 512-32, "UPDATE CYCLE")
 end
 
+function zoom_on(mx, my)
+    DRAG = nil
+    if TWEEN then TIMER:cancel(TWEEN) end
+    ZOOM = math.min(ZOOM * 2, 16)
+    
+    local dx, dy, dz = CAMERA.x - mx, CAMERA.y - my, ZOOM - CAMERA.scale
+    local oscale = CAMERA.scale
+    local factor = ZOOM / CAMERA.scale
+    local t = 0
+
+    TWEEN = TIMER:do_for(0.25, function(dt)
+        t = t + dt
+        local u = t / 0.25
+        local du = factor - 1
+
+        CAMERA.scale = oscale*factor - (1 - u) * dz
+        CAMERA.x, CAMERA.y = mx + dx / (1 + du*u), my + dy / (1 + du*u)
+    end)
+end
+
+function zoom_out()
+    DRAG = nil
+    if TWEEN then TIMER:cancel(TWEEN) end
+    ZOOM = math.max(ZOOM / 2, 1 / 16)
+    TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
+end
+
 function love.mousepressed(x, y, button)
-    if love.keyboard.isDown("tab") then
-        local mx, my = x, y --CAMERA:mousepos()
-
-        if love.mouse.isDown("l") then
-            if TWEEN then TIMER:cancel(TWEEN) end
-            ZOOM = math.min(ZOOM * 2, 16)
-            
-            local dx, dy, dz = CAMERA.x - mx, CAMERA.y - my, ZOOM - CAMERA.scale
-            local oscale = CAMERA.scale
-            local factor = ZOOM / CAMERA.scale
-            local t = 0
-
-            TWEEN = TIMER:do_for(0.25, function(dt)
-                t = t + dt
-                local u = t / 0.25
-                local du = factor - 1
-
-                CAMERA.scale = oscale*factor - (1 - u) * dz
-                CAMERA.x, CAMERA.y = mx + dx / (1 + du*u), my + dy / (1 + du*u)
-            end)
-        elseif love.mouse.isDown("r") then
-            if TWEEN then TIMER:cancel(TWEEN) end
-            ZOOM = math.max(ZOOM / 2, 1 / 16)
-            TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
-        end
-
-        return
-    end
+    local mx, my = CAMERA:worldCoords(x, y)
+    mx, my = math.floor(mx), math.floor(my)
 
     local w, h = love.window.getDimensions()
     if x <= 0 or y <= 0 or x >= w or y >= w then return end
 
-    local mx, my = CAMERA:worldCoords(x, y)
-    mx, my = math.floor(mx), math.floor(my)
-
-    if PROJECT then
+    if PROJECT and not love.keyboard.isDown("tab") then
         if button == "l" and MODE == PROJECT.tilelayer.modes.tile then
             local index = PROJECT.tilelayer.tileset:click(x, y)
             if index then TILE = index return true end
         end
     end
 
-    if MODE:mousepressed(mx, my, button) then return end
+    if not love.keyboard.isDown("tab") then
+        if MODE:mousepressed(mx, my, button) then return end
+    end
 
     if PROJECT then
         if button == "m" then
             DRAG = {x, y, CAMERA.x, CAMERA.y}
-        elseif button == "wu" then
-            if TWEEN then TIMER:cancel(TWEEN) end
-            ZOOM = math.min(ZOOM * 2, 16)
-            
-            local dx, dy, dz = CAMERA.x - mx, CAMERA.y - my, ZOOM - CAMERA.scale
-            local oscale = CAMERA.scale
-            local factor = ZOOM / CAMERA.scale
-            local t = 0
-
-            TWEEN = TIMER:do_for(0.25, function(dt)
-                t = t + dt
-                local u = t / 0.25
-                local du = factor - 1
-
-                CAMERA.scale = oscale*factor - (1 - u) * dz
-                CAMERA.x, CAMERA.y = mx + dx / (1 + du*u), my + dy / (1 + du*u)
-            end)
-        elseif button == "wd" then
-            if TWEEN then TIMER:cancel(TWEEN) end
-            ZOOM = math.max(ZOOM / 2, 1 / 16)
-            TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
+        elseif button == "wu" or (love.keyboard.isDown("tab") and button == "l") then
+            zoom_on(mx, my)
+        elseif button == "wd" or (love.keyboard.isDown("tab") and button == "r") then
+            zoom_out()
         end
     end
 end
@@ -439,7 +422,7 @@ function love.keypressed(key, isrepeat)
 end
 
 function love.keyreleased(key)
-    if key == "tab" and DRAG[5] == "tab" then DRAG = nil return end
+    if key == "tab" and DRAG and DRAG[5] == "tab" then DRAG = nil return end
 
     MODE:keyreleased(key)
 end
