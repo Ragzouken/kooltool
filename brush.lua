@@ -4,7 +4,7 @@ local bresenham = require "bresenham"
 
 local Brush = Class {}
 
-local function line(x1, y1, x2, y2, size, colour)
+function Brush.line(x1, y1, x2, y2, size, colour)
     local le = math.floor(size / 2)
     local re = size - le
 
@@ -38,6 +38,23 @@ local function line(x1, y1, x2, y2, size, colour)
     return brush, x-1-le, y-1-le
 end
 
-return {
-    line = line,
-}
+function Brush:init(w, h, render)
+    self.canvas = love.graphics.newCanvas(w, h)
+    self.canvas:renderTo(render)
+end
+
+function Brush:draw(quad, ...)
+    local bw, bh = self.canvas:getDimensions()
+    local x, y, w, h = quad:getViewport()
+
+    local dx1, dy1 = math.max(x, 0), math.max(y, 0)
+    local dx2, dy2 = math.min(x+w, bw), math.min(y+h, bh)
+
+    quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
+
+    love.graphics.draw(self.canvas, quad, ...)
+
+    quad:setViewport(x, y, w, h)
+end
+
+return Brush

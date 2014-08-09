@@ -5,7 +5,7 @@ local Tileset = require "tileset"
 local Palette = require "palette"
 
 local bresenham = require "bresenham"
-local brush = require "brush"
+local Brush = require "brush"
 local colour = require "colour"
 
 local TileMode = Class { __includes = EditMode, name = "tile placement" }
@@ -227,7 +227,7 @@ function PixelMode:hover(x, y, dt)
     if self.state.draw then
         local dx, dy = unpack(self.state.draw)
 
-        local brush, ox, oy = brush.line(dx, dy, x, y, BRUSHSIZE, PALETTE.colours[3])
+        local brush, ox, oy = Brush.line(dx, dy, x, y, BRUSHSIZE, PALETTE.colours[3])
         self.layer:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)
 
         self.state.draw = {x, y}
