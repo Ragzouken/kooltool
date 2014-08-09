@@ -356,7 +356,7 @@ end
 
 function love.mousereleased(x, y, button)
     if PROJECT then
-        if button == "m" and not DRAG[5] then DRAG = nil end
+        if button == "m" and DRAG and not DRAG[5] then DRAG = nil end
 
         local mx, my = CAMERA:worldCoords(x, y)
         mx, my = math.floor(mx), math.floor(my)
