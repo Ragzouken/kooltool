@@ -184,7 +184,7 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
 
     -- split canvas into quads
     -- draw each quad to the corresponding tile TODO: (if unlocked)
-    local bw, bh = brush:getDimensions()
+    local bw, bh = brush.canvas:getDimensions()
     local size = 32
 
     local gw, gh = math.ceil((bw + tx) / size), math.ceil((bh + ty) / size)
@@ -207,7 +207,10 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
 
             if index and not locked then
                 self.tileset:renderTo(index, function()
-                    love.graphics.draw(brush, quad, 0, 0)
+                    --print(quad:getViewport())
+
+                    --love.graphics.draw(brush, quad, 0, 0)
+                    brush:draw(quad, 0, 0)
                 end)
 
                 self.tileset:refresh()

@@ -11,16 +11,9 @@ function Brush.line(x1, y1, x2, y2, size, colour)
     local w, h = math.abs(x2 - x1), math.abs(y2 - y1)
     local x, y = math.min(x1, x2), math.min(y1, y2)
 
-    local brush = love.graphics.newCanvas(w+2+1+size, h+2+1+size)
-
-    if not colour then
-        brush:clear(255, 255, 255, 255)
-        love.graphics.setBlendMode("replace")
-    end
-
-    brush:renderTo(function()
+    local brush = Brush(w+1+size, h+1+size, function()
         love.graphics.push()
-        love.graphics.translate(1-x, 1-y)
+        love.graphics.translate(-x, -y)
 
         love.graphics.setColor(colour or {0, 0, 0, 0})
         local sx, sy = x1+le, y1+le
@@ -31,19 +24,25 @@ function Brush.line(x1, y1, x2, y2, size, colour)
         end
 
         love.graphics.pop()
-    end)
+    end, not colour)
 
     love.graphics.setBlendMode("alpha")
 
-    return brush, x-1-le, y-1-le
+    return brush, x-le, y-le
 end
 
-function Brush:init(w, h, render)
+function Brush:init(w, h, render, mode)
     self.canvas = love.graphics.newCanvas(w, h)
+    
+    if mode == "erase" then
+        self.canvas:clear(255, 255, 255, 255)
+        love.graphics.setBlendMode("replace")
+    end
+
     self.canvas:renderTo(render)
 end
 
-function Brush:draw(quad, ...)
+function Brush:draw(quad, ox, oy, ...)
     local bw, bh = self.canvas:getDimensions()
     local x, y, w, h = quad:getViewport()
 
@@ -52,7 +51,7 @@ function Brush:draw(quad, ...)
 
     quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
 
-    love.graphics.draw(self.canvas, quad, ...)
+    love.graphics.draw(self.canvas, quad, ox+dx1-x, oy+dy1-y, ...)
 
     quad:setViewport(x, y, w, h)
 end
