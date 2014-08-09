@@ -2,7 +2,7 @@ if jit then require "imagedata-ffi" end
 
 love.graphics.setDefaultFilter("nearest", "nearest")
 
-do--if not love.graphics.isSupported("canvas") then
+if not love.graphics.isSupported("canvas") then
     --function love.load() image = love.graphics.newImage("images/nocanvas.png") end
     --function love.update(dt) end
     --function love.draw() love.graphics.draw(image, 0, 0) end
@@ -31,7 +31,7 @@ do--if not love.graphics.isSupported("canvas") then
             fakecanvas=true,
             image=image.fakecanvas and image.image or image,
             renderTo=function()end,
-            getDimensions=function() return w, h end,
+            getDimensions=function() return image:getDimensions() end,
         } 
     end
 
