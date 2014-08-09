@@ -35,12 +35,7 @@ function Sprite:applyBrush(bx, by, brush, lock)
         end
     end
 
-    love.graphics.setBlendMode("premultiplied")
-    love.graphics.setColor(255, 255, 255, 255)
-
-    self.canvas:renderTo(function()
-        love.graphics.draw(brush, bx, by)
-    end)
+    brush:apply(self.canvas, nil, bx, by)
 end
 
 function Sprite:sample(x, y)

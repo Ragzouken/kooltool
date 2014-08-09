@@ -24,7 +24,7 @@ function Brush.line(x1, y1, x2, y2, size, colour)
         end
 
         love.graphics.pop()
-    end, not colour)
+    end, colour or "erase")
 
     love.graphics.setBlendMode("alpha")
 
@@ -33,8 +33,9 @@ end
 
 function Brush:init(w, h, render, mode)
     self.canvas = love.graphics.newCanvas(w, h)
-    
-    if mode == "erase" then
+    self.mode = mode
+
+    if self.mode == "erase" then
         self.canvas:clear(255, 255, 255, 255)
         love.graphics.setBlendMode("replace")
     end
@@ -42,18 +43,42 @@ function Brush:init(w, h, render, mode)
     self.canvas:renderTo(render)
 end
 
+function Brush:getDimensions()
+    return self.canvas:getDimensions()
+end
+
+function Brush:apply(canvas, ...)
+    local args = {...}
+
+    if self.mode == "erase" then
+        love.graphics.setBlendMode("multiplicative")
+    else
+        love.graphics.setBlendMode("premultiplied")
+    end
+
+    love.graphics.setColor(255, 255, 255, 255)
+
+    canvas:renderTo(function()
+        self:draw(unpack(args))
+    end)
+end
+
 function Brush:draw(quad, ox, oy, ...)
-    local bw, bh = self.canvas:getDimensions()
-    local x, y, w, h = quad:getViewport()
+    if quad then
+        local bw, bh = self.canvas:getDimensions()
+        local x, y, w, h = quad:getViewport()
 
-    local dx1, dy1 = math.max(x, 0), math.max(y, 0)
-    local dx2, dy2 = math.min(x+w, bw), math.min(y+h, bh)
+        local dx1, dy1 = math.max(x, 0), math.max(y, 0)
+        local dx2, dy2 = math.min(x+w, bw), math.min(y+h, bh)
 
-    quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
+        quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
 
-    love.graphics.draw(self.canvas, quad, ox+dx1-x, oy+dy1-y, ...)
+        love.graphics.draw(self.canvas, quad, ox+dx1-x, oy+dy1-y, ...)
 
-    quad:setViewport(x, y, w, h)
+        quad:setViewport(x, y, w, h)
+    else
+        love.graphics.draw(self.canvas, ox, oy, ...)
+    end
 end
 
 return Brush

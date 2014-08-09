@@ -5,7 +5,7 @@ local EditMode = require "editmode"
 local Notebox = require "notebox"
 
 local colour = require "colour"
-local brush = require "brush"
+local Brush = require "brush"
 local common = require "common"
 
 local Annotate = Class { __includes = EditMode, name = "annotate project" }
@@ -147,40 +147,9 @@ function NoteLayer:applyBrush(bx, by, brush)
                 self.blocks:set(block, gx + x, gy + y)
             end
 
-            block:renderTo(function()
-                love.graphics.draw(brush, quad, 0, 0)
-            end)
+            brush:apply(block, quad, 0, 0)
         end
     end
-end
-
-function NoteLayer:eraseBrush(bx, by, brush)
-    local gx, gy, tx, ty = self.blocks:gridCoords(bx, by)
-    bx, by = math.floor(bx), math.floor(by)
-
-    -- split canvas into quads
-    -- draw each quad to the corresponding tile
-    local bw, bh = brush:getDimensions()
-    local size = self.BLOCK_SIZE
-
-    local gw, gh = math.ceil((bw + tx) / size), math.ceil((bh + ty) / size)
-    local quad = love.graphics.newQuad(0, 0, size, size, bw, bh)
-
-    love.graphics.setBlendMode("multiplicative")
-    love.graphics.setColor(255, 255, 255, 255)
-    for y=0,gh-1 do
-        for x=0,gw-1 do
-            local block = self.blocks:get(gx + x, gy + y)
-            quad:setViewport(-tx + x * size, -ty + y * size, size, size)
-
-            if block then
-                block:renderTo(function()
-                    love.graphics.draw(brush, quad, 0, 0)
-                end)
-            end
-        end
-    end
-    love.graphics.setBlendMode("alpha")
 end
 
 function Annotate:update(dt)
@@ -198,14 +167,15 @@ function Annotate:hover(x, y, dt)
         notebox:moveTo(x*2 + dx, y*2 + dy)
     elseif self.state.draw then
         local dx, dy = unpack(self.state.draw)
+        local brush, ox, oy
 
         if not love.keyboard.isDown("lctrl") then
-            local brush, ox, oy = brush.line(dx, dy, x, y, 2, {255, 255, 255, 255})
-            self.layer:applyBrush(ox, oy, brush)
+            brush, ox, oy = Brush.line(dx, dy, x, y, 2, {255, 255, 255, 255})
         else
-            local brush, ox, oy = brush.line(dx, dy, x, y, 7)
-            self.layer:eraseBrush(ox, oy, brush)
+            brush, ox, oy = Brush.line(dx, dy, x, y, 7)
         end
+
+        self.layer:applyBrush(ox, oy, brush)
 
         self.state.draw = {x, y}
     end
