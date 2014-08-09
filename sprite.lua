@@ -20,10 +20,9 @@ function Sprite:applyBrush(bx, by, brush, lock)
 
     if lock then
         local bw, bh = brush:getDimensions()
-        local brush_rect = {bx+1, by+1, bw-2, bh-2}
+        local brush_rect = {bx, by, bw-1, bh-1}
         local sw, sh = self.canvas:getDimensions()
         local sprite_rect = {0, 0, sw, sh}
-
         
         local rect = common.expandRectangle(sprite_rect, brush_rect)
         dx, dy, nw, nh = unpack(rect)
