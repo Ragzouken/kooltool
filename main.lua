@@ -383,7 +383,7 @@ function love.mousereleased(x, y, button)
 end
 
 function love.keypressed(key, isrepeat)
-    if key == "tab" then
+    if key == "tab" and not isrepeat then
         local x, y = love.mouse.getPosition()
         DRAG = {x, y, CAMERA.x, CAMERA.y, "tab"}
         return
