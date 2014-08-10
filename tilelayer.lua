@@ -19,15 +19,15 @@ function TileLayer.default()
 
     layer.tileset = Tileset()
 
-    layer.tileset:renderTo(layer.tileset:add_tile(), function()
+    layer.tileset:applyBrush(layer.tileset:add_tile(), Brush(32, 32, function()
         love.graphics.setColor(PALETTE.colours[1])
         love.graphics.rectangle("fill", 0, 0, 32, 32)
-    end)
+    end))
 
-    layer.tileset:renderTo(layer.tileset:add_tile(), function()
+    layer.tileset:applyBrush(layer.tileset:add_tile(), Brush(32, 32, function()
         love.graphics.setColor(PALETTE.colours[2])
         love.graphics.rectangle("fill", 0, 0, 32, 32)
-    end)
+    end))
 
     for item, x, y in generators.Grid.dungeon():items() do
         layer:set(item, x, y)

@@ -16,7 +16,7 @@ local function FakeCanvas(canvas)
 
     function canvas:renderTo(render)
         print("RENDERING TO FAKE CANVAS IS NOT SUPPORTED")
-        assert(false)    
+        --assert(false)    
     end
 
     function canvas:getDimensions()
