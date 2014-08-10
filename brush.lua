@@ -8,10 +8,10 @@ function Brush.line(x1, y1, x2, y2, size, colour)
     local le = math.floor(size / 2)
     local re = size - le
 
-    local w, h = math.abs(x2 - x1), math.abs(y2 - y1)
+    local w, h = math.abs(x2 - x1)+1, math.abs(y2 - y1)+1
     local x, y = math.min(x1, x2), math.min(y1, y2)
 
-    local brush = Brush(w+1+size, h+1+size, function()
+    local brush = Brush(w+size-1, h+size-1, function()
         love.graphics.push()
         love.graphics.translate(-x, -y)
 

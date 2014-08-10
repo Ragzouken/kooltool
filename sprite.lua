@@ -32,6 +32,8 @@ function Sprite:applyBrush(bx, by, brush, lock)
             self.pivot = {px - dx, py - dy}
             self.size = {nw, nh}
         end
+
+        bx, by = bx - dx, by - dy
     end
 
     brush:apply(self.canvas, nil, bx, by)
