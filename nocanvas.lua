@@ -84,10 +84,12 @@ function Brush.line(x1, y1, x2, y2, size, colour)
     local le = math.floor(size / 2)
     local re = size - le
 
-    local w, h = math.abs(x2 - x1), math.abs(y2 - y1)
+    local w, h = math.abs(x2 - x1)+1, math.abs(y2 - y1)+1
     local x, y = math.min(x1, x2), math.min(y1, y2)
 
-    local brush = Brush(w+1+size, h+1+size, false, colour or "erase")
+    print(w, h, size)
+
+    local brush = Brush(w+size-1, h+size-1, false, colour or "erase")
 
     local bdata = brush.canvas:getData()
     
@@ -110,43 +112,8 @@ function Brush.line(x1, y1, x2, y2, size, colour)
     return brush, x-le, y-le
 end
 
-function blit(source, destination, quad, x, y, ...)
-    do return destination:blit(source, quad, x, y, ...) end 
-
-    local sw, sh = source:getDimensions()
-    local dw, dh = destination:getDimensions()
-    local qx, qy, qw, qh = quad:getViewport()
-
-    -- TODO fails on tile edge
-    -- TODO line isn't solid (blit bounds are broken)
-
-    -- click quad to source
-    -- how much to correct for top left corner out of bounds
-    local dx, dy = qx >= 0 and 0 or -qx, qy >= 0 and 0 or -qy
-    qx, qy, qw, qh = qx + dx, qy + dy, qw - dx, qh - dy
-
-    -- bottom right corner clipping
-    qw = math.min(qw, sw - qx - 1, dw - x)
-    qh = math.min(qh, sh - qy - 1, dh - y)
-
-    if qx > sw-1 or qy > sh-1 -- quad beyond source bounds
-    or qw <= 0   or qh <= 0   -- degenerate quad
-    or  x > dw-1 or  y > dh-1 -- draw beyond destination bounds
-    then return end
-
-    destination:mapPixel(function(px, py, dr, dg, db, da)
-        local sr, sg, sb, sa = source:getPixel(px-x+qx, py-y+qy)
-
-        if sa > 128 then -- TODO alpha blend
-            return sr, sg, sb, sa
-        else
-            return dr, dg, db, da
-        end
-    end,
-    x, 
-    y, 
-    qw, 
-    qh)
+function blit(source, destination, ...)
+    return destination:blit(source, ...)
 end
 
 function Brush:apply(canvas, quad, bx, by)
@@ -168,6 +135,8 @@ function Brush:apply(canvas, quad, bx, by)
     local dx2, dy2 = math.min(qx+qw, bw), math.min(qy+qh, bh)
 
     quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
+
+    print("VIEWPORT", quad:getViewport())
 
     blit(bdata, cdata, quad, bx+dx1-qx, by+dy1-qy, self.mode == "erase" and "multiplicative")
 
