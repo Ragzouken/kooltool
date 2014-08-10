@@ -26,9 +26,16 @@ function Brush.line(x1, y1, x2, y2, size, colour)
         love.graphics.pop()
     end, colour or "erase")
 
-    love.graphics.setBlendMode("alpha")
-
     return brush, x-le, y-le
+end
+
+function Brush.image(image, quad)
+    local brush = Brush(image:getWidth(), image:getHeight(), function()
+        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.draw(image, quad)
+    end)
+
+    return brush, 0, 0
 end
 
 function Brush:init(w, h, render, mode)
@@ -40,7 +47,7 @@ function Brush:init(w, h, render, mode)
         love.graphics.setBlendMode("replace")
     end
 
-    self.canvas:renderTo(render)
+    if render then self.canvas:renderTo(render) end
 end
 
 function Brush:getDimensions()
@@ -65,6 +72,8 @@ end
 
 function Brush:draw(quad, ox, oy, ...)
     if quad then
+        LASTBRUSH = self.canvas
+
         local bw, bh = self.canvas:getDimensions()
         local x, y, w, h = quad:getViewport()
 

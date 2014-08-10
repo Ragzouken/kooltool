@@ -2,8 +2,8 @@ local Class = require "hump.class"
 local TileLayer = require "tilelayer"
 local NoteLayer = require "notelayer"
 local EntityLayer = require "entitylayer"
-local StringGenerator = require "stringgenerator"
 
+local generators = require "generators"
 local common = require "common"
 local json = require "json"
 local export = require "export"
@@ -17,7 +17,7 @@ do
         names[#names+1] = line
     end
 
-    Project.name_generator = StringGenerator(names)
+    Project.name_generator = generators.String(names)
 end
 
 function Project.default(name)

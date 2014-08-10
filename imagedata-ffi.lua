@@ -133,6 +133,63 @@ local function ImageData_FFI_getDimensions(imagedata)
 	return p.width, p.height
 end
 
+local function ImageData_FFI_blit(destination, source, quad, x, y, blend)
+    local dest_r = id_registry[destination]
+    local dw, dh = dest_r.width, dest_r.height
+
+    local source_r = id_registry[source]
+    local sw, sh = source_r.width, source_r.height
+    
+    local qx, qy, qw, qh = quad:getViewport()
+
+    -- click quad to source
+    -- how much to correct for top left corner out of bounds
+    local dx, dy = qx >= 0 and 0 or -qx, qy >= 0 and 0 or -qy
+    qx, qy, qw, qh = qx + dx, qy + dy, qw - dx, qh - dy
+
+    -- bottom right corner clipping
+    qw = math.min(qw, sw - qx - 1, dw - x)
+    qh = math.min(qh, sh - qy - 1, dh - y)
+
+    if qx > sw-1 or qy > sh-1 -- quad beyond source bounds
+    or qw <= 0   or qh <= 0   -- degenerate quad
+    or  x > dw-1 or  y > dh-1 -- draw beyond destination bounds
+    then return end
+
+    local idw, idh = dw, dh
+	
+	ix = x or 0
+	iy = y or 0
+	iw = qw or idw
+	ih = qh or idh
+
+	local dest_pixels = dest_r.pointer
+
+	for py=iy, iy+ih-1 do
+		for px=ix, ix+iw-1 do
+			local p = dest_pixels[py*idw+px]
+			local sx, sy = px-x+qx, py-y+qy
+			local source_pixel = source_r.pointer[sy * source_r.width + sx]
+			
+			local sr, sg, sb, sa = tonumber(source_pixel.r), tonumber(source_pixel.g), tonumber(source_pixel.b), tonumber(source_pixel.a)
+			local dr, dg, db, da = tonumber(p.r), tonumber(p.g), tonumber(p.b), tonumber(p.a)
+			local r, g, b, a
+
+			if blend == "multiplicative" then
+				r, g, b, a = sr * dr, sg * dg, sb * db, sa * da
+			elseif sa > 128 then
+				r, g, b, a = sr, sg, sb, sa
+			else
+				r, g, b, a = dr, dg, db, da
+			end
+
+			dest_pixels[py*idw+px].r = r
+			dest_pixels[py*idw+px].g = g
+			dest_pixels[py*idw+px].b = b
+			dest_pixels[py*idw+px].a = a == nil and 255 or a
+		end
+	end
+end
 
 -- Overwrite love's functions with the new FFI versions.
 imagedata_mt.__index.mapPixel = ImageData_FFI_mapPixel
@@ -141,3 +198,4 @@ imagedata_mt.__index.setPixel = ImageData_FFI_setPixel
 imagedata_mt.__index.getWidth = ImageData_FFI_getWidth
 imagedata_mt.__index.getHeight = ImageData_FFI_getHeight
 imagedata_mt.__index.getDimensions = ImageData_FFI_getDimensions
+imagedata_mt.__index.blit = ImageData_FFI_blit

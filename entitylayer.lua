@@ -1,10 +1,10 @@
 local Class = require "hump.class"
 local Collider = require "collider"
-local Palette = require "palette"
 local EditMode = require "editmode"
 local Sprite = require "sprite"
 local Entity = require "entity"
 
+local generators = require "generators"
 local common = require "common"
 local brush = require "brush"
 
@@ -259,7 +259,7 @@ function PixelMode:keypressed(key, isrepeat)
         if key == "3" then BRUSHSIZE = 3 end
 
         if key == " " then
-            PALETTE = Palette.generate(5)
+            PALETTE = generators.Palette.generate(5)
         end
     end
 end

@@ -2,8 +2,8 @@ local Class = require "hump.class"
 local SparseGrid = require "sparsegrid"
 local EditMode = require "editmode"
 local Tileset = require "tileset"
-local Palette = require "palette"
 
+local generators = require "generators"
 local bresenham = require "bresenham"
 local Brush = require "brush"
 local colour = require "colour"
@@ -29,10 +29,8 @@ function TileLayer.default()
         love.graphics.rectangle("fill", 0, 0, 32, 32)
     end)
 
-    for y=0,7 do
-        for x=0,7 do
-            layer:set(love.math.random(2), x, y)
-        end
+    for item, x, y in generators.Grid.dungeon():items() do
+        layer:set(item, x, y)
     end
 
     return layer
@@ -129,7 +127,7 @@ function TileLayer:draw()
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(255, 255, 255, self.active and 255 or 64)
     
-    if not self.tileset.canvas.fakecanvas then
+    if not self.tileset.canvas.fake then
         self.batch:setTexture(self.tileset.canvas)
     else
         self.batch:setTexture(self.tileset.canvas.image)
@@ -206,10 +204,7 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
             end
 
             if index and not locked then
-                self.tileset:renderTo(index, function()
-                    brush:draw(quad, 0, 0)
-                end)
-
+                self.tileset:applyBrush(index, brush, quad)
                 self.tileset:refresh()
             end
         end
@@ -289,7 +284,7 @@ function PixelMode:keypressed(key, isrepeat)
         if key == "3" then BRUSHSIZE = 3 end
 
         if key == " " then
-            PALETTE = Palette.generate(5)
+            PALETTE = generators.Palette.generate(5)
         end
     end
 end

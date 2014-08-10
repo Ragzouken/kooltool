@@ -1,0 +1,189 @@
+--function love.load() image = love.graphics.newImage("images/nocanvas.png") end
+--function love.update(dt) end
+--function love.draw() love.graphics.draw(image, 0, 0) end
+--do return end
+
+local broken = love.graphics.newImage("images/broken.png")
+local common = require "common"
+
+local Brush = require "brush"
+local bresenham = require "bresenham"
+
+NOCANVAS = true
+
+local function FakeCanvas(canvas)
+    canvas.fake = true
+
+    function canvas:renderTo(render)
+        print("RENDERING TO FAKE CANVAS IS NOT SUPPORTED")
+        assert(false)    
+    end
+
+    function canvas:getDimensions()
+        return self.image:getDimensions()
+    end
+
+    function canvas:getData()
+        return self.image:getData()
+    end
+
+    function canvas:getPixel(...)
+        return self.image:getData():getPixel(...)
+    end
+
+    function canvas:clear(r, g, b, a)
+        self.image:getData():mapPixel(function(x, y)
+            return r, g, b, a
+        end)
+    end
+
+    return canvas
+end
+
+function love.graphics.newCanvas(w, h)
+    return FakeCanvas{
+        image = love.graphics.newImage(love.image.newImageData(w, h)),
+    }
+end
+
+function common.canvasFromImage(image)
+    return FakeCanvas {
+        image = love.graphics.newImage(image:getData())
+    }
+end
+
+function common.resizeCanvas(image, w, h, ox, oy)
+    local canvas = love.image.newImageData(w, h)
+    local ow, oh = image:getDimensions()
+    canvas:paste(image:getData(), ox or 0, oy or 0, 0, 0, ow, oh)
+
+    return FakeCanvas{
+        image = love.graphics.newImage(canvas),
+    } 
+end
+
+local draw = love.graphics.draw
+function love.graphics.draw(image, ...)
+    if not image.fake then
+        draw(image, ...)
+    else
+        draw(image.image, ...)
+    end
+end
+
+local newSB = love.graphics.newSpriteBatch
+function love.graphics.newSpriteBatch(texture, ...)
+    if not texture.fake then
+        return newSB(texture, ...)
+    else
+        return newSB(texture.image, ...)
+    end
+end
+
+function Brush.line(x1, y1, x2, y2, size, colour)
+    local le = math.floor(size / 2)
+    local re = size - le
+
+    local w, h = math.abs(x2 - x1), math.abs(y2 - y1)
+    local x, y = math.min(x1, x2), math.min(y1, y2)
+
+    local brush = Brush(w+1+size, h+1+size, false, colour or "erase")
+
+    local bdata = brush.canvas:getData()
+    
+    local r, g, b, a = unpack(colour or {0, 0, 0, 0})
+    local sx, sy = x1+le, y1+le
+    local ex, ey = x2+le, y2+le
+
+    for lx, ly in bresenham.line(sx, sy, ex, ey) do
+        for py=0,size do
+            for px=0,size do
+                bdata:setPixel(lx - x - le + px, ly - y - le + py, r, g, b, a)
+            end
+        end
+    end
+
+    brush.canvas.image = love.graphics.newImage(bdata)
+
+    LASTBRUSH = brush.canvas.image
+
+    return brush, x-le, y-le
+end
+
+function blit(source, destination, quad, x, y, ...)
+    do return destination:blit(source, quad, x, y, ...) end 
+
+    local sw, sh = source:getDimensions()
+    local dw, dh = destination:getDimensions()
+    local qx, qy, qw, qh = quad:getViewport()
+
+    -- TODO fails on tile edge
+    -- TODO line isn't solid (blit bounds are broken)
+
+    -- click quad to source
+    -- how much to correct for top left corner out of bounds
+    local dx, dy = qx >= 0 and 0 or -qx, qy >= 0 and 0 or -qy
+    qx, qy, qw, qh = qx + dx, qy + dy, qw - dx, qh - dy
+
+    -- bottom right corner clipping
+    qw = math.min(qw, sw - qx - 1, dw - x)
+    qh = math.min(qh, sh - qy - 1, dh - y)
+
+    if qx > sw-1 or qy > sh-1 -- quad beyond source bounds
+    or qw <= 0   or qh <= 0   -- degenerate quad
+    or  x > dw-1 or  y > dh-1 -- draw beyond destination bounds
+    then return end
+
+    destination:mapPixel(function(px, py, dr, dg, db, da)
+        local sr, sg, sb, sa = source:getPixel(px-x+qx, py-y+qy)
+
+        if sa > 128 then -- TODO alpha blend
+            return sr, sg, sb, sa
+        else
+            return dr, dg, db, da
+        end
+    end,
+    x, 
+    y, 
+    qw, 
+    qh)
+end
+
+function Brush:apply(canvas, quad, bx, by)
+    LASTBRUSH = self.canvas
+
+    local cdata = canvas:getData()
+    local cw, ch = canvas:getDimensions()
+
+    local bdata = self.canvas:getData()
+    local bw, bh = self.canvas:getDimensions()
+
+    if quad then
+        local qx, qy, qw, qh = quad:getViewport()
+
+        local dx1, dy1 = math.max(qx, 0), math.max(qy, 0)
+        local dx2, dy2 = math.min(qx+qw, bw), math.min(qy+qh, bh)
+
+        quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
+
+        blit(bdata, cdata, quad, bx+dx1-qx, by+dy1-qy, self.mode == "erase" and "multiplicative")
+
+        quad:setViewport(qx, qy, qw, qh)
+    else
+        cdata:mapPixel(function(x, y, cr, cg, cb, ca)
+            if x-bx >= 0 and y-by >= 0 and x-bx < bw-1 and y-by < bh-1 then
+                local br, bg, bb, ba = bdata:getPixel(x-bx, y-by)
+
+                if ba > 0 then
+                    return br, bg, bb, 255
+                else
+                    return cr, cg, cb, ca
+                end
+            else
+                return cr, cg, cb, ca
+            end
+        end, bx, by) -- width/height trim
+    end
+
+    canvas.image = love.graphics.newImage(cdata)
+end

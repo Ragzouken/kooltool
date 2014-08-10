@@ -1,4 +1,5 @@
 local Class = require "hump.class"
+local Brush = require "brush"
 
 local common = require "common"
 
@@ -39,14 +40,14 @@ function Tileset:init()
 end
 
 function Tileset:snapshot(limit)
-    print("SNAP")
     local snapshot = love.graphics.newCanvas(self.canvas:getDimensions())
 
+    --[[
     snapshot:renderTo(function()
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.setBlendMode("premultiplied")
         love.graphics.draw(self.canvas, 0, 0)
-    end)
+    end)]]
 
     if #self.snapshots == limit then
         table.remove(self.snapshots, 1)
@@ -113,26 +114,27 @@ function Tileset:clone(tile)
     local clone = self:add_tile()
 
     if tile then
-        self:renderTo(clone, function()
-            love.graphics.setColor(255, 255, 255, 255)
-            love.graphics.draw(self.canvas, self.quads[tile], 0, 0)
-        end)
+        if NOCANVAS then
+            local data = self.canvas:getData()
+            data:paste(data, (self.tiles - 1) * self.SIZE, 0, (tile - 1) * self.SIZE, 0, self.SIZE, self.SIZE)
+            self.canvas.image = love.graphics.newImage(data)
+        else
+            local brush = Brush.image(self.canvas, self.quads[tile])
+            self:applyBrush(clone, brush)
+        end
     end
 
     return clone
 end
 
-function Tileset:renderTo(tile, action)
-    love.graphics.push()
-    love.graphics.translate((tile - 1) * self.SIZE, 0)
-
+function Tileset:applyBrush(index, brush, quad)
     love.graphics.setStencil(function()
-        love.graphics.rectangle("fill", 0, 0, self.SIZE, self.SIZE)
+        love.graphics.rectangle("fill", (index - 1) * self.SIZE, 0, self.SIZE, self.SIZE)
     end)
-    self.canvas:renderTo(action)
+    
+    brush:apply(self.canvas, quad, (index - 1) * self.SIZE, 0)
+    
     love.graphics.setStencil()
-
-    love.graphics.pop()
 end
 
 function Tileset:sample(tile, tx, ty)
