@@ -96,8 +96,8 @@ function Brush.line(x1, y1, x2, y2, size, colour)
     local ex, ey = x2+le, y2+le
 
     for lx, ly in bresenham.line(sx, sy, ex, ey) do
-        for py=0,size do
-            for px=0,size do
+        for py=0,size-1 do
+            for px=0,size-1 do
                 bdata:setPixel(lx - x - le + px, ly - y - le + py, r, g, b, a)
             end
         end

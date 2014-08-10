@@ -2,7 +2,7 @@ if jit then require "imagedata-ffi" end
 
 love.graphics.setDefaultFilter("nearest", "nearest")
 
-if not love.graphics.isSupported("canvas") then
+do--if not love.graphics.isSupported("canvas") then
     require "nocanvas"
 end
 
