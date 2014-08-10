@@ -140,8 +140,8 @@ function love.draw()
         love.graphics.rectangle("fill", 0, 17, 512, 19)
         love.graphics.setColor(0, 0, 0, 255)
         love.graphics.setFont(large)
-        love.graphics.print("ERROR: broken editing due to lack of OpenGL framebuffer support", 1, 4+16)
-        love.graphics.print("       please report to ragzouken@gmail.com or tweet @ragzouken", 1, 4+16+9)
+        love.graphics.print(" WARNING: pixel edit may misbehave due to unsupported features", 1, 4+16)
+        love.graphics.print("          please email ragzouken@gmail.com or tweet @ragzouken", 1, 4+16+9)
     end
 
     GPROFILER:endCycle()

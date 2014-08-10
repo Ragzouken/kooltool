@@ -158,32 +158,20 @@ function Brush:apply(canvas, quad, bx, by)
     local bdata = self.canvas:getData()
     local bw, bh = self.canvas:getDimensions()
 
-    if quad then
-        local qx, qy, qw, qh = quad:getViewport()
-
-        local dx1, dy1 = math.max(qx, 0), math.max(qy, 0)
-        local dx2, dy2 = math.min(qx+qw, bw), math.min(qy+qh, bh)
-
-        quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
-
-        blit(bdata, cdata, quad, bx+dx1-qx, by+dy1-qy, self.mode == "erase" and "multiplicative")
-
-        quad:setViewport(qx, qy, qw, qh)
-    else
-        cdata:mapPixel(function(x, y, cr, cg, cb, ca)
-            if x-bx >= 0 and y-by >= 0 and x-bx < bw-1 and y-by < bh-1 then
-                local br, bg, bb, ba = bdata:getPixel(x-bx, y-by)
-
-                if ba > 0 then
-                    return br, bg, bb, 255
-                else
-                    return cr, cg, cb, ca
-                end
-            else
-                return cr, cg, cb, ca
-            end
-        end, bx, by) -- width/height trim
+    if not quad then
+        quad = love.graphics.newQuad(0, 0, bw, bh, bw, bh)
     end
+
+    local qx, qy, qw, qh = quad:getViewport()
+
+    local dx1, dy1 = math.max(qx, 0), math.max(qy, 0)
+    local dx2, dy2 = math.min(qx+qw, bw), math.min(qy+qh, bh)
+
+    quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
+
+    blit(bdata, cdata, quad, bx+dx1-qx, by+dy1-qy, self.mode == "erase" and "multiplicative")
+
+    quad:setViewport(qx, qy, qw, qh)
 
     canvas.image = love.graphics.newImage(cdata)
 end
