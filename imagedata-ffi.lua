@@ -144,15 +144,15 @@ local function ImageData_FFI_blit(destination, source, quad, x, y, blend)
 
     -- clip quad to destination
     if x < 0 then
-		qw = qw - -x
-		qx = qx + -x
-		x = 0
+        qw = qw - -x
+        qx = qx + -x
+        x = 0
     end
 
     if y < 0 then
-		qh = qh - -y
-		qy = qy + -y
-		y = 0
+        qh = qh - -y
+        qy = qy + -y
+        y = 0
     end
 
     -- clip quad to source
