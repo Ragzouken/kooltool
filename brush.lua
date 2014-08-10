@@ -72,8 +72,6 @@ end
 
 function Brush:draw(quad, ox, oy, ...)
     if quad then
-        LASTBRUSH = self.canvas
-
         local bw, bh = self.canvas:getDimensions()
         local x, y, w, h = quad:getViewport()
 

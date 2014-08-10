@@ -150,7 +150,6 @@ function love.draw()
     --CPROFILER:draw(512-16-192, 16, 192, 512-32, "UPDATE CYCLE")
 
     love.graphics.setColor(255, 255, 255, 255)
-    if LASTBRUSH then love.graphics.draw(LASTBRUSH, 0, 64, 0, 4, 4) end
 end
 
 function zoom_on(mx, my)

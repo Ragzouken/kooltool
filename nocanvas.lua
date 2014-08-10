@@ -87,8 +87,6 @@ function Brush.line(x1, y1, x2, y2, size, colour)
     local w, h = math.abs(x2 - x1)+1, math.abs(y2 - y1)+1
     local x, y = math.min(x1, x2), math.min(y1, y2)
 
-    print(w, h, size)
-
     local brush = Brush(w+size-1, h+size-1, false, colour or "erase")
 
     local bdata = brush.canvas:getData()
@@ -106,8 +104,6 @@ function Brush.line(x1, y1, x2, y2, size, colour)
     end
 
     brush.canvas.image = love.graphics.newImage(bdata)
-
-    LASTBRUSH = brush.canvas.image
 
     return brush, x-le, y-le
 end
