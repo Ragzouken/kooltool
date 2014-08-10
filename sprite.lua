@@ -20,7 +20,7 @@ function Sprite:applyBrush(bx, by, brush, lock)
 
     if lock then
         local bw, bh = brush:getDimensions()
-        local brush_rect = {bx, by, bw-1, bh-1}
+        local brush_rect = {bx, by, bw, bh}
         local sw, sh = self.canvas:getDimensions()
         local sprite_rect = {0, 0, sw, sh}
         
