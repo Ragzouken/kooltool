@@ -235,11 +235,7 @@ function love.keypressed(key, isrepeat)
         local modes = {
             q = PROJECT.tilelayer.modes.pixel,
             w = PROJECT.tilelayer.modes.tile,
-
             e = PROJECT.entitylayer.modes.place,
-
-            s = PROJECT.tilelayer.modes.walls,
-
             r = PROJECT.notelayer.modes.annotate,
         } 
 

@@ -10,7 +10,6 @@ local colour = require "colour"
 
 local TileMode = Class { __includes = EditMode, name = "tile placement" }
 local PixelMode = Class { __includes = EditMode, name = "edit pixels" }
-local WallsMode = Class { __includes = EditMode, name = "tile passability" }
 
 local TileLayer = Class {}
 
@@ -116,7 +115,6 @@ function TileLayer:init()
     self.modes = {
         tile = TileMode(self),
         pixel = PixelMode(self),
-        walls = WallsMode(self),
     }
 end
 
@@ -342,20 +340,48 @@ end
 function TileMode:hover(x, y, dt)
     local gx, gy = self.layer:gridCoords(x, y)
     local tile = PROJECT.tilelayer:get(gx, gy)
+    local wall = PROJECT.tilelayer.walls:get(gx, gy)
+    local change
 
     if self.state.draw then
         local ox, oy = unpack(self.state.draw)
 
-        for lx, ly in bresenham.line(ox, oy, gx, gy) do
-            self.layer:set(TILE, lx, ly)
+        if love.keyboard.isDown("lshift") then
+            for lx, ly in bresenham.line(ox, oy, gx, gy) do
+                self.layer.walls:set(true, lx, ly)
+            end
+
+            change = change or not wall
+        else
+            for lx, ly in bresenham.line(ox, oy, gx, gy) do
+                self.layer:set(TILE, lx, ly)
+            end
+
+            change = tile ~= TILE
         end
 
         self.state.draw = {gx, gy}
     elseif self.state.erase then
-        self.layer:set(0, gx, gy)
+        local ox, oy = unpack(self.state.erase)
+
+        if love.keyboard.isDown("lshift") then
+            for lx, ly in bresenham.line(ox, oy, gx, gy) do
+                self.layer.walls:set(nil, lx, ly)
+            end
+
+            change = change or wall
+        else
+            for lx, ly in bresenham.line(ox, oy, gx, gy) do
+                self.layer:set(nil, lx, ly)
+            end
+
+            change = change or tile
+        end
+
+        self.state.erase = {gx, gy}
     end
 
-    if tile ~= PROJECT.tilelayer:get(gx, gy) then
+    if change then
         TILESOUND:stop()
         TILESOUND:play()
     end
@@ -365,6 +391,13 @@ function TileMode:draw(x, y)
     local gx, gy, ox, oy = self.layer:gridCoords(x, y)
     local size = 32
 
+    if love.keyboard.isDown("lshift") then
+        for wall, x, y in self.layer.walls:items() do
+            love.graphics.setColor(255, 0, 0, 128)
+            love.graphics.rectangle("fill", x * size, y * size, size, size)
+        end
+    end
+
     local quad = self.layer.tileset.quads[TILE]
 
     love.graphics.rectangle("line", gx*size-0.5, gy*size-0.5, size+1, size+1)
@@ -373,9 +406,9 @@ function TileMode:draw(x, y)
 end
 
 function TileMode:mousepressed(x, y, button)
-    if button == "l" then
-        local gx, gy = self.layer.tiles:gridCoords(x, y)
+    local gx, gy = self.layer.tiles:gridCoords(x, y)
 
+    if button == "l" then
         if love.keyboard.isDown("lalt") then
             TILE = self.layer:get(gx, gy) or TILE
         else
@@ -384,7 +417,7 @@ function TileMode:mousepressed(x, y, button)
 
         return true
     elseif button == "m" then
-        self.state.erase = true
+        self.state.erase = {gx, gy}
 
         return true
     end
@@ -396,58 +429,6 @@ function TileMode:mousereleased(x, y, button)
     if button == "l" then
         self.state.draw = nil
     elseif button == "m" then
-        self.state.erase = nil
-    end
-end
-
-function WallsMode:hover(x, y, dt)
-    local gx, gy = self.layer:gridCoords(x, y)
-    local wall = PROJECT.tilelayer.walls:get(gx, gy)
-
-    if self.state.draw then
-        self.layer.walls:set(true, gx, gy)
-    elseif self.state.erase then
-        self.layer.walls:set(nil, gx, gy)
-    end
-
-    if (self.state.draw and not wall) or (self.state.erase and wall) then
-        TILESOUND:stop()
-        TILESOUND:play()
-    end
-end
-
-function WallsMode:draw(x, y)
-    local size = 32
-
-    for wall, x, y in self.layer.walls:items() do
-        love.graphics.setColor(255, 0, 0, 128)
-        love.graphics.rectangle("fill", x * size, y * size, size, size)
-    end
-
-    local gx, gy, ox, oy = self.layer:gridCoords(x, y)
-
-    love.graphics.setColor(colour.random(128, 255))
-    love.graphics.rectangle("line", gx*size-0.5, gy*size-0.5, size+1, size+1)
-end
-
-function WallsMode:mousepressed(x, y, button)
-    if button == "l" then
-        self.state.draw = true
-
-        return true
-    elseif button == "m" then
-        self.state.erase = true
-
-        return true
-    end
-
-    return false
-end
-
-function WallsMode:mousereleased(x, y, button)
-    if button == "l" then
-        self.state.draw = nil
-    elseif button == "r" then
         self.state.erase = nil
     end
 end

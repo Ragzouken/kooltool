@@ -1,4 +1,5 @@
 local Class = require "hump.class"
+local Collider = require "collider"
 local TileLayer = require "tilelayer"
 local NoteLayer = require "notelayer"
 local EntityLayer = require "entitylayer"
@@ -32,6 +33,8 @@ end
 
 function Project:init(name)
     self.name = name:match("[^/]+$")
+
+    self.dragables = Collider(128)
 end
 
 function Project:load(folder_path)
