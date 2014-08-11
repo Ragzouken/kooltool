@@ -69,15 +69,15 @@ end
 function Tileset:draw()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setBlendMode("alpha")
-    love.graphics.rectangle("fill", 512-32-4-1, 4-1, 32+2, self.tiles*(32+1)+1)
+    love.graphics.rectangle("fill", love.window:getWidth()-32-4-1, 4-1, 32+2, self.tiles*(32+1)+1)
 
     for i, quad in ipairs(self.quads) do
-        local x, y = 512 - 32 - 4, 4 + (i - 1) * (32 + 1)
+        local x, y = love.window:getWidth() - 32 - 4, 4 + (i - 1) * (32 + 1)
 
         love.graphics.draw(self.canvas, quad, x, y, 0, 1, 1)
     end
 
-    local x, y = 512 - 32 - 4, 4 + (TILE - 1) * (32 + 1)
+    local x, y = love.window:getWidth() - 32 - 4, 4 + (TILE - 1) * (32 + 1)
     love.graphics.setColor(colour.random(0, 128))
     love.graphics.rectangle("line", x, y, 32, 32)
 end

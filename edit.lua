@@ -281,5 +281,10 @@ function love.textinput(character)
     MODE:textinput(character)
 end
 
-function love.focus()
+function love.focus(focus)
+    if not focus then
+        MODE:defocus()
+    else
+        MODE:focus()
+    end
 end
