@@ -1,6 +1,9 @@
 local Class = require "hump.class"
 local EditMode = require "editmode"
 
+local Entity = require "entity"
+local Notebox = require "notebox"
+
 local bresenham = require "bresenham"
 local Brush = require "brush"
 local colour = require "colour"

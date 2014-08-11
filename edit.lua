@@ -242,7 +242,6 @@ function love.keypressed(key, isrepeat)
                 --modes[key].layer.active = not modes[key].layer.active
             else
                 switch(modes[key])
-                modes[key].layer.active = true
             end
         end
 

@@ -26,12 +26,12 @@ function Project.default(name)
 
     project.palette = PALETTE
     project.layers.surface = generators.surface.default(project)
-    project.layers.annotation = AnnotationLayer()
+    project.layers.annotation = AnnotationLayer(project)
 
-    PIXELMODE = PixelMode(self.layers.surface)
-    TILEMODE = TileMode(self.layers.surface)
-    PLACEMODE = PlaceMode(self.layers.surface)
-    ANNOTATEMODE = AnnotateMode(self.layers.annotation)
+    PIXELMODE = PixelMode(project.layers.surface)
+    TILEMODE = TileMode(project.layers.surface)
+    PLACEMODE = PlaceMode(project.layers.surface)
+    ANNOTATEMODE = AnnotateMode(project.layers.annotation)
     
     return project
 end
@@ -51,17 +51,17 @@ function Project:load(folder_path)
     self.layers.surface = SurfaceLayer(self)
     self.layers.surface:deserialise(json.decode(data), folder_path)
 
-    PIXELMODE = PixelMode(self.layers.surface)
-    TILEMODE = TileMode(self.layers.surface)
-    PLACEMODE = PlaceMode(self.layers.surface)
-    ANNOTATEMODE = AnnotateMode(self.layers.annotation)
-
     local data = love.filesystem.read(folder_path .. "/entitylayer.json")
     self.layers.surface:deserialise_entity(json.decode(data), folder_path)
 
     local data = love.filesystem.read(folder_path .. "/notelayer.json")
-    self.layers.annotation = AnnotationLayer()
+    self.layers.annotation = AnnotationLayer(self)
     self.layers.annotation:deserialise(json.decode(data), folder_path)
+
+    PIXELMODE = PixelMode(self.layers.surface)
+    TILEMODE = TileMode(self.layers.surface)
+    PLACEMODE = PlaceMode(self.layers.surface)
+    ANNOTATEMODE = AnnotateMode(self.layers.annotation)
 end
 
 function Project:save(folder_path)
