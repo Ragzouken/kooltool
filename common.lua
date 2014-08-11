@@ -40,4 +40,6 @@ function common.loadCanvas(...)
     return common.canvasFromImage(love.graphics.newImage(...))
 end
 
+common.BROKEN = love.graphics.newImage("images/broken.png")
+
 return common

@@ -13,173 +13,30 @@ local PixelMode = Class { __includes = EditMode, name = "edit pixels" }
 
 local TileLayer = Class {}
 
-function TileLayer.default()
-    local layer = TileLayer()
-
-    layer.tileset = Tileset()
-
-    layer.tileset:applyBrush(layer.tileset:add_tile(), Brush(32, 32, function()
-        love.graphics.setColor(PALETTE.colours[1])
-        love.graphics.rectangle("fill", 0, 0, 32, 32)
-    end))
-
-    layer.tileset:applyBrush(layer.tileset:add_tile(), Brush(32, 32, function()
-        love.graphics.setColor(PALETTE.colours[2])
-        love.graphics.rectangle("fill", 0, 0, 32, 32)
-    end))
-
-    for item, x, y in generators.Grid.dungeon():items() do
-        layer:set(item, x, y)
-    end
-
-    return layer
-end
-
-function TileLayer:deserialise(data, saves)
-    self.tileset = Tileset()
-    self.tileset:deserialise(data.tileset, saves)
-
-    for y, row in pairs(data.tiles) do
-        for x, index in pairs(row) do
-            if index > 0 then self:set(index, tonumber(x), tonumber(y)) end
-        end
-    end
-
-    for y, row in pairs(data.walls or {}) do
-        for x, wall in pairs(row) do
-            self.walls:set(wall or nil, tonumber(x), tonumber(y))
-        end
-    end
-
-    self.wall_index = {[0] = false}
-
-    for index, solid in pairs(data.wall_index or {}) do
-        self.wall_index[tonumber(index)] = solid
-    end
-end
-
-function TileLayer:serialise(saves)
-    local tiles = {[0]={[0]=0}}
-
-    for tile, x, y in self.tiles:items() do
-        tiles[y] = tiles[y] or {[0]=0}
-        tiles[y][x] = tile[1]
-    end
-
-    local walls = {[0]={[0]=false}}
-
-    for wall, x, y in self.walls:items() do
-        walls[y] = walls[y] or {[0]=false}
-        walls[y][x] = wall
-    end
-
-    return {
-        tileset = self.tileset:serialise(saves),
-        tiles = tiles,
-        walls = walls,
-        wall_index = self.wall_index,
-    }
-end
-
-function TileLayer:exportRegions(folder_path)
-    local regions = self.tiles:regions()
-
-    love.filesystem.createDirectory(folder_path .. "/regions")
-
-    for i, region in ipairs(regions) do
-        local text = ""
-        local lasty
-
-        for item, x, y in region:rectangle() do
-            if lasty and lasty ~= y then
-                text = text .. "\n"
-            elseif lasty then
-                text = text .. ","
-            end
-
-            lasty = y
-
-            text = text .. (item and item[1] or 0)
-        end
-
-        text = text .. "\n"
-
-        local file = love.filesystem.newFile(folder_path .. "/regions/" .. i .. ".txt", "w")
-        file:write(text)
-        file:close()
-    end
-end
-
-function TileLayer:init()
-    self.tileset = Tileset()
-    self.batch = love.graphics.newSpriteBatch(love.graphics.newCanvas(32, 32), 7500)
-
-    self.tiles = SparseGrid(32)
-    self.walls = SparseGrid(32)
-    self.wall_index = {}
+function TileLayer:init(project)
+    self.project = project
 
     self.active = true
 
     self.modes = {
-        tile = TileMode(self),
-        pixel = PixelMode(self),
+        tile = TileMode(self.project.layers.surface),
+        pixel = PixelMode(self.project.layers.surface),
     }
 end
 
 function TileLayer:update(dt)
 end
 
-function TileLayer:draw()
-    love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(255, 255, 255, self.active and 255 or 64)
-    
-    if not self.tileset.canvas.fake then
-        self.batch:setTexture(self.tileset.canvas)
-    else
-        self.batch:setTexture(self.tileset.canvas.image)
-    end
-
-    love.graphics.draw(self.batch, 0, 0)
+function TileLayer:get(...)
+    return self.project.layers.surface:getTile(...)
 end
 
-function TileLayer:get(gx, gy)
-    local tile = self.tiles:get(gx, gy)
-
-    return tile and tile[1] or nil
+function TileLayer:set(...)
+    return self.project.layers.surface:setTile(...)
 end
 
-function TileLayer:set(index, gx, gy)
-    local existing = self.tiles:get(gx, gy)
-    local id = existing and existing[2]
-    local size = 32
-
-    if index and index ~= 0 then
-        local quad = self.tileset.quads[index]
-
-        if id then
-            self.batch:set(id, quad, gx * size, gy * size)
-        else
-            id = self.batch:add(quad, gx * size, gy * size)
-        end
-
-        self.tiles:set({index, id}, gx, gy)
-    else
-        if id then
-            self.batch:set(id, gx * size, gy * size, 0, 0, 0)
-        end
-
-        self.tiles:set(nil, gx, gy)
-    end
-end
-
-function TileLayer:refresh()
-    for tile, x, y in self.tiles:items() do
-        self:set(tile[1], x, y)
-    end
-end
-
-function TileLayer:gridCoords(x, y)
-    return self.tiles:gridCoords(x, y)
+function TileLayer:gridCoords(...)
+    return self.project.layers.surface.tilemap:gridCoords(...)
 end
 
 function TileLayer:applyBrush(bx, by, brush, lock, cloning)
@@ -216,7 +73,7 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
         end
     end
 
-    if cloning then self:refresh() end
+    if cloning then self.project.layers.surface:refresh() end
 end
 
 function TileLayer:sample(x, y)
@@ -234,35 +91,6 @@ function TileLayer:sample(x, y)
     return index and self.tileset:sample(index, ox, oy) or {0, 0, 0, 255}
 end
 
-function TileLayer:setWall(gx, gy, solid, clone)
-    local index = self:get(gx, gy)
-    local default = self.wall_index[index]
-    local instance = self.walls:get(gx, gy)
-
-    if not clone and index and instance == nil then
-        --print("changing default wall of " .. index .. " to ", solid)
-        self.wall_index[index] = solid or nil
-        return (default and not solid) or (solid and not default)
-    elseif default then
-        if (solid and not default) or (default and not solid) then
-            --print("changing instance passibility to ", not solid)
-            self.walls:set(solid, gx, gy)
-            return instance ~= solid
-        elseif instance ~= nil and instance ~= solid then
-            --print("nullifying")
-            self.walls:set(nil, gx, gy)
-            return true
-        else
-            --print("matches default, no change")
-            return false
-        end
-    else
-        --print("in the absense of a default, setting instance passibility to ", not solid)
-        self.walls:set(solid or nil, gx, gy)
-        return true
-    end
-end
-
 function PixelMode:hover(x, y, dt)
     if self.state.draw then
         local dx, dy, subject = unpack(self.state.draw)
@@ -275,7 +103,7 @@ function PixelMode:hover(x, y, dt)
 end
 
 function PixelMode:draw(x, y)
-    local gx, gy, ox, oy = self.layer.tiles:gridCoords(x, y)
+    local gx, gy, ox, oy = self.layer.tilemap:gridCoords(x, y)
     local tsize = 32
 
     local size = BRUSHSIZE
@@ -284,7 +112,7 @@ function PixelMode:draw(x, y)
     love.graphics.setColor(PALETTE.colours[3])
     love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-le, size, size)
 
-    local shape = self.layer.collider:shapesAt(x, y)[1]
+    local shape = PROJECT.tilelayer.collider:shapesAt(x, y)[1]
     local entity = shape and shape.entity
 
     if self.state.locked_entity then
@@ -338,7 +166,7 @@ end
 function PixelMode:keypressed(key, isrepeat)
     if not isrepeat then
         local x, y = CAMERA:mousepos()
-        local shape = self.layer.collider:shapesAt(x, y)[1]
+        local shape = PROJECT.tilelayer.collider:shapesAt(x, y)[1]
         local entity = shape and shape.entity
 
         if entity and key == "lshift" then
@@ -349,7 +177,7 @@ function PixelMode:keypressed(key, isrepeat)
         if not entity or self.state.draw then
             if key == "lshift" then
                 local mx, my = CAMERA:mousepos()
-                self.state.lock = {self.layer.tiles:gridCoords(mx, my)}
+                self.state.lock = {self.layer.tilemap:gridCoords(mx, my)}
             elseif key == "lctrl" then
                 self.state.cloning = {}
             end
@@ -375,9 +203,8 @@ function PixelMode:keyreleased(key)
 end
 
 function TileMode:hover(x, y, dt)
-    local gx, gy = self.layer:gridCoords(x, y)
-    local tile = PROJECT.tilelayer:get(gx, gy)
-    local wall = PROJECT.tilelayer.walls:get(gx, gy)
+    local gx, gy = self.layer.tilemap:gridCoords(x, y)
+    local tile = self.layer:getTile(gx, gy)
     local clone = love.keyboard.isDown("lctrl")
     local change
 
@@ -386,11 +213,11 @@ function TileMode:hover(x, y, dt)
 
         if love.keyboard.isDown("lshift") then
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
-                change = change or self.layer:setWall(lx, ly, true, clone)
+                change = change or self.layer:setWall(true, lx, ly, clone)
             end
         else
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
-                self.layer:set(TILE, lx, ly)
+                self.layer:setTile(TILE, lx, ly)
             end
 
             change = tile ~= TILE
@@ -402,7 +229,7 @@ function TileMode:hover(x, y, dt)
 
         if love.keyboard.isDown("lshift") then
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
-                change = change or self.layer:setWall(lx, ly, false, clone)
+                change = change or self.layer:setWall(false, lx, ly, clone)
             end
         else
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
@@ -423,14 +250,14 @@ end
 
 function TileMode:draw(x, y)
     love.graphics.setBlendMode("alpha")
-    local gx, gy, ox, oy = self.layer:gridCoords(x, y)
+    local gx, gy, ox, oy = self.layer.tilemap:gridCoords(x, y)
     local size = 32
 
     local wall_alpha = math.random(96, 160)
 
     if love.keyboard.isDown("lshift") then
-        for tile, x, y in self.layer.tiles:items() do
-            local wall = self.layer.walls:get(x, y)
+        for tile, x, y in self.layer.tilemap:items() do
+            local wall = PROJECT.layers.surface.wallmap:get(x, y)
 
             if wall == nil and self.layer.wall_index[tile[1]] then
                 love.graphics.setColor(255, 0, 0, wall_alpha)
@@ -438,7 +265,7 @@ function TileMode:draw(x, y)
             end
         end
 
-        for wall, x, y in self.layer.walls:items() do
+        for wall, x, y in self.layer.wallmap:items() do
             if wall then
                 love.graphics.setColor(255, 0, 0, wall_alpha)
             else
@@ -447,21 +274,26 @@ function TileMode:draw(x, y)
 
             love.graphics.rectangle("fill", x * size, y * size, size, size)
         end
+
+        love.graphics.setColor(255, 0, 0, 128)
+        love.graphics.rectangle("fill", gx*size, gy*size, size, size)
+    else
+        local quad = self.layer.tileset.quads[TILE]
+
+        love.graphics.setColor(255, 255, 255, 128)
+        love.graphics.draw(self.layer.tileset.canvas, quad, gx * size, gy * size)
     end
 
-    local quad = self.layer.tileset.quads[TILE]
-
+    love.graphics.setColor(colour.random(128, 255))
     love.graphics.rectangle("line", gx*size-0.5, gy*size-0.5, size+1, size+1)
-    love.graphics.setColor(255, 255, 255, 128)
-    love.graphics.draw(self.layer.tileset.canvas, quad, gx * size, gy * size)
 end
 
 function TileMode:mousepressed(x, y, button)
-    local gx, gy = self.layer.tiles:gridCoords(x, y)
+    local gx, gy = self.layer.tilemap:gridCoords(x, y)
 
     if button == "l" then
         if love.keyboard.isDown("lalt") then
-            TILE = self.layer:get(gx, gy) or TILE
+            TILE = self.layer:getTile(gx, gy) or TILE
         else
             self.state.draw = {gx, gy}
         end

@@ -1,5 +1,6 @@
 local Class = require "hump.class"
 local Collider = require "collider"
+local SurfaceLayer = require "layers.surface"
 local TileLayer = require "tilelayer"
 local NoteLayer = require "notelayer"
 local EntityLayer = require "entitylayer"
@@ -24,7 +25,10 @@ end
 function Project.default(name)
     local project = Project(name)
 
-    project.tilelayer = TileLayer.default()
+    project.palette = PALETTE
+    project.layers.surface = generators.surface.default(project)
+
+    project.tilelayer = TileLayer.default(project)
     project.notelayer = NoteLayer()
     project.entitylayer = EntityLayer()
 
@@ -35,14 +39,18 @@ function Project:init(name)
     self.name = name:match("[^/]+$")
 
     self.dragables = Collider(128)
+
+    self.layers = {}
 end
 
 function Project:load(folder_path)
     if self.name == "tutorial" then self.name = "tutorial_copy" end
 
+    self.layers.surface = SurfaceLayer(self)
+
     local data = love.filesystem.read(folder_path .. "/tilelayer.json")
-    self.tilelayer = TileLayer(self.tileset)
-    self.tilelayer:deserialise(json.decode(data), folder_path)
+    self.tilelayer = TileLayer(self)
+    self.layers.surface:deserialise(json.decode(data), folder_path)
 
     local data = love.filesystem.read(folder_path .. "/notelayer.json")
     self.notelayer = NoteLayer()
@@ -61,7 +69,7 @@ end
 function Project:save(folder_path)
     love.filesystem.createDirectory(folder_path)
     local file = love.filesystem.newFile(folder_path .. "/tilelayer.json", "w")
-    file:write(json.encode(self.tilelayer:serialise(folder_path)))
+    file:write(json.encode(self.layers.surface:serialise(folder_path)))
     file:close()
 
     local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
@@ -72,7 +80,7 @@ function Project:save(folder_path)
     file:write(json.encode(self.entitylayer:serialise(folder_path)))
     file:close()
 
-    self.tilelayer:exportRegions(folder_path)
+    self.layers.surface:exportRegions(folder_path)
 end
 
 function Project:loadIcon(folder_path)

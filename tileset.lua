@@ -2,6 +2,7 @@ local Class = require "hump.class"
 local Brush = require "brush"
 
 local common = require "common"
+local colour = require "colour"
 
 local Tileset = Class {
     SIZE = 32,
@@ -75,6 +76,10 @@ function Tileset:draw()
 
         love.graphics.draw(self.canvas, quad, x, y, 0, 1, 1)
     end
+
+    local x, y = 512 - 32 - 4, 4 + (TILE - 1) * (32 + 1)
+    love.graphics.setColor(colour.random(0, 128))
+    love.graphics.rectangle("line", x, y, 32, 32)
 end
 
 function Tileset:click(x, y)

@@ -210,7 +210,7 @@ function Annotate:mousepressed(x, y, button)
             self.layer:removeNotebox(notebox)
             self.state.selected = nil
         else
-            notebox = Notebox(self.layer, x*2, y*2)
+            notebox = Notebox(self.layer, x*2, y*2, "[note]")
             self.layer:addNotebox(notebox)
             self.state.selected = notebox
         end

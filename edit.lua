@@ -102,7 +102,7 @@ function love.update(dt)
     CPROFILER:endCycle()
 end
 
-local large = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
+local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
 function love.draw()
     GPROFILER:startCycle()
@@ -110,7 +110,7 @@ function love.draw()
     if PROJECT then
         CAMERA:attach()
 
-        PROJECT.tilelayer:draw()
+        PROJECT.layers.surface:draw()
         PROJECT.entitylayer:draw()
 
         love.graphics.push()
@@ -124,7 +124,10 @@ function love.draw()
 
         CAMERA:detach()
 
-        PROJECT.tilelayer.tileset:draw()
+        PROJECT.layers.surface.tileset:draw()
+
+        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.setFont(large)
         love.graphics.print(MODE.name, 3, 5)
 
         INTERFACE:draw()
@@ -186,7 +189,7 @@ function love.mousepressed(x, y, button)
 
     if PROJECT and not love.keyboard.isDown("tab") then
         if button == "l" and MODE == PROJECT.tilelayer.modes.tile then
-            local index = PROJECT.tilelayer.tileset:click(x, y)
+            local index = PROJECT.layers.surface.tileset:click(x, y)
             if index then TILE = index return true end
         end
     end
