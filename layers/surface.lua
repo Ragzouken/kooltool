@@ -118,7 +118,7 @@ end
 
 function SurfaceLayer:setTile(index, gx, gy)
     local current = self.tilemap:get(gx, gy)
-    local id = existing and existing[2]
+    local id = current and current[2]
     local tw, th = unpack(self.tilesize)
 
     if index and index ~= 0 then

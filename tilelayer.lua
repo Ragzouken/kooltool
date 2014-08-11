@@ -130,7 +130,7 @@ function PixelMode:mousepressed(x, y, button)
 
     if button == "l" then
         if love.keyboard.isDown("lalt") then
-            PALETTE.colours[3] = self.layer:sample(x, y)
+            PALETTE.colours[3] = PROJECT.tilelayer:sample(x, y)
         else
             if not entity then self.layer.tileset:snapshot(7) end
             self.state.draw = {x, y, entity or PROJECT.tilelayer} 
@@ -218,7 +218,7 @@ function TileMode:hover(x, y, dt)
             end
         else
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
-                self.layer:set(nil, lx, ly)
+                self.layer:setTile(nil, lx, ly)
             end
 
             change = change or tile
