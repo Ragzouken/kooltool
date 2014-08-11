@@ -9,7 +9,7 @@ local Brush = require "brush"
 local colour = require "colour"
 
 local TileMode = Class { __includes = EditMode, name = "tile placement" }
-local PixelMode = Class { __includes = EditMode, name = "edit tiles" }
+local PixelMode = Class { __includes = EditMode, name = "edit pixels" }
 local WallsMode = Class { __includes = EditMode, name = "tile passability" }
 
 local TileLayer = Class {}
@@ -214,6 +214,14 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
 end
 
 function TileLayer:sample(x, y)
+    local shape = self.collider:shapesAt(x, y)[1]
+    local entity = shape and shape.entity
+
+    if entity then
+        local colour = entity and entity:sample(x, y) or {0, 0, 0, 0}
+        if colour[4] ~= 0 then return colour end
+    end
+
     local gx, gy, ox, oy = self:gridCoords(x, y)
     local index = self:get(gx, gy)
 
@@ -222,12 +230,12 @@ end
 
 function PixelMode:hover(x, y, dt)
     if self.state.draw then
-        local dx, dy = unpack(self.state.draw)
+        local dx, dy, subject = unpack(self.state.draw)
 
         local brush, ox, oy = Brush.line(dx, dy, x, y, BRUSHSIZE, PALETTE.colours[3])
-        self.layer:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)
+        subject:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)
 
-        self.state.draw = {x, y}
+        self.state.draw = {x, y, subject}
     end
 end
 
@@ -241,21 +249,39 @@ function PixelMode:draw(x, y)
     love.graphics.setColor(PALETTE.colours[3])
     love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-le, size, size)
 
-    if self.state.lock then
-        love.graphics.setColor(colour.random(128, 255))
+    local shape = self.layer.collider:shapesAt(x, y)[1]
+    local entity = shape and shape.entity
 
-        local lx, ly = unpack(self.state.lock)
-        love.graphics.rectangle("line", lx*tsize-0.5, ly*tsize-0.5, tsize+1, tsize+1)
+    if self.state.draw and self.state.draw[3].border then
+        self.state.draw[3]:border()
+    elseif entity and not self.state.draw then
+        entity:border()
+    else
+        if self.state.lock then
+            love.graphics.setColor(colour.random(128, 255))
+
+            local lx, ly = unpack(self.state.lock)
+            love.graphics.rectangle("line", lx*tsize-0.5, ly*tsize-0.5, tsize+1, tsize+1)
+        end
+
+        if love.keyboard.isDown("lshift") then
+            for entity in pairs(PROJECT.entitylayer.entities) do
+                entity:border()
+            end
+        end
     end
 end
 
 function PixelMode:mousepressed(x, y, button)
+    local shape = self.layer.collider:shapesAt(x, y)[1]
+    local entity = shape and shape.entity
+
     if button == "l" then
         if love.keyboard.isDown("lalt") then
             PALETTE.colours[3] = self.layer:sample(x, y)
         else
-            self.layer.tileset:snapshot(7)
-            self.state.draw = {x, y} 
+            if not entity then self.layer.tileset:snapshot(7) end
+            self.state.draw = {x, y, entity or self.layer} 
         end
 
         return true
@@ -272,11 +298,17 @@ end
 
 function PixelMode:keypressed(key, isrepeat)
     if not isrepeat then
-        if key == "lshift" then
-            local mx, my = CAMERA:mousepos()
-            self.state.lock = {self.layer.tiles:gridCoords(mx, my)}
-        elseif key == "lctrl" then
-            self.state.cloning = {}
+        local x, y = CAMERA:mousepos()
+        local shape = self.layer.collider:shapesAt(x, y)[1]
+        local entity = shape and shape.entity
+
+        if not entity or self.state.draw then
+            if key == "lshift" then
+                local mx, my = CAMERA:mousepos()
+                self.state.lock = {self.layer.tiles:gridCoords(mx, my)}
+            elseif key == "lctrl" then
+                self.state.cloning = {}
+            end
         end
 
         if key == "1" then BRUSHSIZE = 1 end
@@ -393,7 +425,7 @@ function WallsMode:mousepressed(x, y, button)
         self.state.draw = true
 
         return true
-    elseif button == "r" then
+    elseif button == "m" then
         self.state.erase = true
 
         return true

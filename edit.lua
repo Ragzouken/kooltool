@@ -198,7 +198,7 @@ function love.mousepressed(x, y, button)
     end
 
     if PROJECT then
-        if button == "m" then
+        if button == "r" then
             DRAG = {x, y, CAMERA.x, CAMERA.y}
         elseif button == "wu" or (love.keyboard.isDown("tab") and button == "l") then
             zoom_on(mx, my)
@@ -210,7 +210,7 @@ end
 
 function love.mousereleased(x, y, button)
     if PROJECT then
-        if button == "m" and DRAG and not DRAG[5] then DRAG = nil end
+        if button == "r" and DRAG and not DRAG[5] then DRAG = nil end
 
         local mx, my = CAMERA:worldCoords(x, y)
         mx, my = math.floor(mx), math.floor(my)
@@ -236,12 +236,11 @@ function love.keypressed(key, isrepeat)
     if PROJECT then
         local modes = {
             q = PROJECT.tilelayer.modes.pixel,
-            a = PROJECT.tilelayer.modes.tile,
+            w = PROJECT.tilelayer.modes.tile,
 
-            w = PROJECT.entitylayer.modes.pixel,
-            s = PROJECT.entitylayer.modes.place,
+            e = PROJECT.entitylayer.modes.place,
 
-            e = PROJECT.tilelayer.modes.walls,
+            s = PROJECT.tilelayer.modes.walls,
 
             r = PROJECT.notelayer.modes.annotate,
         } 

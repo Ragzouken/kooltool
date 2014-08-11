@@ -56,6 +56,8 @@ function NoteLayer:serialise(saves)
         blocks[y] = blocks[y] or {}
         blocks[y][x] = file
 
+        print(annotations .. "/" .. file)
+
         block:getImageData():encode(annotations .. "/" .. file)
     end
 
@@ -170,9 +172,9 @@ function Annotate:hover(x, y, dt)
         local brush, ox, oy
 
         if not love.keyboard.isDown("lctrl") then
-            brush, ox, oy = Brush.line(dx, dy, x, y, 2, {255, 255, 255, 255})
+            brush, ox, oy = Brush.line(dx, dy, x, y, BRUSHSIZE, {255, 255, 255, 255})
         else
-            brush, ox, oy = Brush.line(dx, dy, x, y, 7)
+            brush, ox, oy = Brush.line(dx, dy, x, y, BRUSHSIZE * 3)
         end
 
         self.layer:applyBrush(ox, oy, brush)
@@ -203,7 +205,7 @@ function Annotate:mousepressed(x, y, button)
         end
 
         return true
-    elseif button == "r" then
+    elseif button == "m" then
         if notebox then
             self.layer:removeNotebox(notebox)
             self.state.selected = nil
@@ -238,6 +240,10 @@ function Annotate:keypressed(key)
 
         return true
     end
+
+    if key == "1" then BRUSHSIZE = 1 end
+    if key == "2" then BRUSHSIZE = 2 end
+    if key == "3" then BRUSHSIZE = 3 end
 
     return false
 end

@@ -8,7 +8,6 @@ local generators = require "generators"
 local common = require "common"
 local brush = require "brush"
 
-local PixelMode = Class { __includes = EditMode, name = "edit entities" }
 local PlaceMode = Class { __includes = EditMode, name = "place entities" }
 
 local EntityLayer = Class {}
@@ -71,7 +70,6 @@ function EntityLayer:init()
     self.active = true
 
     self.modes = {
-        pixel = PixelMode(self),
         place = PlaceMode(self),
     }
 
@@ -87,7 +85,7 @@ function EntityLayer:draw()
     end
 end
 
-function EntityLayer:addSprite(sprite, id)    
+function EntityLayer:addSprite(sprite, id)
     if not id then
         id = self.sprites_index.id + 1
         self.sprites_index.id = id
@@ -157,7 +155,7 @@ function PlaceMode:mousepressed(x, y, button)
         else
             self.state.selected = nil
         end
-    elseif button == "r" then
+    elseif button == "m" then
         if entity then
             self.layer:removeEntity(entity)
             if self.state.selected == entity then
@@ -181,94 +179,6 @@ function PlaceMode:mousereleased(x, y, button)
             entity:moveTo(math.floor(entity.x / 32) * 32 + 16,
                           math.floor(entity.y / 32) * 32 + 16)
         end
-    end
-end
-
-function PixelMode:hover(x, y, dt)
-    if self.state.draw then
-        local dx, dy, entity = unpack(self.state.draw)
-
-        entity = self.state.lock or entity
-
-        local brush, ox, oy = brush.line(dx, dy, x, y, BRUSHSIZE, PALETTE.colours[3])
-        self.layer:applyBrush(ox, oy, brush, entity, self.state.lock, self.state.cloning)
-
-        self.state.draw = {x, y, entity}
-    end
-end
-
-function PixelMode:draw(x, y)
-    local size = BRUSHSIZE
-    local le = math.floor(size / 2)
-
-    love.graphics.setColor(PALETTE.colours[3])
-    love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-le, size, size)
-
-    if love.keyboard.isDown("lshift") then
-        if self.state.lock then
-            self.state.lock:border()
-        else
-            for entity in pairs(self.layer.entities) do
-                entity:border()
-            end
-        end
-    end
-
-    if self.state.draw then
-        self.state.draw[3]:border()
-    end
-end
-
-function PixelMode:mousepressed(x, y, button)
-    local shape = self.layer.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
-
-    if button == "l" then
-        if love.keyboard.isDown("lalt") then
-            PALETTE.colours[3] = self.layer:sample(x, y)
-        elseif entity then
-            self.state.draw = {x, y, entity}
-        end
-
-        return true
-    end
-
-    return false
-end
-
-function PixelMode:mousereleased(x, y, button)
-    if button == "l" then
-        self.state.draw = nil
-    end
-end
-
-function PixelMode:keypressed(key, isrepeat)
-    local x, y = CAMERA:mousepos()
-    local shape = self.layer.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
-
-    if not isrepeat then
-        if key == "lshift" then
-            self.state.lock = entity
-        elseif key == "lctrl" then
-            self.state.cloning = {}
-        end
-
-        if key == "1" then BRUSHSIZE = 1 end
-        if key == "2" then BRUSHSIZE = 2 end
-        if key == "3" then BRUSHSIZE = 3 end
-
-        if key == " " then
-            PALETTE = generators.Palette.generate(5)
-        end
-    end
-end
-
-function PixelMode:keyreleased(key)
-    if key == "lshift" then
-        self.state.lock = nil 
-    elseif key == "lctrl" then
-        self.state.cloning = nil
     end
 end
 

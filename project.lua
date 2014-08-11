@@ -35,6 +35,8 @@ function Project:init(name)
 end
 
 function Project:load(folder_path)
+    if self.name == "tutorial" then self.name = "tutorial_copy" end
+
     local data = love.filesystem.read(folder_path .. "/tilelayer.json")
     self.tilelayer = TileLayer(self.tileset)
     self.tilelayer:deserialise(json.decode(data), folder_path)
