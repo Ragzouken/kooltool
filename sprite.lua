@@ -14,6 +14,10 @@ function Sprite:draw(x, y, a, s)
     love.graphics.draw(self.canvas, x, y, a or 0, s or 1, s or 1, px, py)
 end
 
+function Sprite:refresh()
+    self.size = {self.canvas:getDimensions()}
+end
+
 function Sprite:applyBrush(bx, by, brush, lock)
     local px, py = unpack(self.pivot)
     bx, by = bx + px, by + py

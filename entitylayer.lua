@@ -23,6 +23,7 @@ function EntityLayer:deserialise(data, saves)
             sprite.canvas = common.loadCanvas(file)
 
             sprite.pivot = sprite_data.pivot
+            sprite:refresh()
 
             self:addSprite(sprite, id)
         end
