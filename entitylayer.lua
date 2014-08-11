@@ -4,9 +4,7 @@ local EditMode = require "editmode"
 local Sprite = require "sprite"
 local Entity = require "entity"
 
-local generators = require "generators"
 local common = require "common"
-local brush = require "brush"
 
 local PlaceMode = Class { __includes = EditMode, name = "place entities" }
 
@@ -108,20 +106,6 @@ end
 function EntityLayer:swapShapes(old, new)
     self.collider:remove(old)
     self.collider:addShape(new)
-end
-
-function EntityLayer:applyBrush(bx, by, brush, entity, lock, cloning)
-    entity:applyBrush(bx, by, brush, lock, cloning)
-end
-
-function EntityLayer:sample(x, y)
-    local shape = self.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
-
-    local colour = entity and entity:sample(x, y) or {0, 0, 0, 0}
-    colour = colour[4] ~= 0 and colour or PROJECT.tilelayer:sample(x, y)
-
-    return colour
 end
 
 function PlaceMode:draw()
