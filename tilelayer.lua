@@ -252,6 +252,10 @@ function PixelMode:draw(x, y)
     local shape = self.layer.collider:shapesAt(x, y)[1]
     local entity = shape and shape.entity
 
+    if self.state.locked_entity then
+        self.state.locked_entity:border()
+    end
+
     if self.state.draw and self.state.draw[3].border then
         self.state.draw[3]:border()
     elseif entity and not self.state.draw then
@@ -302,6 +306,11 @@ function PixelMode:keypressed(key, isrepeat)
         local shape = self.layer.collider:shapesAt(x, y)[1]
         local entity = shape and shape.entity
 
+        if entity and key == "lshift" then
+            self.state.locked_entity = entity
+            return
+        end
+
         if not entity or self.state.draw then
             if key == "lshift" then
                 local mx, my = CAMERA:mousepos()
@@ -324,6 +333,7 @@ end
 function PixelMode:keyreleased(key)
     if key == "lshift" then
         self.state.lock = nil 
+        self.state.locked_entity = nil
     elseif key == "lctrl" then
         self.state.cloning = nil
     end
