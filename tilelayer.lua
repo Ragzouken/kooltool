@@ -373,7 +373,7 @@ function TileMode:mousepressed(x, y, button)
         end
 
         return true
-    elseif button == "r" then
+    elseif button == "m" then
         self.state.erase = true
 
         return true
@@ -385,7 +385,7 @@ end
 function TileMode:mousereleased(x, y, button)
     if button == "l" then
         self.state.draw = nil
-    elseif button == "r" then
+    elseif button == "m" then
         self.state.erase = nil
     end
 end
