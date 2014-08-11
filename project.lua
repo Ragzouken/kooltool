@@ -97,7 +97,7 @@ function Project:update(dt)
 end
 
 function Project:draw()
-    self.tilelayer:draw()
+    self.layers.surface:draw()
     self.entitylayer:draw()
     --self.notelayer:draw()
 end
