@@ -32,8 +32,14 @@ end
 function Player:move(vector)
     local vx, vy = unpack(vector)
     local gx, gy = self.walls:gridCoords(self.entity.x, self.entity.y)
+    local dx, dy = gx+vx, gy+vy
 
-    if not self.walls:get(gx+vx, gy+vy) and not self.movement then
+    local tile = PROJECT.tilelayer:get(dx, dy)
+    local default = tile and PROJECT.tilelayer.wall_index[tile] or false
+    local instance = self.walls:get(dx, dy)
+    local passable = instance ~= false and not default
+
+    if passable and not self.movement then
         local period = self.speed
         local t = 0
         local x, y = self.entity.x, self.entity.y
