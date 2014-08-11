@@ -92,7 +92,7 @@ function Project:loadIcon(folder_path)
 end
 
 function Project:update(dt)
-    self.tilelayer:update(dt)
+    self.layers.surface:update(dt)
     self.notelayer:update(dt)
 end
 

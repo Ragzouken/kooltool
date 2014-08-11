@@ -24,23 +24,8 @@ function TileLayer:init(project)
     }
 end
 
-function TileLayer:update(dt)
-end
-
-function TileLayer:get(...)
-    return self.project.layers.surface:getTile(...)
-end
-
-function TileLayer:set(...)
-    return self.project.layers.surface:setTile(...)
-end
-
-function TileLayer:gridCoords(...)
-    return self.project.layers.surface.tilemap:gridCoords(...)
-end
-
 function TileLayer:applyBrush(bx, by, brush, lock, cloning)
-    local gx, gy, tx, ty = self:gridCoords(bx, by)
+    local gx, gy, tx, ty = self.project.layers.surface.tilemap:gridCoords(bx, by)
     bx, by = math.floor(bx), math.floor(by)
 
     -- split canvas into quads
@@ -54,21 +39,21 @@ function TileLayer:applyBrush(bx, by, brush, lock, cloning)
     love.graphics.setColor(255, 255, 255, 255)
     for y=0,gh-1 do
         for x=0,gw-1 do
-            local index = self:get(gx + x, gy + y)
+            local index = self.project.layers.surface:getTile(gx + x, gy + y)
             quad:setViewport(-tx + x * size, -ty + y * size, size, size)
 
             local locked = lock and (lock[1] ~= x+gx or lock[2] ~= y+gy)
             local key = tostring(gx + x) .. "," .. tostring(gy + y)
 
             if cloning and not cloning[key] and not locked then
-                index = self.tileset:clone(index)
-                self:set(index, gx + x, gy + y)
+                index = self.project.layers.surface.tileset:clone(index)
+                self.project.layers.surface:setTile(index, gx + x, gy + y)
                 cloning[key] = true
             end
 
             if index and not locked then
-                self.tileset:applyBrush(index, brush, quad)
-                self.tileset:refresh()
+                self.project.layers.surface.tileset:applyBrush(index, brush, quad)
+                self.project.layers.surface.tileset:refresh()
             end
         end
     end
@@ -85,10 +70,10 @@ function TileLayer:sample(x, y)
         if colour[4] ~= 0 then return colour end
     end
 
-    local gx, gy, ox, oy = self:gridCoords(x, y)
-    local index = self:get(gx, gy)
+    local gx, gy, ox, oy = self.project.layers.surface.tilemap:gridCoords(x, y)
+    local index = self.project.layers.surface:getTile(gx, gy)
 
-    return index and self.tileset:sample(index, ox, oy) or {0, 0, 0, 255}
+    return index and self.project.layers.surface.tileset:sample(index, ox, oy) or {0, 0, 0, 255}
 end
 
 function PixelMode:hover(x, y, dt)
@@ -140,7 +125,7 @@ function PixelMode:draw(x, y)
 end
 
 function PixelMode:mousepressed(x, y, button)
-    local shape = self.layer.collider:shapesAt(x, y)[1]
+    local shape = PROJECT.tilelayer.collider:shapesAt(x, y)[1]
     local entity = shape and shape.entity
 
     if button == "l" then
@@ -148,7 +133,7 @@ function PixelMode:mousepressed(x, y, button)
             PALETTE.colours[3] = self.layer:sample(x, y)
         else
             if not entity then self.layer.tileset:snapshot(7) end
-            self.state.draw = {x, y, entity or self.layer} 
+            self.state.draw = {x, y, entity or PROJECT.tilelayer} 
         end
 
         return true
