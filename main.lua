@@ -49,8 +49,6 @@ function SETPROJECT(project)
         PROJECT = Project.default(Project.name_generator:generate():gsub(" ", "_"))
     end
 
-    PROJECT.tilelayer.collider = PROJECT.entitylayer.collider
-
-    MODE = PROJECT.tilelayer.modes.pixel
+    MODE = PIXELMODE
     INTERFACE.draw = function() end
 end

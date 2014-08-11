@@ -1,80 +1,12 @@
 local Class = require "hump.class"
-local SparseGrid = require "sparsegrid"
 local EditMode = require "editmode"
-local Tileset = require "tileset"
 
-local generators = require "generators"
 local bresenham = require "bresenham"
 local Brush = require "brush"
 local colour = require "colour"
 
 local TileMode = Class { __includes = EditMode, name = "tile placement" }
 local PixelMode = Class { __includes = EditMode, name = "edit pixels" }
-
-local TileLayer = Class {}
-
-function TileLayer:init(project)
-    self.project = project
-
-    self.active = true
-
-    self.modes = {
-        tile = TileMode(self.project.layers.surface),
-        pixel = PixelMode(self.project.layers.surface),
-    }
-end
-
-function TileLayer:applyBrush(bx, by, brush, lock, cloning)
-    local gx, gy, tx, ty = self.project.layers.surface.tilemap:gridCoords(bx, by)
-    bx, by = math.floor(bx), math.floor(by)
-
-    -- split canvas into quads
-    -- draw each quad to the corresponding tile TODO: (if unlocked)
-    local bw, bh = brush:getDimensions()
-    local size = 32
-
-    local gw, gh = math.ceil((bw + tx) / size), math.ceil((bh + ty) / size)
-    local quad = love.graphics.newQuad(0, 0, size, size, bw, bh)
-
-    love.graphics.setColor(255, 255, 255, 255)
-    for y=0,gh-1 do
-        for x=0,gw-1 do
-            local index = self.project.layers.surface:getTile(gx + x, gy + y)
-            quad:setViewport(-tx + x * size, -ty + y * size, size, size)
-
-            local locked = lock and (lock[1] ~= x+gx or lock[2] ~= y+gy)
-            local key = tostring(gx + x) .. "," .. tostring(gy + y)
-
-            if cloning and not cloning[key] and not locked then
-                index = self.project.layers.surface.tileset:clone(index)
-                self.project.layers.surface:setTile(index, gx + x, gy + y)
-                cloning[key] = true
-            end
-
-            if index and not locked then
-                self.project.layers.surface.tileset:applyBrush(index, brush, quad)
-                self.project.layers.surface.tileset:refresh()
-            end
-        end
-    end
-
-    if cloning then self.project.layers.surface:refresh() end
-end
-
-function TileLayer:sample(x, y)
-    local shape = self.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
-
-    if entity then
-        local colour = entity and entity:sample(x, y) or {0, 0, 0, 0}
-        if colour[4] ~= 0 then return colour end
-    end
-
-    local gx, gy, ox, oy = self.project.layers.surface.tilemap:gridCoords(x, y)
-    local index = self.project.layers.surface:getTile(gx, gy)
-
-    return index and self.project.layers.surface.tileset:sample(index, ox, oy) or {0, 0, 0, 255}
-end
 
 function PixelMode:hover(x, y, dt)
     if self.state.draw then
@@ -97,7 +29,7 @@ function PixelMode:draw(x, y)
     love.graphics.setColor(PALETTE.colours[3])
     love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-le, size, size)
 
-    local shape = PROJECT.tilelayer.collider:shapesAt(x, y)[1]
+    local shape = self.layer.collider:shapesAt(x, y)[1]
     local entity = shape and shape.entity
 
     if self.state.locked_entity then
@@ -125,7 +57,7 @@ function PixelMode:draw(x, y)
 end
 
 function PixelMode:mousepressed(x, y, button)
-    local shape = PROJECT.tilelayer.collider:shapesAt(x, y)[1]
+    local shape = self.layer.collider:shapesAt(x, y)[1]
     local entity = shape and shape.entity
 
     if button == "l" then
@@ -133,7 +65,7 @@ function PixelMode:mousepressed(x, y, button)
             PALETTE.colours[3] = PROJECT.tilelayer:sample(x, y)
         else
             if not entity then self.layer.tileset:snapshot(7) end
-            self.state.draw = {x, y, entity or PROJECT.tilelayer} 
+            self.state.draw = {x, y, entity or self.layer} 
         end
 
         return true
@@ -151,7 +83,7 @@ end
 function PixelMode:keypressed(key, isrepeat)
     if not isrepeat then
         local x, y = CAMERA:mousepos()
-        local shape = PROJECT.tilelayer.collider:shapesAt(x, y)[1]
+        local shape = self.layer.collider:shapesAt(x, y)[1]
         local entity = shape and shape.entity
 
         if entity and key == "lshift" then
@@ -301,4 +233,4 @@ function TileMode:mousereleased(x, y, button)
     end
 end
 
-return TileLayer
+return {PixelMode, TileMode}

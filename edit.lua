@@ -3,7 +3,6 @@ local Timer = require "hump.timer"
 local Project = require "project"
 local Interface = require "interface"
 
-local TileLayer = require "tilelayer"
 local NoteLayer = require "notelayer"
 
 local generators = require "generators"
@@ -20,7 +19,6 @@ function love.load()
 
     GPROFILER = probe.new()
     --GPROFILER:hookAll(_G, "draw", {love})
-    --GPROFILER:hook(TileLayer, "draw", "TileLayer")
     --GPROFILER:hook(NoteLayer, "draw", "NoteLayer")
     --GPROFILER:hook(NoteBox, "draw", "NoteBox")
     CPROFILER = probe.new()
@@ -188,7 +186,7 @@ function love.mousepressed(x, y, button)
     if x <= 0 or y <= 0 or x >= w or y >= w then return end
 
     if PROJECT and not love.keyboard.isDown("tab") then
-        if button == "l" and MODE == PROJECT.tilelayer.modes.tile then
+        if button == "l" and MODE == TILEMODE then
             local index = PROJECT.layers.surface.tileset:click(x, y)
             if index then TILE = index return true end
         end
@@ -236,8 +234,8 @@ function love.keypressed(key, isrepeat)
 
     if PROJECT then
         local modes = {
-            q = PROJECT.tilelayer.modes.pixel,
-            w = PROJECT.tilelayer.modes.tile,
+            q = PIXELMODE,
+            w = TILEMODE,
             e = PROJECT.entitylayer.modes.place,
             r = PROJECT.notelayer.modes.annotate,
         } 

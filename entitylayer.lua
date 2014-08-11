@@ -75,7 +75,6 @@ function EntityLayer:init()
     self.sprites = {}
     self.sprites_index = {id = 0}
     self.entities = {}
-    self.collider = Collider(64)
 end
 
 function EntityLayer:draw()
@@ -96,17 +95,17 @@ end
 
 function EntityLayer:addEntity(entity)
     self.entities[entity] = true
-    self.collider:addShape(entity.shape)
+    PROJECT.layers.surface.collider:addShape(entity.shape)
 end
 
 function EntityLayer:removeEntity(entity)
     self.entities[entity] = nil
-    self.collider:remove(entity.shape)
+    PROJECT.layers.surface.collider:remove(entity.shape)
 end
 
 function EntityLayer:swapShapes(old, new)
-    self.collider:remove(old)
-    self.collider:addShape(new)
+    PROJECT.layers.surface.collider:remove(old)
+    PROJECT.layers.surface.collider:addShape(new)
 end
 
 function PlaceMode:draw()

@@ -1,7 +1,7 @@
 local Class = require "hump.class"
 local Collider = require "collider"
 local SurfaceLayer = require "layers.surface"
-local TileLayer = require "tilelayer"
+local PixelMode, TileMode = unpack(require "modez")
 local NoteLayer = require "notelayer"
 local EntityLayer = require "entitylayer"
 
@@ -26,12 +26,12 @@ function Project.default(name)
     local project = Project(name)
 
     project.palette = PALETTE
+    project.entitylayer = EntityLayer()
     project.layers.surface = generators.surface.default(project)
 
     project.tilelayer = TileLayer.default(project)
     project.notelayer = NoteLayer()
-    project.entitylayer = EntityLayer()
-
+    
     return project
 end
 
@@ -46,24 +46,25 @@ end
 function Project:load(folder_path)
     if self.name == "tutorial" then self.name = "tutorial_copy" end
 
-    self.layers.surface = SurfaceLayer(self)
+    self.entitylayer = EntityLayer()
 
     local data = love.filesystem.read(folder_path .. "/tilelayer.json")
-    self.tilelayer = TileLayer(self)
+    self.layers.surface = SurfaceLayer(self)
     self.layers.surface:deserialise(json.decode(data), folder_path)
 
-    local data = love.filesystem.read(folder_path .. "/notelayer.json")
-    self.notelayer = NoteLayer()
-    self.notelayer:deserialise(json.decode(data), folder_path)
+    PIXELMODE = PixelMode(self.layers.surface)
+    TILEMODE = TileMode(self.layers.surface)
 
-    self.entitylayer = EntityLayer()
-    
     local entitylayer_path = folder_path .. "/entitylayer.json"
 
     if love.filesystem.exists(entitylayer_path) then
         local data = love.filesystem.read(entitylayer_path)
         self.entitylayer:deserialise(json.decode(data), folder_path)
     end
+
+    local data = love.filesystem.read(folder_path .. "/notelayer.json")
+    self.notelayer = NoteLayer()
+    self.notelayer:deserialise(json.decode(data), folder_path)
 end
 
 function Project:save(folder_path)

@@ -1,4 +1,5 @@
 local Class = require "hump.class"
+local Collider = require "collider"
 local Layer = require "layers.layer"
 local SparseGrid = require "sparsegrid"
 local Tileset = require "tileset"
@@ -56,7 +57,8 @@ function SurfaceLayer:exportRegions(folder_path)
 
         text = text .. "\n"
 
-        local file = love.filesystem.newFile(folder_path .. "/regions/" .. i .. ".txt", "w")
+        local file = love.filesystem.newFile(folder_path
+            .. "/regions/" .. i .. ".txt", "w")
         file:write(text)
         file:close()
     end
@@ -86,6 +88,8 @@ end
 
 function SurfaceLayer:init(project)
     Layer.init(self, project)
+
+    self.collider = Collider(64)
 
     self.tileset = Tileset()
     self.tilemap = SparseGrid(unpack(self.tilesize))
@@ -175,6 +179,58 @@ function SurfaceLayer:refresh()
     for tile, x, y in self.tilemap:items() do
         self:setTile(tile[1], x, y)
     end
+end
+
+function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
+    local gx, gy, tx, ty = self.tilemap:gridCoords(bx, by)
+    bx, by = math.floor(bx), math.floor(by)
+
+    -- split canvas into quads
+    -- draw each quad to the corresponding tile TODO: (if unlocked)
+    local bw, bh = brush:getDimensions()
+    local size = 32
+
+    local gw, gh = math.ceil((bw + tx) / size), math.ceil((bh + ty) / size)
+    local quad = love.graphics.newQuad(0, 0, size, size, bw, bh)
+
+    love.graphics.setColor(255, 255, 255, 255)
+    for y=0,gh-1 do
+        for x=0,gw-1 do
+            local index = self:getTile(gx + x, gy + y)
+            quad:setViewport(-tx + x * size, -ty + y * size, size, size)
+
+            local locked = lock and (lock[1] ~= x+gx or lock[2] ~= y+gy)
+            local key = tostring(gx + x) .. "," .. tostring(gy + y)
+
+            if cloning and not cloning[key] and not locked then
+                index = self.tileset:clone(index)
+                self:setTile(index, gx + x, gy + y)
+                cloning[key] = true
+            end
+
+            if index and not locked then
+                self.tileset:applyBrush(index, brush, quad)
+                self.tileset:refresh()
+            end
+        end
+    end
+
+    if cloning then self:refresh() end
+end
+
+function SurfaceLayer:sample(x, y)
+    local shape = self.collider:shapesAt(x, y)[1]
+    local entity = shape and shape.entity
+
+    if entity then
+        local colour = entity and entity:sample(x, y) or {0, 0, 0, 0}
+        if colour[4] ~= 0 then return colour end
+    end
+
+    local gx, gy, ox, oy = self.tilemap:gridCoords(x, y)
+    local index = self:getTile(gx, gy)
+
+    return index and self.tileset:sample(index, ox, oy) or {0, 0, 0, 255}
 end
 
 return SurfaceLayer
