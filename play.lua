@@ -3,8 +3,8 @@ local Player = require "player"
 function love.load()
     PLAYERS = {}
 
-    for entity in pairs(PROJECT.entitylayer.entities) do
-        local player = Player(entity, PROJECT.tilelayer.walls)
+    for entity in pairs(PROJECT.layers.surface.entities) do
+        local player = Player(entity)
         PLAYERS[player] = true
         PLAYER = player
         player.speed = 0.75

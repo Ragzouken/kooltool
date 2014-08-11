@@ -3,10 +3,9 @@ local Timer = require "hump.timer"
 
 local Player = Class {}
 
-function Player:init(entity, walls)
+function Player:init(entity)
     self.timer = Timer()
     self.entity = entity
-    self.walls = walls
 end
 
 function Player:update(dt)

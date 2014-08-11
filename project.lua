@@ -71,7 +71,7 @@ function Project:save(folder_path)
     file:close()
 
     local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
-    file:write(json.encode(sself.layers.annotation:serialise(folder_path)))
+    file:write(json.encode(self.layers.annotation:serialise(folder_path)))
     file:close()
 
     local file = love.filesystem.newFile(folder_path .. "/entitylayer.json", "w")
@@ -96,7 +96,6 @@ end
 
 function Project:draw()
     self.layers.surface:draw()
-    self.entitylayer:draw()
     --self.layers.annotation:draw()
 end
 
