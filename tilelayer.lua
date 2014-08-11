@@ -50,6 +50,12 @@ function TileLayer:deserialise(data, saves)
             self.walls:set(wall or nil, tonumber(x), tonumber(y))
         end
     end
+
+    self.wall_index = {[0] = false}
+
+    for index, solid in pairs(data.wall_index or {}) do
+        self.wall_index[tonumber(index)] = solid
+    end
 end
 
 function TileLayer:serialise(saves)
@@ -71,6 +77,7 @@ function TileLayer:serialise(saves)
         tileset = self.tileset:serialise(saves),
         tiles = tiles,
         walls = walls,
+        wall_index = self.wall_index,
     }
 end
 
@@ -109,7 +116,8 @@ function TileLayer:init()
 
     self.tiles = SparseGrid(32)
     self.walls = SparseGrid(32)
-    
+    self.wall_index = {}
+
     self.active = true
 
     self.modes = {
@@ -224,6 +232,35 @@ function TileLayer:sample(x, y)
     local index = self:get(gx, gy)
 
     return index and self.tileset:sample(index, ox, oy) or {0, 0, 0, 255}
+end
+
+function TileLayer:setWall(gx, gy, solid, clone)
+    local index = self:get(gx, gy)
+    local default = self.wall_index[index]
+    local instance = self.walls:get(gx, gy)
+
+    if not clone and index and instance == nil then
+        --print("changing default wall of " .. index .. " to ", solid)
+        self.wall_index[index] = solid or nil
+        return (default and not solid) or (solid and not default)
+    elseif default then
+        if (solid and not default) or (default and not solid) then
+            --print("changing instance passibility to ", not solid)
+            self.walls:set(solid, gx, gy)
+            return instance ~= solid
+        elseif instance ~= nil and instance ~= solid then
+            --print("nullifying")
+            self.walls:set(nil, gx, gy)
+            return true
+        else
+            --print("matches default, no change")
+            return false
+        end
+    else
+        --print("in the absense of a default, setting instance passibility to ", not solid)
+        self.walls:set(solid or nil, gx, gy)
+        return true
+    end
 end
 
 function PixelMode:hover(x, y, dt)
@@ -341,6 +378,7 @@ function TileMode:hover(x, y, dt)
     local gx, gy = self.layer:gridCoords(x, y)
     local tile = PROJECT.tilelayer:get(gx, gy)
     local wall = PROJECT.tilelayer.walls:get(gx, gy)
+    local clone = love.keyboard.isDown("lctrl")
     local change
 
     if self.state.draw then
@@ -348,10 +386,8 @@ function TileMode:hover(x, y, dt)
 
         if love.keyboard.isDown("lshift") then
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
-                self.layer.walls:set(true, lx, ly)
+                change = change or self.layer:setWall(lx, ly, true, clone)
             end
-
-            change = change or not wall
         else
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
                 self.layer:set(TILE, lx, ly)
@@ -366,10 +402,8 @@ function TileMode:hover(x, y, dt)
 
         if love.keyboard.isDown("lshift") then
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
-                self.layer.walls:set(nil, lx, ly)
+                change = change or self.layer:setWall(lx, ly, false, clone)
             end
-
-            change = change or wall
         else
             for lx, ly in bresenham.line(ox, oy, gx, gy) do
                 self.layer:set(nil, lx, ly)
@@ -388,12 +422,29 @@ function TileMode:hover(x, y, dt)
 end
 
 function TileMode:draw(x, y)
+    love.graphics.setBlendMode("alpha")
     local gx, gy, ox, oy = self.layer:gridCoords(x, y)
     local size = 32
 
+    local wall_alpha = math.random(96, 160)
+
     if love.keyboard.isDown("lshift") then
+        for tile, x, y in self.layer.tiles:items() do
+            local wall = self.layer.walls:get(x, y)
+
+            if wall == nil and self.layer.wall_index[tile[1]] then
+                love.graphics.setColor(255, 0, 0, wall_alpha)
+                love.graphics.rectangle("fill", x * size, y * size, size, size)
+            end
+        end
+
         for wall, x, y in self.layer.walls:items() do
-            love.graphics.setColor(255, 0, 0, 128)
+            if wall then
+                love.graphics.setColor(255, 0, 0, wall_alpha)
+            else
+                love.graphics.setColor(0, 255, 0, wall_alpha)
+            end
+
             love.graphics.rectangle("fill", x * size, y * size, size, size)
         end
     end
