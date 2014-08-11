@@ -233,7 +233,7 @@ function PixelMode:hover(x, y, dt)
         local dx, dy, subject = unpack(self.state.draw)
 
         local brush, ox, oy = Brush.line(dx, dy, x, y, BRUSHSIZE, PALETTE.colours[3])
-        subject:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)
+        subject:applyBrush(ox, oy, brush, self.state.lock or self.state.locked_entity, self.state.cloning)
 
         self.state.draw = {x, y, subject}
     end

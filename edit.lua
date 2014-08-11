@@ -111,17 +111,15 @@ function love.draw()
         CAMERA:attach()
 
         PROJECT.tilelayer:draw()
-
-        local mx, my = CAMERA:mousepos()
-        love.graphics.setColor(colour.random())
+        PROJECT.entitylayer:draw()
 
         love.graphics.push()
         love.graphics.scale(0.5)
         PROJECT.notelayer:draw()
         love.graphics.pop()
 
-        PROJECT.entitylayer:draw()
-
+        local mx, my = CAMERA:mousepos()
+        love.graphics.setColor(colour.random())
         MODE:draw(mx, my)
 
         CAMERA:detach()
