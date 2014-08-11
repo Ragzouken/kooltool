@@ -3,6 +3,8 @@ local Collider = require "collider"
 local Layer = require "layers.layer"
 local SparseGrid = require "sparsegrid"
 local Tileset = require "tileset"
+local Sprite = require "sprite"
+local Entity = require "entity"
 
 local common = require "common"
 
@@ -10,6 +12,58 @@ local SurfaceLayer = Class {
     __includes = Layer,
     tilesize = {32, 32},
 }
+
+function SurfaceLayer:deserialise_entity(data, saves)
+    local sprite_path = saves .. "/sprites"
+
+    self.sprites_index.id = data.sprites_id
+
+    for id, sprite_data in pairs(data.sprites) do
+        local file = sprite_path .. "/" .. id .. ".png"
+        local sprite = Sprite()
+        sprite.canvas = common.loadCanvas(file)
+
+        sprite.pivot = sprite_data.pivot
+        sprite:refresh()
+
+        self:addSprite(sprite, id)
+    end
+
+    for i, entity_data in ipairs(data.entities) do
+        local entity = Entity(self)
+        entity:deserialise(entity_data)
+        self:addEntity(entity)
+    end
+end
+
+function SurfaceLayer:serialise_entity(saves)
+    local sprite_path = saves .. "/sprites"
+    love.filesystem.createDirectory(sprite_path)
+
+    local sprites = {}
+
+    for sprite, id in pairs(self.sprites) do
+        local file = sprite_path .. "/" .. id .. ".png"
+        local data = sprite.canvas:getImageData()
+        data:encode(file)
+
+        sprites[id] = {
+            pivot = sprite.pivot,
+        }
+    end
+
+    local entities = {}
+
+    for entity in pairs(self.entities) do
+        table.insert(entities, entity:serialise(saves))
+    end
+
+    return {
+        sprites_id = self.sprites_index.id,
+        sprites = sprites,
+        entities = entities,
+    }
+end
 
 function SurfaceLayer:serialise(saves)
     local tiles = {[0]={[0]=0}}
@@ -98,6 +152,8 @@ function SurfaceLayer:init(project)
     self.wall_index = {}
     self.wallmap = SparseGrid(unpack(self.tilesize))
     
+    self.sprites = {}
+    self.sprites_index = {id = 0}
     self.entities = {}
 end
 
@@ -112,6 +168,10 @@ function SurfaceLayer:draw()
     end
 
     love.graphics.draw(self.tilebatch, 0, 0)
+
+    for entity in pairs(self.entities) do
+        entity:draw()
+    end
 end
 
 function SurfaceLayer:getTile(gx, gy)
@@ -164,7 +224,7 @@ function SurfaceLayer:setWall(solid, gx, gy, clone)
             self.wallmap:set(solid, gx, gy)
             return instance ~= solid
         elseif instance ~= nil and instance ~= solid then
-            self.wallmaps:set(nil, gx, gy)
+            self.wallmap:set(nil, gx, gy)
             return true
         end
     else
@@ -173,6 +233,31 @@ function SurfaceLayer:setWall(solid, gx, gy, clone)
     end
 
     return false
+end
+
+function SurfaceLayer:addSprite(sprite, id)
+    if not id then
+        id = self.sprites_index.id + 1
+        self.sprites_index.id = id
+    end
+
+    self.sprites[sprite] = id
+    self.sprites_index[id] = sprite
+end
+
+function SurfaceLayer:addEntity(entity)
+    self.entities[entity] = true
+    self.collider:addShape(entity.shape)
+end
+
+function SurfaceLayer:removeEntity(entity)
+    self.entities[entity] = nil
+    self.collider:remove(entity.shape)
+end
+
+function SurfaceLayer:swapShapes(old, new)
+    self.collider:remove(old)
+    self.collider:addShape(new)
 end
 
 function SurfaceLayer:refresh()
@@ -193,6 +278,8 @@ function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
     local gw, gh = math.ceil((bw + tx) / size), math.ceil((bh + ty) / size)
     local quad = love.graphics.newQuad(0, 0, size, size, bw, bh)
 
+    local cloned
+
     love.graphics.setColor(255, 255, 255, 255)
     for y=0,gh-1 do
         for x=0,gw-1 do
@@ -206,6 +293,7 @@ function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
                 index = self.tileset:clone(index)
                 self:setTile(index, gx + x, gy + y)
                 cloning[key] = true
+                cloned = true
             end
 
             if index and not locked then
@@ -215,7 +303,11 @@ function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
         end
     end
 
-    if cloning then self:refresh() end
+    if cloned then
+        self:refresh()
+        CLONESOUND:stop()
+        CLONESOUND:play()
+    end
 end
 
 function SurfaceLayer:sample(x, y)

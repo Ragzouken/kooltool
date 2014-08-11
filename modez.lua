@@ -7,6 +7,8 @@ local colour = require "colour"
 
 local TileMode = Class { __includes = EditMode, name = "tile placement" }
 local PixelMode = Class { __includes = EditMode, name = "edit pixels" }
+local PlaceMode = Class { __includes = EditMode, name = "place entities" }
+local AnnotateMode = Class { __includes = EditMode, name = "annotate project" }
 
 function PixelMode:hover(x, y, dt)
     if self.state.draw then
@@ -49,7 +51,7 @@ function PixelMode:draw(x, y)
         end
 
         if love.keyboard.isDown("lshift") then
-            for entity in pairs(PROJECT.entitylayer.entities) do
+            for entity in pairs(self.layer.entities) do
                 entity:border()
             end
         end
@@ -233,4 +235,167 @@ function TileMode:mousereleased(x, y, button)
     end
 end
 
-return {PixelMode, TileMode}
+function PlaceMode:draw()
+    if love.keyboard.isDown("lshift") then
+        for entity in pairs(self.layer.entities) do
+            entity:border()
+        end
+    elseif self.state.selected then
+        self.state.selected:border()
+    end
+end
+
+function PlaceMode:hover(x, y, dt)
+    if self.state.drag then
+        local entity, dx, dy = unpack(self.state.drag)
+
+        entity:moveTo(x + dx, y + dy)
+    end
+end
+
+function PlaceMode:mousepressed(x, y, button)
+    local shape = self.layer.collider:shapesAt(x, y)[1]
+    local entity = shape and shape.entity
+
+    if button == "l" then
+        if entity then
+            local dx, dy = entity.x - x, entity.y - y
+        
+            self.state.drag = {entity, dx, dy}
+            self.state.selected = entity
+        else
+            self.state.selected = nil
+        end
+    elseif button == "m" then
+        if entity then
+            self.layer:removeEntity(entity)
+            if self.state.selected == entity then
+                self.state.selected = nil
+            end
+        else
+            local entity = Entity(self.layer)
+            entity:blank(x, y)
+            self.layer:addEntity(entity)
+            self.state.selected = entity
+        end
+    end
+end
+
+function PlaceMode:mousereleased(x, y, button)
+    if button == "l" then
+        self.state.drag = nil
+
+        if self.state.selected then
+            local entity = self.state.selected
+            entity:moveTo(math.floor(entity.x / 32) * 32 + 16,
+                          math.floor(entity.y / 32) * 32 + 16)
+        end
+    end
+end
+
+function AnnotateMode:update(dt)
+    if self.state.selected then
+        self.name = "AnnotateMode project (typing)"
+    else
+        self.name = "AnnotateMode project"
+    end
+end
+
+function AnnotateMode:hover(x, y, dt)
+    if self.state.drag then
+        local notebox, dx, dy = unpack(self.state.drag)
+
+        notebox:moveTo(x*2 + dx, y*2 + dy)
+    elseif self.state.draw then
+        local dx, dy = unpack(self.state.draw)
+        local brush, ox, oy
+
+        if not love.keyboard.isDown("lctrl") then
+            brush, ox, oy = Brush.line(dx, dy, x, y, BRUSHSIZE, {255, 255, 255, 255})
+        else
+            brush, ox, oy = Brush.line(dx, dy, x, y, BRUSHSIZE * 3)
+        end
+
+        self.layer:applyBrush(ox, oy, brush)
+
+        self.state.draw = {x, y}
+    end
+
+    for notebox in pairs(self.layer.noteboxes) do
+        if notebox.text == "" and notebox ~= self.state.selected then
+            self.layer:removeNotebox(notebox)
+        end
+    end
+end
+
+function AnnotateMode:mousepressed(x, y, button)
+    local shape = self.layer.collider:shapesAt(x*2, y*2)[1]
+    local notebox = shape and shape.notebox
+
+    if button == "l" then
+        if notebox then
+            local dx, dy = notebox.x - x*2, notebox.y - y*2
+        
+            self.state.drag = {notebox, dx, dy}
+            self.state.selected = notebox
+        else
+            self.state.draw = {x, y}
+            self.state.selected = nil
+        end
+
+        return true
+    elseif button == "m" then
+        if notebox then
+            self.layer:removeNotebox(notebox)
+            self.state.selected = nil
+        else
+            notebox = Notebox(self.layer, x*2, y*2, "[note]")
+            self.layer:addNotebox(notebox)
+            self.state.selected = notebox
+        end
+
+        return true
+    end
+
+    return false
+end
+
+function AnnotateMode:mousereleased(x, y, button)
+    if button == "l" then
+        self.state.drag = nil
+        self.state.draw = nil
+    end
+end
+
+function AnnotateMode:keypressed(key)
+    local selected = self.state.selected
+
+    if selected then
+        if key == "escape" then
+            self.state.selected = nil
+        else
+            return selected:keypressed(key)
+        end
+
+        return true
+    end
+
+    if key == "1" then BRUSHSIZE = 1 end
+    if key == "2" then BRUSHSIZE = 2 end
+    if key == "3" then BRUSHSIZE = 3 end
+
+    return false
+end
+
+function AnnotateMode:textinput(text)
+    local selected = self.state.selected
+
+    if selected then
+        selected:textinput(text)
+        return true
+    end
+
+    return false
+end
+
+return {PixelMode, TileMode, PlaceMode, AnnotateMode}

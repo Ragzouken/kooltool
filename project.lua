@@ -1,9 +1,8 @@
 local Class = require "hump.class"
 local Collider = require "collider"
 local SurfaceLayer = require "layers.surface"
-local PixelMode, TileMode = unpack(require "modez")
-local NoteLayer = require "notelayer"
-local EntityLayer = require "entitylayer"
+local AnnotationLayer = require "layers.annotation"
+local PixelMode, TileMode, PlaceMode, AnnotateMode = unpack(require "modez")
 
 local generators = require "generators"
 local common = require "common"
@@ -26,11 +25,13 @@ function Project.default(name)
     local project = Project(name)
 
     project.palette = PALETTE
-    project.entitylayer = EntityLayer()
     project.layers.surface = generators.surface.default(project)
+    project.layers.annotation = AnnotationLayer()
 
-    project.tilelayer = TileLayer.default(project)
-    project.notelayer = NoteLayer()
+    PIXELMODE = PixelMode(self.layers.surface)
+    TILEMODE = TileMode(self.layers.surface)
+    PLACEMODE = PlaceMode(self.layers.surface)
+    ANNOTATEMODE = AnnotateMode(self.layers.annotation)
     
     return project
 end
@@ -46,25 +47,21 @@ end
 function Project:load(folder_path)
     if self.name == "tutorial" then self.name = "tutorial_copy" end
 
-    self.entitylayer = EntityLayer()
-
     local data = love.filesystem.read(folder_path .. "/tilelayer.json")
     self.layers.surface = SurfaceLayer(self)
     self.layers.surface:deserialise(json.decode(data), folder_path)
 
     PIXELMODE = PixelMode(self.layers.surface)
     TILEMODE = TileMode(self.layers.surface)
+    PLACEMODE = PlaceMode(self.layers.surface)
+    ANNOTATEMODE = AnnotateMode(self.layers.annotation)
 
-    local entitylayer_path = folder_path .. "/entitylayer.json"
-
-    if love.filesystem.exists(entitylayer_path) then
-        local data = love.filesystem.read(entitylayer_path)
-        self.entitylayer:deserialise(json.decode(data), folder_path)
-    end
+    local data = love.filesystem.read(folder_path .. "/entitylayer.json")
+    self.layers.surface:deserialise_entity(json.decode(data), folder_path)
 
     local data = love.filesystem.read(folder_path .. "/notelayer.json")
-    self.notelayer = NoteLayer()
-    self.notelayer:deserialise(json.decode(data), folder_path)
+    self.layers.annotation = AnnotationLayer()
+    self.layers.annotation:deserialise(json.decode(data), folder_path)
 end
 
 function Project:save(folder_path)
@@ -74,11 +71,11 @@ function Project:save(folder_path)
     file:close()
 
     local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
-    file:write(json.encode(self.notelayer:serialise(folder_path)))
+    file:write(json.encode(sself.layers.annotation:serialise(folder_path)))
     file:close()
 
     local file = love.filesystem.newFile(folder_path .. "/entitylayer.json", "w")
-    file:write(json.encode(self.entitylayer:serialise(folder_path)))
+    file:write(json.encode(self.layers.surface:serialise_entity(folder_path)))
     file:close()
 
     self.layers.surface:exportRegions(folder_path)
@@ -94,13 +91,13 @@ end
 
 function Project:update(dt)
     self.layers.surface:update(dt)
-    self.notelayer:update(dt)
+    self.layers.annotation:update(dt)
 end
 
 function Project:draw()
     self.layers.surface:draw()
     self.entitylayer:draw()
-    --self.notelayer:draw()
+    --self.layers.annotation:draw()
 end
 
 function Project:sample()

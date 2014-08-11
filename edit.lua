@@ -3,14 +3,13 @@ local Timer = require "hump.timer"
 local Project = require "project"
 local Interface = require "interface"
 
-local NoteLayer = require "notelayer"
-
 local generators = require "generators"
 local colour = require "colour"
 local probe = require "probe"
 
 function love.load()
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
+    CLONESOUND = love.audio.newSource("sounds/clone.wav")
     TIMER = Timer()
     PALETTE = generators.Palette.generate(3)
     TILE = 1
@@ -25,7 +24,6 @@ function love.load()
     --CPROFILER:hookAll(_G, "update", {love})
 
     local projects = {}
-
     local proj_path = "projects"
 
     local items = love.filesystem.getDirectoryItems(proj_path, function(filename)
@@ -35,7 +33,7 @@ function love.load()
             local project = Project(path)
             project:loadIcon(path)
 
-            projects[#projects+1] = project
+            table.insert(projects, project)
         end
     end)
 
@@ -109,11 +107,10 @@ function love.draw()
         CAMERA:attach()
 
         PROJECT.layers.surface:draw()
-        PROJECT.entitylayer:draw()
 
         love.graphics.push()
         love.graphics.scale(0.5)
-        PROJECT.notelayer:draw()
+        PROJECT.layers.annotation:draw()
         love.graphics.pop()
 
         local mx, my = CAMERA:mousepos()
@@ -236,13 +233,13 @@ function love.keypressed(key, isrepeat)
         local modes = {
             q = PIXELMODE,
             w = TILEMODE,
-            e = PROJECT.entitylayer.modes.place,
-            r = PROJECT.notelayer.modes.annotate,
+            e = PLACEMODE,
+            r = ANNOTATEMODE,
         } 
 
         if modes[key] then
             if love.keyboard.isDown("tab") then
-                modes[key].layer.active = not modes[key].layer.active
+                --modes[key].layer.active = not modes[key].layer.active
             else
                 switch(modes[key])
                 modes[key].layer.active = true
