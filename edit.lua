@@ -183,9 +183,13 @@ function love.mousepressed(x, y, button)
     if x <= 0 or y <= 0 or x >= w or y >= w then return end
 
     if PROJECT and not love.keyboard.isDown("tab") then
-        if button == "l" and MODE == TILEMODE then
+        if button == "l" then
             local index = PROJECT.layers.surface.tileset:click(x, y)
-            if index then TILE = index return true end
+            if index then
+                TILE = index 
+                MODE = TILEMODE
+                return true
+            end
         end
     end
 
