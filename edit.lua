@@ -160,12 +160,12 @@ function love.mousepressed(x, y, button)
     mx, my = math.floor(mx), math.floor(my)
 
     if PROJECT then
-        if button == "r" then
-            DRAG = {x, y, CAMERA.x, CAMERA.y}
-        elseif button == "wu" or (love.keyboard.isDown("tab") and button == "l") then
+        if button == "wu" or (love.keyboard.isDown("tab") and button == "l") then
             zoom_on(mx, my)
         elseif button == "wd" or (love.keyboard.isDown("tab") and button == "r") then
             zoom_out()
+        elseif button == "r" then
+            DRAG = {x, y, CAMERA.x, CAMERA.y}
         end
     end
 
