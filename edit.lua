@@ -49,6 +49,7 @@ function love.update(dt)
     
     if PROJECT then
         PROJECT:update(dt)
+        DRAGDELETEMODE:update(dt)
         MODE:update(dt)
 
         local mx, my = CAMERA:mousepos()
@@ -206,7 +207,9 @@ function love.keypressed(key, isrepeat)
         DRAG = {x, y, CAMERA.x, CAMERA.y, "tab"}
         return
     end
-    if MODE:keypressed(key, isrepeat) then return end
+    if DRAGDELETEMODE:keypressed(key, isrepeat) then return
+    elseif MODE:keypressed(key, isrepeat) then return
+    end
 
     local function switch(mode)
         MODE:defocus()
@@ -262,7 +265,9 @@ function love.keyreleased(key)
 end
 
 function love.textinput(character)
-    MODE:textinput(character)
+    if not DRAGDELETEMODE:textinput(character) then
+        MODE:textinput(character)
+    end
 end
 
 function love.focus(focus)

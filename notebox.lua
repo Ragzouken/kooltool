@@ -1,5 +1,6 @@
 local Class = require "hump.class"
 local shapes = require "collider.shapes"
+local colour = require "colour"
 
 local Notebox = Class {
     font = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
@@ -35,7 +36,7 @@ function Notebox:init(layer, x, y, text)
     self:refresh()
 end
 
-function Notebox:draw()
+function Notebox:draw(editing)
     love.graphics.setFont(self.font)
 
     local lines, width = self.memo.lines, self.memo.width
@@ -55,6 +56,11 @@ function Notebox:draw()
     love.graphics.setColor(255, 255, 255, 255)
     for i, line in ipairs(lines) do
         love.graphics.printf(line, x*2, y*2 + oy + (i - 1) * font_height, self.memo.width)
+    end
+
+    if editing then
+        love.graphics.setColor(colour.cursor(0))
+        love.graphics.printf(lines[#lines]:gsub(".", "_") .. "*", x*2, y*2 + oy + (#lines - 1) * font_height, self.memo.width)
     end
     love.graphics.pop()
 end
@@ -111,6 +117,8 @@ end
 function Notebox:textinput(character)
     self.text = self.text .. character
     self:refresh()
+
+    return true
 end
 
 return Notebox

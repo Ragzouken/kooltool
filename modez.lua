@@ -9,12 +9,26 @@ local generators = require "generators"
 local bresenham = require "bresenham"
 local colour = require "colour"
 
-local DragDeleteMode = Class { __includes = EditMode, }
-local TileMode = Class { __includes = EditMode, name = "tile placement" }
+local ObjectMode = Class {
+    __includes = EditMode,
+
+    typing_sound = love.audio.newSource("sounds/typing.wav"),
+}
+local TileMode = Class { __includes = EditMode, name = "place tiles and walls" }
 local PixelMode = Class { __includes = EditMode, name = "edit pixels" }
 local AnnotateMode = Class { __includes = EditMode, name = "annotate project" }
 
-function DragDeleteMode:hover(x, y, dt)
+function ObjectMode:update(dt)
+    if self.state.selected and ZOOM < 2 then self.state.selected = nil end
+
+    for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
+        if notebox.text == "" and notebox ~= self.state.selected then
+            PROJECT.layers.annotation:removeNotebox(notebox)
+        end
+    end
+end
+
+function ObjectMode:hover(x, y, dt)
     local object = PROJECT:objectAt(x, y)
 
     if self.state.drag then
@@ -28,7 +42,7 @@ function DragDeleteMode:hover(x, y, dt)
     return object
 end
 
-function DragDeleteMode:mousepressed(x, y, button)
+function ObjectMode:mousepressed(x, y, button)
     local object = PROJECT:objectAt(x, y)
 
     if object then
@@ -36,6 +50,7 @@ function DragDeleteMode:mousepressed(x, y, button)
             local dx, dy = object.x - x, object.y - y
         
             self.state.drag = {object, dx, dy}
+            self.state.selected = object
 
             return true
         elseif button == "m" then
@@ -47,14 +62,41 @@ function DragDeleteMode:mousepressed(x, y, button)
 
             return true
         end
+    elseif self.state.selected then
+        self.state.selected = nil
+        return true
     end
 
     return false
 end
 
-function DragDeleteMode:mousereleased(x, y, button)
+function ObjectMode:mousereleased(x, y, button)
     if button == "l" then
         self.state.drag = nil
+    end
+end
+
+function ObjectMode:keypressed(key)
+    if self.state.selected and not self.state.selected.sprite then
+        if key == "escape" then
+            self.state.selected = nil
+        elseif self.state.selected:keypressed(key) then
+            self.typing_sound:stop()
+            self.typing_sound:play()
+            return true
+        end
+
+        return true
+    end
+end
+
+function ObjectMode:textinput(character)
+    if self.state.selected and not self.state.selected.sprite then
+        if self.state.selected:textinput(character) then
+            self.typing_sound:stop()
+            self.typing_sound:play()
+            return true
+        end
     end
 end
 
@@ -284,19 +326,6 @@ function TileMode:mousereleased(x, y, button)
     end
 end
 
-function AnnotateMode:update(dt)
-    if self.state.selected and ZOOM < 2 then self.state.selected = nil end
-
-    if self.state.selected then
-        self.name = "annotate project (typing)"
-    else
-        self.name = "annotate project"
-    end
-end
-
-function AnnotateMode:draw()
-end
-
 function AnnotateMode:hover(x, y, dt)
     if self.state.draw then
         local dx, dy = unpack(self.state.draw)
@@ -312,21 +341,11 @@ function AnnotateMode:hover(x, y, dt)
 
         self.state.draw = {x, y}
     end
-
-    for notebox in pairs(self.layer.noteboxes) do
-        if notebox.text == "" and notebox ~= self.state.selected then
-            self.layer:removeNotebox(notebox)
-        end
-    end
 end
 
 function AnnotateMode:mousepressed(x, y, button)
-    local notebox = self.layer:objectAt(x, y)
-    local draggable = PROJECT.layers.surface:objectAt(x, y)
-
     if button == "l" then
         self.state.draw = {x, y}
-        self.state.selected = nil
 
         return true
     end
@@ -341,18 +360,6 @@ function AnnotateMode:mousereleased(x, y, button)
 end
 
 function AnnotateMode:keypressed(key)
-    local selected = self.state.selected
-
-    if selected then
-        if key == "escape" then
-            self.state.selected = nil
-        else
-            return selected:keypressed(key)
-        end
-
-        return true
-    end
-
     if key == "1" then BRUSHSIZE = 1 end
     if key == "2" then BRUSHSIZE = 2 end
     if key == "3" then BRUSHSIZE = 3 end
@@ -360,15 +367,4 @@ function AnnotateMode:keypressed(key)
     return false
 end
 
-function AnnotateMode:textinput(text)
-    local selected = self.state.selected
-
-    if selected then
-        selected:textinput(text)
-        return true
-    end
-
-    return false
-end
-
-return {DragDeleteMode, PixelMode, TileMode, AnnotateMode}
+return {ObjectMode, PixelMode, TileMode, AnnotateMode}

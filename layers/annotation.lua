@@ -96,7 +96,7 @@ function AnnotationLayer:draw()
     love.graphics.setColor(255, 255, 255, 255)
 
     for notebox in pairs(self.noteboxes) do
-        notebox:draw()
+        notebox:draw(DRAGDELETEMODE.state.selected == notebox)
     end
 end
 

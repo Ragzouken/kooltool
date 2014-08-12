@@ -136,7 +136,7 @@ function Project:newNotebox(x, y)
     local notebox = Notebox(self.layers.annotation, x, y, "[note]")
     self.layers.annotation:addNotebox(notebox)
     MODE = ANNOTATEMODE
-    ANNOTATEMODE.state.selected = notebox
+    DRAGDELETEMODE.state.selected = notebox
 end
 
 Project.export = export.export
