@@ -25,10 +25,12 @@ function AnnotationLayer:deserialise(data, saves)
     love.graphics.setColor(255, 255, 255, 255)
     for y, row in pairs(blocks) do
         for x, path in pairs(row) do
-            local image = love.graphics.newImage(annotations .. "/" .. path)
-            local block = common.canvasFromImage(image)
+            if path ~= "" then
+                local image = love.graphics.newImage(annotations .. "/" .. path)
+                local block = common.canvasFromImage(image)
 
-            self.blocks:set(block, tonumber(x), tonumber(y))
+                self.blocks:set(block, tonumber(x), tonumber(y))
+            end
         end
     end
     love.graphics.setBlendMode("alpha")
@@ -44,12 +46,12 @@ function AnnotationLayer:serialise(saves)
     local annotations = saves .. "/annotations"
     love.filesystem.createDirectory(annotations)
 
-    local blocks = {}
+    local blocks = {[0]=""}
 
     for block, x, y in self.blocks:items() do
         local file = x .. "," .. y .. ".png"
 
-        blocks[y] = blocks[y] or {}
+        blocks[y] = blocks[y] or {[0]=""}
         blocks[y][x] = file
 
         block:getImageData():encode(annotations .. "/" .. file)
