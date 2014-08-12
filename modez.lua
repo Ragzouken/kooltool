@@ -127,9 +127,9 @@ function TileMode:hover(x, y, dt)
     local change
 
     if self.state.drag then
-        local object, dx, dy, f = unpack(self.state.drag)
+        local object, dx, dy = unpack(self.state.drag)
 
-        object:moveTo(x * f + dx, y * f + dy)
+        object:moveTo(x + dx, y + dy)
     elseif self.state.draw then
         local ox, oy = unpack(self.state.draw)
 
@@ -230,11 +230,11 @@ function TileMode:mousepressed(x, y, button)
         if entity then
             local dx, dy = entity.x - x, entity.y - y
         
-            self.state.drag = {entity, dx, dy, 1}
+            self.state.drag = {entity, dx, dy}
         elseif notebox then
             local dx, dy = notebox.x - x, notebox.y - y
         
-            self.state.drag = {notebox, dx, dy, 1}
+            self.state.drag = {notebox, dx, dy}
         else
             if love.keyboard.isDown("lalt") then
                 TILE = self.layer:getTile(gx, gy) or TILE
@@ -350,9 +350,9 @@ end
 
 function AnnotateMode:hover(x, y, dt)
     if self.state.drag then
-        local object, dx, dy, f = unpack(self.state.drag)
+        local object, dx, dy = unpack(self.state.drag)
 
-        object:moveTo(x*f + dx, y*f + dy)
+        object:moveTo(x + dx, y + dy)
     elseif self.state.draw then
         local dx, dy = unpack(self.state.draw)
         local brush, ox, oy
@@ -383,12 +383,12 @@ function AnnotateMode:mousepressed(x, y, button)
         if entity then
             local dx, dy = entity.x - x, entity.y - y
         
-            self.state.drag = {entity, dx, dy, 1}
+            self.state.drag = {entity, dx, dy}
             self.state.selected = nil
         elseif notebox then
             local dx, dy = notebox.x - x, notebox.y - y
         
-            self.state.drag = {notebox, dx, dy, 1}
+            self.state.drag = {notebox, dx, dy}
             self.state.selected = notebox
         else
             self.state.draw = {x, y}
