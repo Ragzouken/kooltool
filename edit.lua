@@ -91,12 +91,7 @@ function love.draw()
     if PROJECT then
         CAMERA:attach()
 
-        PROJECT.layers.surface:draw()
-
-        love.graphics.push()
-        --love.graphics.scale(0.5)
-        PROJECT.layers.annotation:draw()
-        love.graphics.pop()
+        PROJECT:draw(true)
 
         local mx, my = CAMERA:mousepos()
         love.graphics.setColor(colour.random())
@@ -104,6 +99,7 @@ function love.draw()
 
         CAMERA:detach()
 
+        love.graphics.setBlendMode("alpha")
         love.graphics.setColor(0, 0, 0, 255)
         love.graphics.rectangle("fill", 0, 0, 512, 16 + 3)
         love.graphics.setColor(255, 255, 255, 255)
@@ -219,8 +215,7 @@ function love.keypressed(key, isrepeat)
         local modes = {
             q = PIXELMODE,
             w = TILEMODE,
-            e = PLACEMODE,
-            r = ANNOTATEMODE,
+            e = ANNOTATEMODE,
         } 
 
         if modes[key] then
@@ -231,7 +226,13 @@ function love.keypressed(key, isrepeat)
             end
         end
 
-        if key == "f10" and not isrepeat then
+        local mx, my = CAMERA:mousepos()
+
+        if key == "t" then 
+            PROJECT:newEntity(mx, my)
+        elseif key == "y" then
+            PROJECT:newNotebox(mx, my)
+        elseif key == "f10" and not isrepeat then
             --local w, h, flags = love.window.getMode()
             --flags.vsync = not flags.vsync
             --love.window.setMode(w, h, flags)

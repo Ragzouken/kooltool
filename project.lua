@@ -2,7 +2,10 @@ local Class = require "hump.class"
 local Collider = require "collider"
 local SurfaceLayer = require "layers.surface"
 local AnnotationLayer = require "layers.annotation"
-local PixelMode, TileMode, PlaceMode, AnnotateMode = unpack(require "modez")
+local PixelMode, TileMode, AnnotateMode = unpack(require "modez")
+
+local Entity = require "entity"
+local Notebox = require "notebox"
 
 local generators = require "generators"
 local common = require "common"
@@ -32,7 +35,6 @@ function Project.default(name)
 
     PIXELMODE = PixelMode(project.layers.surface)
     TILEMODE = TileMode(project.layers.surface)
-    PLACEMODE = PlaceMode(project.layers.surface)
     ANNOTATEMODE = AnnotateMode(project.layers.annotation)
     
     return project
@@ -62,7 +64,6 @@ function Project:load(folder_path)
 
     PIXELMODE = PixelMode(self.layers.surface)
     TILEMODE = TileMode(self.layers.surface)
-    PLACEMODE = PlaceMode(self.layers.surface)
     ANNOTATEMODE = AnnotateMode(self.layers.annotation)
 end
 
@@ -101,6 +102,13 @@ end
 
 function Project:draw(annotations)
     self.layers.surface:draw()
+
+    if MODE ~= PIXELMODE then
+        for entity in pairs(self.layers.surface.entities) do
+            entity:border()
+        end
+    end
+
     if annotations then self.layers.annotation:draw() end
 end
 
@@ -111,7 +119,22 @@ function Project:objectAt(x, y)
     return notebox or entity
 end
 
-function Project:sample()
+function Project:sample(x, y)
+end
+
+function Project:newEntity(x, y)
+    local entity = Entity(self.layers.surface)
+    entity:blank(x, y)
+
+    self.layers.surface:addEntity(entity)
+    MODE = TILEMODE
+end
+
+function Project:newNotebox(x, y)
+    local notebox = Notebox(self.layers.annotation, x, y, "[note]")
+    self.layers.annotation:addNotebox(notebox)
+    MODE = ANNOTATEMODE
+    ANNOTATEMODE.state.selected = notebox
 end
 
 Project.export = export.export

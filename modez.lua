@@ -9,10 +9,12 @@ local generators = require "generators"
 local bresenham = require "bresenham"
 local colour = require "colour"
 
+local DragDeleteMode = Class { __includes = EditMode, }
 local TileMode = Class { __includes = EditMode, name = "tile placement" }
 local PixelMode = Class { __includes = EditMode, name = "edit pixels" }
-local PlaceMode = Class { __includes = EditMode, name = "place entities" }
 local AnnotateMode = Class { __includes = EditMode, name = "annotate project" }
+
+--
 
 function PixelMode:hover(x, y, dt)
     if self.state.draw then
@@ -242,13 +244,13 @@ function TileMode:mousepressed(x, y, button)
 
         return true
     elseif button == "m" then
-        --if entity then
-        --    self.layer:removeEntity(entity)
-        --elseif notebox then
-        --    self.layer.project.layers.annotation:removeNotebox(notebox)
-        --else
+        if draggable and draggable.sprite then
+            self.layer:removeEntity(draggable)
+        elseif draggable then
+            self.layer.project.layers.annotation:removeNotebox(draggable)
+        else
             self.state.erase = {gx, gy}
-        --end
+        end
 
         return true
     end
@@ -262,64 +264,6 @@ function TileMode:mousereleased(x, y, button)
         self.state.drag = nil
     elseif button == "m" then
         self.state.erase = nil
-    end
-end
-
-function PlaceMode:draw()
-    if love.keyboard.isDown("lshift") then
-        for entity in pairs(self.layer.entities) do
-            entity:border()
-        end
-    elseif self.state.selected then
-        self.state.selected:border()
-    end
-end
-
-function PlaceMode:hover(x, y, dt)
-    if self.state.drag then
-        local entity, dx, dy = unpack(self.state.drag)
-
-        entity:moveTo(x + dx, y + dy)
-    end
-end
-
-function PlaceMode:mousepressed(x, y, button)
-    local entity = self.layer:objectAt(x, y)
-    local draggable = self.layer.project:objectAt(x, y)
-
-    if button == "l" then
-        if draggable then
-            local dx, dy = draggable.x - x, draggable.y - y
-        
-            self.state.drag = {draggable, dx, dy}
-            self.state.selected = entity
-        else
-            self.state.selected = nil
-        end
-    elseif button == "m" then
-        if entity then
-            self.layer:removeEntity(entity)
-            if self.state.selected == entity then
-                self.state.selected = nil
-            end
-        else
-            local entity = Entity(self.layer)
-            entity:blank(x, y)
-            self.layer:addEntity(entity)
-            self.state.selected = entity
-        end
-    end
-end
-
-function PlaceMode:mousereleased(x, y, button)
-    if button == "l" then
-        self.state.drag = nil
-
-        if self.state.selected then
-            local entity = self.state.selected
-            entity:moveTo(math.floor(entity.x / 32) * 32 + 16,
-                          math.floor(entity.y / 32) * 32 + 16)
-        end
     end
 end
 
@@ -398,13 +342,9 @@ function AnnotateMode:mousepressed(x, y, button)
         if notebox then
             self.layer:removeNotebox(notebox)
             self.state.selected = nil
-        else
-            notebox = Notebox(self.layer, x, y, "[note]")
-            self.layer:addNotebox(notebox)
-            self.state.selected = notebox
-        end
 
-        return true
+            return true
+        end
     end
 
     return false
@@ -448,4 +388,4 @@ function AnnotateMode:textinput(text)
     return false
 end
 
-return {PixelMode, TileMode, PlaceMode, AnnotateMode}
+return {PixelMode, TileMode, AnnotateMode}
