@@ -46,11 +46,11 @@ function AnnotationLayer:serialise(saves)
     local annotations = saves .. "/annotations"
     love.filesystem.createDirectory(annotations)
 
-    local blocks = {[0]=""}
+    local blocks = {[0]={[0]=""}}
 
     for block, x, y in self.blocks:items() do
         local file = x .. "," .. y .. ".png"
-
+        
         blocks[y] = blocks[y] or {[0]=""}
         blocks[y][x] = file
 
@@ -88,9 +88,9 @@ function AnnotationLayer:draw()
 
     for block, x, y in self.blocks:items() do
         love.graphics.draw(block, 
-                           x * self.BLOCK_SIZE * 2, 
-                           y * self.BLOCK_SIZE * 2,
-                           0, 2, 2)
+                           x * self.BLOCK_SIZE, 
+                           y * self.BLOCK_SIZE,
+                           0, 1, 1)
     end
 
     love.graphics.setColor(255, 255, 255, 255)

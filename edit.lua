@@ -5,7 +5,6 @@ local Interface = require "interface"
 
 local generators = require "generators"
 local colour = require "colour"
-local probe = require "probe"
 
 function love.load()
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
@@ -15,13 +14,6 @@ function love.load()
     TILE = 1
     FULL = false
     BRUSHSIZE = 1
-
-    GPROFILER = probe.new()
-    --GPROFILER:hookAll(_G, "draw", {love})
-    --GPROFILER:hook(NoteLayer, "draw", "NoteLayer")
-    --GPROFILER:hook(NoteBox, "draw", "NoteBox")
-    CPROFILER = probe.new()
-    --CPROFILER:hookAll(_G, "update", {love})
 
     local projects = {}
     local proj_path = "projects"
@@ -53,10 +45,6 @@ local dirs = {
 }
 
 function love.update(dt)
-    CPROFILER:startCycle()
-
-    --require("lovebird").update()
-
     TIMER:update(dt)
     
     if PROJECT then
@@ -94,23 +82,19 @@ function love.update(dt)
             CAMERA.scale = CAMERA.scale + CAMERA.scale * dt
         end
     end
-
-    CPROFILER:endCycle()
 end
 
 local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
 function love.draw()
-    GPROFILER:startCycle()
-
     if PROJECT then
         CAMERA:attach()
 
         PROJECT.layers.surface:draw()
 
         love.graphics.push()
-        love.graphics.scale(0.5)
+        --love.graphics.scale(0.5)
         PROJECT.layers.annotation:draw()
         love.graphics.pop()
 
@@ -142,11 +126,6 @@ function love.draw()
         love.graphics.print(" WARNING: pixel edit may misbehave due to unsupported features", 1, 4+16)
         love.graphics.print("          please email ragzouken@gmail.com or tweet @ragzouken", 1, 4+16+9)
     end
-
-    GPROFILER:endCycle()
-    love.graphics.setColor(colour.random(128, 255))
-    --GPROFILER:draw(16, 16, 192, 512-32, "DRAW CYCLE")
-    --CPROFILER:draw(512-16-192, 16, 192, 512-32, "UPDATE CYCLE")
 
     love.graphics.setColor(255, 255, 255, 255)
 end

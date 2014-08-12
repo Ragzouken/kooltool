@@ -179,7 +179,7 @@ function TileMode:draw(x, y)
 
     if not self.state.draw and not self.state.erase and not self.state.drag then
         local entity = self.layer:objectAt(x, y)
-        local notebox = self.layer.project.layers.annotation:objectAt(x*2, y*2)
+        local notebox = self.layer.project.layers.annotation:objectAt(x, y)
 
         if entity then entity:border() return end
         if notebox then return end
@@ -224,7 +224,7 @@ function TileMode:mousepressed(x, y, button)
     local gx, gy = self.layer.tilemap:gridCoords(x, y)
 
     local entity = self.layer:objectAt(x, y)
-    local notebox = self.layer.project.layers.annotation:objectAt(x*2, y*2)
+    local notebox = self.layer.project.layers.annotation:objectAt(x, y)
 
     if button == "l" then
         if entity then
@@ -232,9 +232,9 @@ function TileMode:mousepressed(x, y, button)
         
             self.state.drag = {entity, dx, dy, 1}
         elseif notebox then
-            local dx, dy = notebox.x - x*2, notebox.y - y*2
+            local dx, dy = notebox.x - x, notebox.y - y
         
-            self.state.drag = {notebox, dx, dy, 2}
+            self.state.drag = {notebox, dx, dy, 1}
         else
             if love.keyboard.isDown("lalt") then
                 TILE = self.layer:getTile(gx, gy) or TILE
@@ -326,6 +326,8 @@ function PlaceMode:mousereleased(x, y, button)
 end
 
 function AnnotateMode:update(dt)
+    if self.state.selected and ZOOM < 2 then self.state.selected = nil end
+
     if self.state.selected then
         self.name = "annotate project (typing)"
     else
@@ -374,7 +376,7 @@ function AnnotateMode:hover(x, y, dt)
 end
 
 function AnnotateMode:mousepressed(x, y, button)
-    local notebox = self.layer:objectAt(x*2, y*2)
+    local notebox = self.layer:objectAt(x, y)
     local entity = PROJECT.layers.surface:objectAt(x, y)
 
     if button == "l" then
@@ -384,9 +386,9 @@ function AnnotateMode:mousepressed(x, y, button)
             self.state.drag = {entity, dx, dy, 1}
             self.state.selected = nil
         elseif notebox then
-            local dx, dy = notebox.x - x*2, notebox.y - y*2
+            local dx, dy = notebox.x - x, notebox.y - y
         
-            self.state.drag = {notebox, dx, dy, 2}
+            self.state.drag = {notebox, dx, dy, 1}
             self.state.selected = notebox
         else
             self.state.draw = {x, y}
@@ -399,7 +401,7 @@ function AnnotateMode:mousepressed(x, y, button)
             self.layer:removeNotebox(notebox)
             self.state.selected = nil
         else
-            notebox = Notebox(self.layer, x*2, y*2, "[note]")
+            notebox = Notebox(self.layer, x, y, "[note]")
             self.layer:addNotebox(notebox)
             self.state.selected = notebox
         end

@@ -44,15 +44,19 @@ function Notebox:draw()
     local height = font_height * #lines
     local oy = self.font:getAscent() - self.font:getBaseline()
 
-    local x, y = self.x - math.ceil(width / 2), self.y - math.ceil(height / 2)
+    local x, y = self.x - math.ceil(width / 4), self.y - math.ceil(height / 4)
+
+    love.graphics.push()
+    love.graphics.scale(0.5)
 
     love.graphics.setColor(0, 0, 0, 255)
-    love.graphics.rectangle("fill", x-1, y-1, width+2, height+2)
+    love.graphics.rectangle("fill", x*2-1, y*2-1, width+2, height+2)
 
     love.graphics.setColor(255, 255, 255, 255)
     for i, line in ipairs(lines) do
-        love.graphics.printf(line, x, y + oy + (i - 1) * font_height, self.memo.width)
+        love.graphics.printf(line, x*2, y*2 + oy + (i - 1) * font_height, self.memo.width)
     end
+    love.graphics.pop()
 end
 
 function Notebox:move(dx, dy)
@@ -79,10 +83,10 @@ function Notebox:refresh()
     local height = self.font:getHeight() * #lines
     local oy = self.font:getAscent() - self.font:getBaseline()
 
-    local x, y = self.x - math.ceil(width / 2), self.y - math.ceil(height / 2)
+    local x, y = self.x - math.ceil(width*2), self.y - math.ceil(height*2)
 
-    local x1, y1 = x-1, y-1
-    local x2, y2 = x1+width+2, y1+height+2
+    local x1, y1 = 0, 0
+    local x2, y2 = width/2+3, height/2+3
 
     local shape = shapes.newPolygonShape(x1, y1, x2, y1, x2, y2, x1, y2)
     shape:moveTo(self.x, self.y)

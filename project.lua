@@ -6,8 +6,9 @@ local PixelMode, TileMode, PlaceMode, AnnotateMode = unpack(require "modez")
 
 local generators = require "generators"
 local common = require "common"
-local json = require "json"
 local export = require "export"
+
+require "utilities.json" -- ugh
 
 local Project = Class {}
 
@@ -97,6 +98,13 @@ end
 function Project:draw()
     self.layers.surface:draw()
     --self.layers.annotation:draw()
+end
+
+function Project:objectAt(x, y)
+    local entity = self.layers.surface:objectAt(x, y)
+    local notebox = self.layers.annotation:objectAt(x, y)
+
+    return notebox or entity
 end
 
 function Project:sample()
