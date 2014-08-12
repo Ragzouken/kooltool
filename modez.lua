@@ -47,7 +47,7 @@ function PixelMode:draw(x, y)
         entity:border()
     else
         if self.state.lock then
-            love.graphics.setColor(colour.random(128, 255))
+            love.graphics.setColor(colour.cursor(0))
 
             local lx, ly = unpack(self.state.lock)
             love.graphics.rectangle("line", lx*tsize-0.5, ly*tsize-0.5, tsize+1, tsize+1)
@@ -220,7 +220,7 @@ function TileMode:draw(x, y)
         love.graphics.draw(self.layer.tileset.canvas, quad, gx * size, gy * size)
     end
 
-    love.graphics.setColor(colour.random(128, 255))
+    love.graphics.setColor(colour.cursor(0))
     love.graphics.rectangle("line", gx*size-0.5, gy*size-0.5, size+1, size+1)
 end
 

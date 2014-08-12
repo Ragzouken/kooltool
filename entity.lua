@@ -42,7 +42,7 @@ function Entity:border()
     local w, h = self.sprite.canvas:getDimensions()
 
     love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(colour.random(128, 255))
+    love.graphics.setColor(colour.cursor(0))
     love.graphics.rectangle("line", self.x - px - 0.5, self.y - py - 0.5, w+1, h+1)
 end
 

@@ -19,6 +19,15 @@ local function hsv(h, s, v)
     return (r+m)*255, (g+m)*255, (b+m)*255
 end
 
+local t = 0
+local function cursor(dt)
+    t = t + dt * 3
+    local u = t % 7 / 7
+    local r, g, b = hsv(u * 255, 255, 255)
+
+    return r, g, b, 255
+end
+
 local function random(low, high)
     local low, high = low or 0, high or 255
     local r = love.math.random(low, high)
@@ -31,4 +40,5 @@ end
 return {
     hsv = hsv,
     random = random,
+    cursor = cursor,
 }

@@ -7,6 +7,7 @@ local PixelMode, TileMode, PlaceMode, AnnotateMode = unpack(require "modez")
 local generators = require "generators"
 local common = require "common"
 local export = require "export"
+local colour = require "colour"
 
 require "utilities.json" -- ugh
 
@@ -93,11 +94,13 @@ end
 function Project:update(dt)
     self.layers.surface:update(dt)
     self.layers.annotation:update(dt)
+
+    colour.cursor(dt)
 end
 
-function Project:draw()
+function Project:draw(annotations)
     self.layers.surface:draw()
-    --self.layers.annotation:draw()
+    if annotations then self.layers.annotation:draw() end
 end
 
 function Project:objectAt(x, y)

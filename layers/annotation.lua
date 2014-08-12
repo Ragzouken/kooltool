@@ -50,7 +50,7 @@ function AnnotationLayer:serialise(saves)
 
     for block, x, y in self.blocks:items() do
         local file = x .. "," .. y .. ".png"
-        
+
         blocks[y] = blocks[y] or {[0]=""}
         blocks[y][x] = file
 
@@ -84,7 +84,7 @@ end
 function AnnotationLayer:draw()
     love.graphics.setBlendMode("alpha")
     
-    love.graphics.setColor(colour.random(128, 255))
+    love.graphics.setColor(colour.cursor(0))
 
     for block, x, y in self.blocks:items() do
         love.graphics.draw(block, 
