@@ -3,9 +3,10 @@ local EditMode = require "editmode"
 
 local Entity = require "entity"
 local Notebox = require "notebox"
-
-local bresenham = require "bresenham"
 local Brush = require "brush"
+
+local generators = require "generators"
+local bresenham = require "bresenham"
 local colour = require "colour"
 
 local TileMode = Class { __includes = EditMode, name = "tile placement" }
@@ -67,7 +68,7 @@ function PixelMode:mousepressed(x, y, button)
 
     if button == "l" then
         if love.keyboard.isDown("lalt") then
-            PALETTE.colours[3] = PROJECT.tilelayer:sample(x, y)
+            PALETTE.colours[3] = self.layer:sample(x, y)
         else
             if not entity then self.layer.tileset:snapshot(7) end
             self.state.draw = {x, y, entity or self.layer} 
