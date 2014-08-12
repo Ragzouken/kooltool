@@ -266,7 +266,7 @@ function love.keypressed(key, isrepeat)
                 love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
             end
         elseif key == "z" and love.keyboard.isDown("lctrl") then
-            PROJECT.tilelayer.tileset:undo()
+            --PROJECT.layers.surface.tileset:undo()
         end
     end
 end
