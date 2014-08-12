@@ -54,7 +54,8 @@ function love.update(dt)
         local mx, my = CAMERA:mousepos()
         mx, my = math.floor(mx), math.floor(my)
 
-        MODE:hover(mx, my, dt)
+        if MODE ~= PIXELMODE and DRAGDELETEMODE:hover(mx, my, dt) then
+        else MODE:hover(mx, my, dt) end
 
         if DRAG then
             local mx, my = love.mouse.getPosition()
@@ -157,10 +158,20 @@ function love.mousepressed(x, y, button)
     local mx, my = CAMERA:worldCoords(x, y)
     mx, my = math.floor(mx), math.floor(my)
 
+    if PROJECT then
+        if button == "r" then
+            DRAG = {x, y, CAMERA.x, CAMERA.y}
+        elseif button == "wu" or (love.keyboard.isDown("tab") and button == "l") then
+            zoom_on(mx, my)
+        elseif button == "wd" or (love.keyboard.isDown("tab") and button == "r") then
+            zoom_out()
+        end
+    end
+
     local w, h = love.window.getDimensions()
     if x <= 0 or y <= 0 or x >= w or y >= w then return end
 
-    if PROJECT and not love.keyboard.isDown("tab") then
+    if PROJECT then
         if button == "l" then
             local index = PROJECT.layers.surface.tileset:click(x, y)
             if index then
@@ -172,17 +183,8 @@ function love.mousepressed(x, y, button)
     end
 
     if not love.keyboard.isDown("tab") then
+        if PROJECT and MODE ~= PIXELMODE and DRAGDELETEMODE:mousepressed(mx, my, button) then return end
         if MODE:mousepressed(mx, my, button) then return end
-    end
-
-    if PROJECT then
-        if button == "r" then
-            DRAG = {x, y, CAMERA.x, CAMERA.y}
-        elseif button == "wu" or (love.keyboard.isDown("tab") and button == "l") then
-            zoom_on(mx, my)
-        elseif button == "wd" or (love.keyboard.isDown("tab") and button == "r") then
-            zoom_out()
-        end
     end
 end
 
@@ -192,7 +194,8 @@ function love.mousereleased(x, y, button)
 
         local mx, my = CAMERA:worldCoords(x, y)
         mx, my = math.floor(mx), math.floor(my)
-            
+        
+        DRAGDELETEMODE:mousereleased(mx, my, button)
         MODE:mousereleased(mx, my, button)
     end
 end

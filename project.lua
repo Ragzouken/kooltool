@@ -2,7 +2,7 @@ local Class = require "hump.class"
 local Collider = require "collider"
 local SurfaceLayer = require "layers.surface"
 local AnnotationLayer = require "layers.annotation"
-local PixelMode, TileMode, AnnotateMode = unpack(require "modez")
+local DragDeleteMode, PixelMode, TileMode, AnnotateMode = unpack(require "modez")
 
 local Entity = require "entity"
 local Notebox = require "notebox"
@@ -33,6 +33,7 @@ function Project.default(name)
     project.layers.surface = generators.surface.default(project)
     project.layers.annotation = AnnotationLayer(project)
 
+    DRAGDELETEMODE = DragDeleteMode()
     PIXELMODE = PixelMode(project.layers.surface)
     TILEMODE = TileMode(project.layers.surface)
     ANNOTATEMODE = AnnotateMode(project.layers.annotation)
@@ -62,6 +63,7 @@ function Project:load(folder_path)
     self.layers.annotation = AnnotationLayer(self)
     self.layers.annotation:deserialise(json.decode(data), folder_path)
 
+    DRAGDELETEMODE = DragDeleteMode()
     PIXELMODE = PixelMode(self.layers.surface)
     TILEMODE = TileMode(self.layers.surface)
     ANNOTATEMODE = AnnotateMode(self.layers.annotation)
