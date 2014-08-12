@@ -83,7 +83,7 @@ function Tileset:draw()
 end
 
 function Tileset:click(x, y)
-    local ox = 512 - 32 - 4
+    local ox = love.window:getWidth() - 32 - 4
     local oy = 4
 
     if x > ox and x < ox + 32 and y > 4 and y < 4+self.tiles*(32+1) then
