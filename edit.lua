@@ -121,6 +121,8 @@ function love.draw()
 
         PROJECT.layers.surface.tileset:draw()
 
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.rectangle("fill", 0, 0, 512, 16 + 3)
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.setFont(large)
         love.graphics.print(MODE.name, 3, 5)
