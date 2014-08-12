@@ -25,7 +25,17 @@ local function cursor(dt)
     local u = t % 7 / 7
     local r, g, b = hsv(u * 255, 255, 255)
 
-    return r, g, b, 255
+    return r, g, b, 192
+end
+
+local t = 0
+local function walls(dt, hue)
+    t = t + dt * 3
+    local u = t % 7 / 7
+    local v = math.sin(u * math.pi * 2) * 0.5 + 0.5
+    local r, g, b = hsv(hue, 255, 128 + 127 * v)
+
+    return r, g, b, 128
 end
 
 local function random(low, high)
@@ -41,4 +51,5 @@ return {
     hsv = hsv,
     random = random,
     cursor = cursor,
+    walls = walls,
 }

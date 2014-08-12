@@ -175,8 +175,6 @@ function TileMode:draw(x, y)
     local gx, gy, ox, oy = self.layer.tilemap:gridCoords(x, y)
     local size = 32
 
-    local wall_alpha = math.random(96, 160)
-
     if not self.state.draw and not self.state.erase and not self.state.drag then
         local entity = self.layer:objectAt(x, y)
         local notebox = self.layer.project.layers.annotation:objectAt(x, y)
@@ -196,16 +194,16 @@ function TileMode:draw(x, y)
             local wall = PROJECT.layers.surface.wallmap:get(x, y)
 
             if wall == nil and self.layer.wall_index[tile[1]] then
-                love.graphics.setColor(255, 0, 0, wall_alpha)
+                love.graphics.setColor(colour.walls(0, 0))
                 love.graphics.rectangle("fill", x * size, y * size, size, size)
             end
         end
 
         for wall, x, y in self.layer.wallmap:items() do
             if wall then
-                love.graphics.setColor(255, 0, 0, wall_alpha)
+                love.graphics.setColor(colour.walls(0, 0))
             else
-                love.graphics.setColor(0, 255, 0, wall_alpha)
+                love.graphics.setColor(colour.walls(0, 85))
             end
 
             love.graphics.rectangle("fill", x * size, y * size, size, size)

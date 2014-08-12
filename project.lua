@@ -96,6 +96,7 @@ function Project:update(dt)
     self.layers.annotation:update(dt)
 
     colour.cursor(dt)
+    colour.walls(dt, 0)
 end
 
 function Project:draw(annotations)
