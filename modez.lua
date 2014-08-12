@@ -183,8 +183,12 @@ function TileMode:draw(x, y)
 
         if entity then entity:border() return end
         if notebox then return end
-    elseif self.state.drag and self.state.drag[1].border then
-        self.state.drag[1]:border()
+    elseif self.state.drag then
+        if self.state.drag[1].border then
+            self.state.drag[1]:border()
+        end
+
+        return
     end
 
     if love.keyboard.isDown("lshift") then
@@ -223,18 +227,13 @@ end
 function TileMode:mousepressed(x, y, button)
     local gx, gy = self.layer.tilemap:gridCoords(x, y)
 
-    local entity = self.layer:objectAt(x, y)
-    local notebox = self.layer.project.layers.annotation:objectAt(x, y)
+    local draggable = self.layer.project:objectAt(x, y)
 
     if button == "l" then
-        if entity then
-            local dx, dy = entity.x - x, entity.y - y
+        if draggable then
+            local dx, dy = draggable.x - x, draggable.y - y
         
-            self.state.drag = {entity, dx, dy}
-        elseif notebox then
-            local dx, dy = notebox.x - x, notebox.y - y
-        
-            self.state.drag = {notebox, dx, dy}
+            self.state.drag = {draggable, dx, dy}
         else
             if love.keyboard.isDown("lalt") then
                 TILE = self.layer:getTile(gx, gy) or TILE
@@ -245,13 +244,13 @@ function TileMode:mousepressed(x, y, button)
 
         return true
     elseif button == "m" then
-        if entity then
-            self.layer:removeEntity(entity)
-        elseif notebox then
-            self.layer.project.layers.annotation:removeNotebox(notebox)
-        else
+        --if entity then
+        --    self.layer:removeEntity(entity)
+        --elseif notebox then
+        --    self.layer.project.layers.annotation:removeNotebox(notebox)
+        --else
             self.state.erase = {gx, gy}
-        end
+        --end
 
         return true
     end
@@ -288,12 +287,13 @@ end
 
 function PlaceMode:mousepressed(x, y, button)
     local entity = self.layer:objectAt(x, y)
+    local draggable = self.layer.project:objectAt(x, y)
 
     if button == "l" then
-        if entity then
-            local dx, dy = entity.x - x, entity.y - y
+        if draggable then
+            local dx, dy = draggable.x - x, draggable.y - y
         
-            self.state.drag = {entity, dx, dy}
+            self.state.drag = {draggable, dx, dy}
             self.state.selected = entity
         else
             self.state.selected = nil
@@ -377,19 +377,19 @@ end
 
 function AnnotateMode:mousepressed(x, y, button)
     local notebox = self.layer:objectAt(x, y)
-    local entity = PROJECT.layers.surface:objectAt(x, y)
+    local draggable = PROJECT.layers.surface:objectAt(x, y)
 
     if button == "l" then
-        if entity then
-            local dx, dy = entity.x - x, entity.y - y
-        
-            self.state.drag = {entity, dx, dy}
-            self.state.selected = nil
-        elseif notebox then
+        if notebox then
             local dx, dy = notebox.x - x, notebox.y - y
         
             self.state.drag = {notebox, dx, dy}
             self.state.selected = notebox
+        elseif draggable then
+            local dx, dy = draggable.x - x, draggable.y - y
+        
+            self.state.drag = {draggable, dx, dy}
+            self.state.selected = nil
         else
             self.state.draw = {x, y}
             self.state.selected = nil
