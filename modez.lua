@@ -35,12 +35,11 @@ function PixelMode:draw(x, y)
     love.graphics.setColor(PALETTE.colours[3])
     love.graphics.rectangle("fill", math.floor(x)-le, math.floor(y)-le, size, size)
 
-    local shape = self.layer.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
-
     if self.state.locked_entity then
         self.state.locked_entity:border()
     end
+
+    local entity = self.layer:objectAt(x, y)
 
     if self.state.draw and self.state.draw[3].border then
         self.state.draw[3]:border()
@@ -63,8 +62,7 @@ function PixelMode:draw(x, y)
 end
 
 function PixelMode:mousepressed(x, y, button)
-    local shape = self.layer.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
+    local entity = self.layer:objectAt(x, y)
 
     if button == "l" then
         if love.keyboard.isDown("lalt") then
@@ -88,9 +86,7 @@ end
 
 function PixelMode:keypressed(key, isrepeat)
     if not isrepeat then
-        local x, y = CAMERA:mousepos()
-        local shape = self.layer.collider:shapesAt(x, y)[1]
-        local entity = shape and shape.entity
+        local entity = self.layer:objectAt(CAMERA:mousepos())
 
         if entity and key == "lshift" then
             self.state.locked_entity = entity
@@ -99,8 +95,7 @@ function PixelMode:keypressed(key, isrepeat)
 
         if not entity or self.state.draw then
             if key == "lshift" then
-                local mx, my = CAMERA:mousepos()
-                self.state.lock = {self.layer.tilemap:gridCoords(mx, my)}
+                self.state.lock = {self.layer.tilemap:gridCoords(CAMERA:mousepos())}
             elseif key == "lctrl" then
                 self.state.cloning = {}
             end
@@ -131,7 +126,11 @@ function TileMode:hover(x, y, dt)
     local clone = love.keyboard.isDown("lctrl")
     local change
 
-    if self.state.draw then
+    if self.state.drag then
+        local object, dx, dy, f = unpack(self.state.drag)
+
+        object:moveTo(x * f + dx, y * f + dy)
+    elseif self.state.draw then
         local ox, oy = unpack(self.state.draw)
 
         if love.keyboard.isDown("lshift") then
@@ -178,6 +177,16 @@ function TileMode:draw(x, y)
 
     local wall_alpha = math.random(96, 160)
 
+    if not self.state.draw and not self.state.erase and not self.state.drag then
+        local entity = self.layer:objectAt(x, y)
+        local notebox = self.layer.project.layers.annotation:objectAt(x*2, y*2)
+
+        if entity then entity:border() return end
+        if notebox then return end
+    elseif self.state.drag and self.state.drag[1].border then
+        self.state.drag[1]:border()
+    end
+
     if love.keyboard.isDown("lshift") then
         for tile, x, y in self.layer.tilemap:items() do
             local wall = PROJECT.layers.surface.wallmap:get(x, y)
@@ -214,16 +223,35 @@ end
 function TileMode:mousepressed(x, y, button)
     local gx, gy = self.layer.tilemap:gridCoords(x, y)
 
+    local entity = self.layer:objectAt(x, y)
+    local notebox = self.layer.project.layers.annotation:objectAt(x*2, y*2)
+
     if button == "l" then
-        if love.keyboard.isDown("lalt") then
-            TILE = self.layer:getTile(gx, gy) or TILE
+        if entity then
+            local dx, dy = entity.x - x, entity.y - y
+        
+            self.state.drag = {entity, dx, dy, 1}
+        elseif notebox then
+            local dx, dy = notebox.x - x*2, notebox.y - y*2
+        
+            self.state.drag = {notebox, dx, dy, 2}
         else
-            self.state.draw = {gx, gy}
+            if love.keyboard.isDown("lalt") then
+                TILE = self.layer:getTile(gx, gy) or TILE
+            else
+                self.state.draw = {gx, gy}
+            end
         end
 
         return true
     elseif button == "m" then
-        self.state.erase = {gx, gy}
+        if entity then
+            self.layer:removeEntity(entity)
+        elseif notebox then
+            self.layer.project.layers.annotation:removeNotebox(notebox)
+        else
+            self.state.erase = {gx, gy}
+        end
 
         return true
     end
@@ -234,6 +262,7 @@ end
 function TileMode:mousereleased(x, y, button)
     if button == "l" then
         self.state.draw = nil
+        self.state.drag = nil
     elseif button == "m" then
         self.state.erase = nil
     end
@@ -258,8 +287,7 @@ function PlaceMode:hover(x, y, dt)
 end
 
 function PlaceMode:mousepressed(x, y, button)
-    local shape = self.layer.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
+    local entity = self.layer:objectAt(x, y)
 
     if button == "l" then
         if entity then
@@ -305,11 +333,24 @@ function AnnotateMode:update(dt)
     end
 end
 
+function AnnotateMode:draw()
+    if self.state.drag and self.state.drag[1].border then
+        self.state.drag[1]:border()
+    end
+
+    if not self.state.draw or self.state.erase or self.state.drag then
+        local x, y = CAMERA:mousepos()
+        local entity = PROJECT.layers.surface:objectAt(x, y)
+
+        if entity then entity:border() end
+    end
+end
+
 function AnnotateMode:hover(x, y, dt)
     if self.state.drag then
-        local notebox, dx, dy = unpack(self.state.drag)
+        local object, dx, dy, f = unpack(self.state.drag)
 
-        notebox:moveTo(x*2 + dx, y*2 + dy)
+        object:moveTo(x*f + dx, y*f + dy)
     elseif self.state.draw then
         local dx, dy = unpack(self.state.draw)
         local brush, ox, oy
@@ -333,14 +374,19 @@ function AnnotateMode:hover(x, y, dt)
 end
 
 function AnnotateMode:mousepressed(x, y, button)
-    local shape = self.layer.collider:shapesAt(x*2, y*2)[1]
-    local notebox = shape and shape.notebox
+    local notebox = self.layer:objectAt(x*2, y*2)
+    local entity = PROJECT.layers.surface:objectAt(x, y)
 
     if button == "l" then
-        if notebox then
+        if entity then
+            local dx, dy = entity.x - x, entity.y - y
+        
+            self.state.drag = {entity, dx, dy, 1}
+            self.state.selected = nil
+        elseif notebox then
             local dx, dy = notebox.x - x*2, notebox.y - y*2
         
-            self.state.drag = {notebox, dx, dy}
+            self.state.drag = {notebox, dx, dy, 2}
             self.state.selected = notebox
         else
             self.state.draw = {x, y}

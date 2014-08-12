@@ -98,6 +98,13 @@ function AnnotationLayer:draw()
     end
 end
 
+function AnnotationLayer:objectAt(x, y)
+    local shape = self.collider:shapesAt(x, y)[1]
+    local notebox = shape and shape.notebox
+
+    return notebox
+end
+
 function AnnotationLayer:addNotebox(notebox)
     self.noteboxes[notebox] = true
     self.collider:addShape(notebox.shape)

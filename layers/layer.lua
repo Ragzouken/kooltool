@@ -12,4 +12,7 @@ end
 function Layer:draw()
 end
 
+function Layer:objectAt(x, y)
+end
+
 return Layer

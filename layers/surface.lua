@@ -174,6 +174,13 @@ function SurfaceLayer:draw()
     end
 end
 
+function SurfaceLayer:objectAt(x, y)
+    local shape = self.collider:shapesAt(x, y)[1]
+    local entity = shape and shape.entity
+
+    return entity --or self
+end
+
 function SurfaceLayer:getTile(gx, gy)
     local tile = self.tilemap:get(gx, gy)
 
