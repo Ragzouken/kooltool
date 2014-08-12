@@ -55,9 +55,9 @@ function ObjectMode:mousepressed(x, y, button)
             return true
         elseif button == "m" then
             if object.sprite then
-                PROJECT.layers.surface:removeEntity(draggable)
+                PROJECT.layers.surface:removeEntity(object)
             else
-                PROJECT.layers.annotation:removeNotebox(draggable)
+                PROJECT.layers.annotation:removeNotebox(object)
             end
 
             return true
