@@ -299,9 +299,9 @@ end
 
 function AnnotateMode:update(dt)
     if self.state.selected then
-        self.name = "AnnotateMode project (typing)"
+        self.name = "annotate project (typing)"
     else
-        self.name = "AnnotateMode project"
+        self.name = "annotate project"
     end
 end
 
