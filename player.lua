@@ -33,8 +33,9 @@ function Player:move(vector)
     local gx, gy = PROJECT.layers.surface.tilemap:gridCoords(self.entity.x, self.entity.y)
     local dx, dy = gx+vx, gy+vy
 
-    local tile = PROJECT.layers.surface:getTile(dx, dy)
     local wall = PROJECT.layers.surface:getWall(dx, dy)
+
+    if self == PLAYER then print(dx, dy, wall) end
 
     if not wall and not self.movement then
         local period = self.speed

@@ -47,6 +47,7 @@ function Project:init(name)
     self.dragables = Collider(128)
 
     self.layers = {}
+    self.history = {}
 end
 
 function Project:load(folder_path)
@@ -130,6 +131,10 @@ function Project:newEntity(x, y)
 
     self.layers.surface:addEntity(entity)
     MODE = TILEMODE
+
+    table.insert(self.history, function()
+        self.layers.surface:removeEntity(entity)
+    end)
 end
 
 function Project:newNotebox(x, y)
@@ -137,6 +142,15 @@ function Project:newNotebox(x, y)
     self.layers.annotation:addNotebox(notebox)
     MODE = ANNOTATEMODE
     DRAGDELETEMODE.state.selected = notebox
+
+    table.insert(self.history, function()
+        self.layers.annotation:removeNotebox(notebox)
+    end)
+end
+
+function Project:undo()
+    local action = table.remove(self.history)
+    action()
 end
 
 Project.export = export.export

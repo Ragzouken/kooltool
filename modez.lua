@@ -34,7 +34,7 @@ function ObjectMode:hover(x, y, dt)
     if self.state.drag then
         local object, dx, dy = unpack(self.state.drag)
 
-        object:moveTo(x + dx, y + dy)
+        object:moveTo(math.floor(x + dx), math.floor(y + dy))
     
         return true
     end
@@ -49,15 +49,23 @@ function ObjectMode:mousepressed(x, y, button)
         if button == "l" then
             local dx, dy = object.x - x, object.y - y
         
-            self.state.drag = {object, dx, dy}
+            self.state.drag = {object, dx, dy, {object.x, object.y}}
             self.state.selected = object
 
             return true
         elseif button == "m" then
             if object.sprite then
                 PROJECT.layers.surface:removeEntity(object)
+
+                table.insert(PROJECT.history, function()
+                    PROJECT.layers.surface:addEntity(object)
+                end)
             else
                 PROJECT.layers.annotation:removeNotebox(object)
+
+                table.insert(PROJECT.history, function()
+                    PROJECT.layers.annotation:addNotebox(object)
+                end)
             end
 
             return true
@@ -71,7 +79,14 @@ function ObjectMode:mousepressed(x, y, button)
 end
 
 function ObjectMode:mousereleased(x, y, button)
-    if button == "l" then
+    if button == "l" and self.state.drag then
+        local object, dx, dy, original = unpack(self.state.drag)
+
+        table.insert(PROJECT.history, function()
+            local x, y = unpack(original)
+            object:moveTo(x, y)
+        end)
+
         self.state.drag = nil
     end
 end

@@ -257,6 +257,7 @@ function love.keypressed(key, isrepeat)
         end
 
         local mx, my = CAMERA:mousepos()
+        mx, my = math.floor(mx), math.floor(my)
 
         if key == "t" then 
             PROJECT:newEntity(mx, my)
@@ -277,7 +278,7 @@ function love.keypressed(key, isrepeat)
                 love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
             end
         elseif key == "z" and love.keyboard.isDown("lctrl") then
-            --PROJECT.layers.surface.tileset:undo()
+            PROJECT:undo()
         end
     end
 end
