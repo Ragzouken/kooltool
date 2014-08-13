@@ -78,7 +78,7 @@ function Tileset:draw()
     end
 
     local x, y = love.window:getWidth() - 32 - 4, 4 + (TILE - 1) * (32 + 1)
-    love.graphics.setColor(colour.random(0, 128))
+    love.graphics.setColor(colour.cursor(0))
     love.graphics.rectangle("line", x, y, 32, 32)
 end
 

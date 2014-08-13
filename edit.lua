@@ -89,6 +89,10 @@ end
 local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
+local pencil = love.graphics.newImage("images/pencil.png")
+local tiles = love.graphics.newImage("images/tiles.png")
+local marker = love.graphics.newImage("images/marker.png")
+
 function love.draw()
     if PROJECT then
         CAMERA:attach()
@@ -101,16 +105,28 @@ function love.draw()
 
         CAMERA:detach()
 
+        local o = 4-1+32+2
         love.graphics.setBlendMode("alpha")
         love.graphics.setColor(0, 0, 0, 255)
         love.graphics.rectangle("fill", 0, 0, 512, 16 + 3)
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.setFont(large)
-        love.graphics.print(MODE.name, 3, 5)
+        love.graphics.print(" " .. MODE.name, 3+o, 5)
 
         PROJECT.layers.surface.tileset:draw()
 
         INTERFACE:draw()
+
+        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.setBlendMode("premultiplied")
+        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 3*(32+1)+1)
+
+        love.graphics.setColor(PALETTE.colours[3])
+        love.graphics.draw(pencil, 4, 4 + 0 * 33, 0, 1, 1)
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.draw(tiles, 4, 4 + 1 * 33, 0, 1, 1)
+        love.graphics.setColor(colour.cursor(0))
+        love.graphics.draw(marker, 4, 4 + 2 * 33, 0, 1, 1)
     else
         INTERFACE:draw()
         MODE:draw()
@@ -156,6 +172,12 @@ function zoom_out()
 end
 
 function love.mousepressed(x, y, button)
+    if x <= 35 then
+        if y <= 36 then MODE = PIXELMODE return end
+        if y <= 70 then MODE = TILEMODE return end
+        if y <= 106 then MODE = ANNOTATEMODE return end
+    end
+
     local mx, my = CAMERA:worldCoords(x, y)
     mx, my = math.floor(mx), math.floor(my)
 
