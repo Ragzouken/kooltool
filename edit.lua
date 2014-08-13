@@ -46,7 +46,9 @@ local dirs = {
 
 function love.update(dt)
     TIMER:update(dt)
-    
+
+    if CAMERA.scale % 1 == 0 then CAMERA.x, CAMERA.y = math.floor(CAMERA.x), math.floor(CAMERA.y) end
+
     if PROJECT then
         PROJECT:update(dt)
         DRAGDELETEMODE:update(dt)
