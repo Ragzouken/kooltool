@@ -94,6 +94,8 @@ local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 local pencil = love.graphics.newImage("images/pencil.png")
 local tiles = love.graphics.newImage("images/tiles.png")
 local marker = love.graphics.newImage("images/marker.png")
+local entity = love.graphics.newImage("images/entity.png")
+local note = love.graphics.newImage("images/note.png")
 
 function love.draw()
     if PROJECT then
@@ -121,7 +123,7 @@ function love.draw()
 
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.setBlendMode("premultiplied")
-        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 3*(32+1)+1)
+        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 5*(32+1)+1)
 
         love.graphics.setColor(PALETTE.colours[3])
         love.graphics.draw(pencil, 4, 4 + 0 * 33, 0, 1, 1)
@@ -129,6 +131,10 @@ function love.draw()
         love.graphics.draw(tiles, 4, 4 + 1 * 33, 0, 1, 1)
         love.graphics.setColor(colour.cursor(0))
         love.graphics.draw(marker, 4, 4 + 2 * 33, 0, 1, 1)
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.draw(entity, 4, 4 + 3 * 33, 0, 1, 1)
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.draw(note, 4, 4 + 4 * 33, 0, 1, 1)
     else
         INTERFACE:draw()
         MODE:draw()
@@ -174,14 +180,23 @@ function zoom_out()
 end
 
 function love.mousepressed(x, y, button)
-    if x <= 35 then
-        if y <= 36 then MODE = PIXELMODE return end
-        if y <= 70 then MODE = TILEMODE return end
-        if y <= 106 then MODE = ANNOTATEMODE return end
-    end
-
     local mx, my = CAMERA:worldCoords(x, y)
     mx, my = math.floor(mx), math.floor(my)
+
+    if x <= 35 then
+        if y <= 36 then MODE = PIXELMODE return
+        elseif y <= 70 then MODE = TILEMODE return
+        elseif y <= 106 then MODE = ANNOTATEMODE return
+        elseif y <= 125 then
+            MODE = TILEMODE
+            MODE:mousepressed(mx, my, button)
+            MODE.state.selected = PROJECT:newEntity(mx, my)
+        elseif y <= 168 then
+            MODE = ANNOTATEMODE
+            MODE:mousepressed(mx, my, button)
+            MODE.state.selected = PROJECT:newNotebox(mx, my)
+        end
+    end
 
     if PROJECT then
         if button == "wu" or (love.keyboard.isDown("tab") and button == "l") then

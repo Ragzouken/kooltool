@@ -135,6 +135,8 @@ function Project:newEntity(x, y)
     table.insert(self.history, function()
         self.layers.surface:removeEntity(entity)
     end)
+
+    return entity
 end
 
 function Project:newNotebox(x, y)
@@ -146,6 +148,8 @@ function Project:newNotebox(x, y)
     table.insert(self.history, function()
         self.layers.annotation:removeNotebox(notebox)
     end)
+
+    return notebox
 end
 
 function Project:undo()
