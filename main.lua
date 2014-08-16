@@ -51,4 +51,6 @@ function SETPROJECT(project)
 
     MODE = PIXELMODE
     INTERFACE.draw = function() end
+
+    love.window.setTitle("kooltool sketch (" .. PROJECT.name .. ")")
 end

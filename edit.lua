@@ -9,6 +9,7 @@ local colour = require "colour"
 function love.load()
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
     CLONESOUND = love.audio.newSource("sounds/clone.wav")
+    SAVESOUND = love.audio.newSource("sounds/save.wav")
     TIMER = Timer()
     PALETTE = generators.Palette.generate(3)
     TILE = 1
@@ -96,6 +97,8 @@ local tiles = love.graphics.newImage("images/tiles.png")
 local marker = love.graphics.newImage("images/marker.png")
 local entity = love.graphics.newImage("images/entity.png")
 local note = love.graphics.newImage("images/note.png")
+local save = love.graphics.newImage("images/save.png")
+local export = love.graphics.newImage("images/export.png")
 
 function love.draw()
     if PROJECT then
@@ -123,7 +126,7 @@ function love.draw()
 
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.setBlendMode("premultiplied")
-        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 5*(32+1)+1)
+        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 7*(32+1)+1)
 
         love.graphics.setColor(PALETTE.colours[3])
         love.graphics.draw(pencil, 4, 4 + 0 * 33, 0, 1, 1)
@@ -135,6 +138,8 @@ function love.draw()
         love.graphics.draw(entity, 4, 4 + 3 * 33, 0, 1, 1)
         love.graphics.setColor(0, 0, 0, 255)
         love.graphics.draw(note, 4, 4 + 4 * 33, 0, 1, 1)
+        love.graphics.draw(save, 4, 4 + 5 * 33, 0, 1, 1)
+        love.graphics.draw(export, 4, 4 + 6 * 33, 0, 1, 1)
     else
         INTERFACE:draw()
         MODE:draw()
@@ -189,12 +194,25 @@ function love.mousepressed(x, y, button)
         elseif y <= 106 then MODE = ANNOTATEMODE return
         elseif y <= 125 then
             MODE = TILEMODE
-            MODE:mousepressed(mx, my, button)
             MODE.state.selected = PROJECT:newEntity(mx, my)
+            DRAGDELETEMODE:mousepressed(mx, my, button)
+            return
         elseif y <= 168 then
             MODE = ANNOTATEMODE
-            MODE:mousepressed(mx, my, button)
             MODE.state.selected = PROJECT:newNotebox(mx, my)
+            DRAGDELETEMODE:mousepressed(mx, my, button)
+            return
+        elseif y <= 201 then
+            SAVESOUND:play()
+            PROJECT:save("projects/" .. PROJECT.name)
+            love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+            return
+        elseif y <= 234 then
+            SAVESOUND:play()
+            PROJECT:save("projects/" .. PROJECT.name)
+            PROJECT:export()
+            love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
+            return
         end
     end
 
