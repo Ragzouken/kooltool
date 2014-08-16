@@ -6,7 +6,7 @@ local Notebox = require "notebox"
 local Brush = require "brush"
 
 local generators = require "generators"
-local bresenham = require "bresenham"
+local bresenham = require "utilities.bresenham"
 local colour = require "colour"
 
 local ObjectMode = Class {
@@ -140,12 +140,12 @@ function PixelMode:draw(x, y)
         self.state.locked_entity:border()
     end
 
-    local entity = self.layer:objectAt(x, y)
+    local object = self.layer:objectAt(x, y)
 
     if self.state.draw and self.state.draw[3].border then
         self.state.draw[3]:border()
-    elseif entity and not self.state.draw then
-        entity:border()
+    elseif object and object.border and not self.state.draw then
+        object:border()
     else
         if self.state.lock then
             love.graphics.setColor(colour.cursor(0))
@@ -163,14 +163,13 @@ function PixelMode:draw(x, y)
 end
 
 function PixelMode:mousepressed(x, y, button)
-    local entity = self.layer:objectAt(x, y)
+    local object = self.layer:objectAt(x, y)
 
     if button == "l" then
         if love.keyboard.isDown("lalt") then
             PALETTE.colours[3] = self.layer:sample(x, y)
         else
-            if not entity then self.layer.tileset:snapshot(7) end
-            self.state.draw = {x, y, entity or self.layer} 
+            self.state.draw = {x, y, object or self.layer} 
         end
 
         return true

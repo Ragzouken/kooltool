@@ -1,6 +1,6 @@
 local Class = require "hump.class"
 
-local bresenham = require "bresenham"
+local bresenham = require "utilities.bresenham"
 
 local Brush = Class {}
 

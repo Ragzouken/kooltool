@@ -1,4 +1,4 @@
-if jit then require "imagedata-ffi" end
+if jit then require "utilities.imagedata-ffi" end
 
 love.graphics.setDefaultFilter("nearest", "nearest")
 

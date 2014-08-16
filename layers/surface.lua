@@ -1,7 +1,7 @@
 local Class = require "hump.class"
 local Collider = require "collider"
 local Layer = require "layers.layer"
-local SparseGrid = require "sparsegrid"
+local SparseGrid = require "utilities.sparsegrid"
 local Tileset = require "tileset"
 local Sprite = require "sprite"
 local Entity = require "entity"
@@ -178,7 +178,7 @@ function SurfaceLayer:objectAt(x, y)
     local shape = self.collider:shapesAt(x, y)[1]
     local entity = shape and shape.entity
 
-    return entity --or self
+    return entity
 end
 
 function SurfaceLayer:getTile(gx, gy)

@@ -1,5 +1,7 @@
 -- Converts HSV to RGB. (input and output range: 0 - 255)
 
+local husl = require "utilities.husl"
+
 local function hsv(h, s, v)
     if s <= 0 then return v, v, v end
     h, s, v = h/256*6, s/255, v/255
@@ -21,11 +23,11 @@ end
 
 local t = 0
 local function cursor(dt)
-    t = t + dt * 3
-    local u = t % 7 / 7
-    local r, g, b = hsv(u * 255, 255, 255)
+    t = t + dt * 0.5
+    local u = t % 1
+    local r, g, b = husl.huslp_to_rgb(u * 360, 100, 75)
 
-    return r, g, b, 192
+    return r*255, g*255, b*255, 192
 end
 
 local t = 0

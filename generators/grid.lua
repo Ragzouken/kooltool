@@ -1,4 +1,4 @@
-local SparseGrid = require "sparsegrid"
+local SparseGrid = require "utilities.sparsegrid"
 
 local grid = {}
 

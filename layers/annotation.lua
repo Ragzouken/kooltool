@@ -1,6 +1,6 @@
 local Class = require "hump.class"
 local Collider = require "collider"
-local SparseGrid = require "sparsegrid"
+local SparseGrid = require "utilities.sparsegrid"
 local Notebox = require "notebox"
 
 local colour = require "colour"
