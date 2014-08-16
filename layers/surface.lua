@@ -84,7 +84,7 @@ function SurfaceLayer:serialise(saves)
         tileset = self.tileset:serialise(saves),
         tiles = tiles,
         walls = walls,
-        wall_index = self.wall_index,
+        wall_index = {[0]=false, unpack(self.wall_index)},
     }
 end
 
