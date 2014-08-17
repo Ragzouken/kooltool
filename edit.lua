@@ -6,6 +6,8 @@ local Interface = require "interface"
 local generators = require "generators"
 local colour = require "colour"
 
+local Pan = require "actions.pan"
+
 function love.load()
     TILESOUND = love.audio.newSource("sounds/marker pen.wav")
     CLONESOUND = love.audio.newSource("sounds/clone.wav")
@@ -36,6 +38,7 @@ function love.load()
 
     INTERFACE = Interface(projects)
     MODE = INTERFACE.modes.select_project
+    ACTION = nil
 end
 
 local dirs = {
@@ -46,6 +49,9 @@ local dirs = {
 }
 
 function love.update(dt)
+    local sx, sy = love.mouse.getPosition()
+    if ACTION then ACTION:update(dt, sx, sy, CAMERA:mousepos()) end
+
     TIMER:update(dt)
 
     if CAMERA.scale % 1 == 0 then CAMERA.x, CAMERA.y = math.floor(CAMERA.x), math.floor(CAMERA.y) end
@@ -60,16 +66,6 @@ function love.update(dt)
 
         if MODE ~= PIXELMODE and DRAGDELETEMODE:hover(mx, my, dt) then
         else MODE:hover(mx, my, dt) end
-
-        if DRAG then
-            local mx, my = love.mouse.getPosition()
-            local x, y, cx, cy = unpack(DRAG)
-
-            local dx, dy = mx - x, my - y
-            local s = CAMERA.scale
-
-            CAMERA:lookAt(cx - dx / s, cy - dy / s)
-        end
     end
 
     if not love.keyboard.isDown("lshift") then
@@ -126,7 +122,7 @@ function love.draw()
 
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.setBlendMode("premultiplied")
-        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 7*(32+1)+1)
+        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 8*(32+1)+1)
 
         love.graphics.setColor(PALETTE.colours[3])
         love.graphics.draw(pencil, 4, 4 + 0 * 33, 0, 1, 1)
@@ -158,7 +154,6 @@ function love.draw()
 end
 
 function zoom_on(mx, my)
-    DRAG = nil
     if TWEEN then TIMER:cancel(TWEEN) end
     ZOOM = math.min(ZOOM * 2, 16)
     
@@ -178,13 +173,15 @@ function zoom_on(mx, my)
 end
 
 function zoom_out()
-    DRAG = nil
     if TWEEN then TIMER:cancel(TWEEN) end
     ZOOM = math.max(ZOOM / 2, 1 / 16)
     TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
 end
 
 function love.mousepressed(x, y, button)
+    local wx, wy = CAMERA:worldCoords(x, y)
+    if ACTION then ACTION:mousepressed(button, x, y, wx, wy) return end
+
     local mx, my = CAMERA:worldCoords(x, y)
     mx, my = math.floor(mx), math.floor(my)
 
@@ -222,7 +219,9 @@ function love.mousepressed(x, y, button)
         elseif button == "wd" or (love.keyboard.isDown("tab") and button == "r") then
             zoom_out()
         elseif button == "r" then
-            DRAG = {x, y, CAMERA.x, CAMERA.y}
+            ACTION = Pan(function() ACTION = nil end)
+            ACTION:mousepressed(button, x, y, CAMERA:mousepos())
+            return
         end
     end
 
@@ -247,9 +246,10 @@ function love.mousepressed(x, y, button)
 end
 
 function love.mousereleased(x, y, button)
-    if PROJECT then
-        if button == "r" and DRAG and not DRAG[5] then DRAG = nil end
+    local wx, wy = CAMERA:worldCoords(x, y)
+    if ACTION then ACTION:mousereleased(button, x, y, wx, wy) return end
 
+    if PROJECT then
         local mx, my = CAMERA:worldCoords(x, y)
         mx, my = math.floor(mx), math.floor(my)
         
@@ -259,11 +259,6 @@ function love.mousereleased(x, y, button)
 end
 
 function love.keypressed(key, isrepeat)
-    if key == "tab" and not isrepeat then
-        local x, y = love.mouse.getPosition()
-        DRAG = {x, y, CAMERA.x, CAMERA.y, "tab"}
-        return
-    end
     if DRAGDELETEMODE:keypressed(key, isrepeat) then return
     elseif MODE:keypressed(key, isrepeat) then return
     end
@@ -317,8 +312,6 @@ function love.keypressed(key, isrepeat)
 end
 
 function love.keyreleased(key)
-    if key == "tab" and DRAG and DRAG[5] == "tab" then DRAG = nil return end
-
     MODE:keyreleased(key)
 end
 
