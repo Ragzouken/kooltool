@@ -21,6 +21,8 @@ function Wall:cursor(sx, sy, wx, wy)
     local size = 32
     local layer = self.project.layers.surface
 
+    love.graphics.setBlendMode("alpha")
+
     for tile, gx, gy in layer.tilemap:items() do
         local wall = layer.wallmap:get(gx, gy)
 

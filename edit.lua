@@ -89,8 +89,6 @@ function love.draw()
             love.graphics.print(" " .. INTERFACE_.active.name, 3+o, 5)
         end
 
-        PROJECT.layers.surface.tileset:draw()
-
         INTERFACE_:draw()
     else
         INTERFACE:draw()
@@ -110,17 +108,8 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button)
-    local wx, wy = CAMERA:worldCoords(x, y)
-
     if PROJECT then
-        if button == "l" then
-            local index = PROJECT.layers.surface.tileset:click(x, y)
-            if index then
-                INTERFACE_.active = INTERFACE_.tools.tile
-                INTERFACE_.active.tile = index
-                return true
-            end
-        end
+        local wx, wy = CAMERA:worldCoords(x, y)
 
         if INTERFACE_:input("mousepressed", button, x, y, wx, wy) then
             return

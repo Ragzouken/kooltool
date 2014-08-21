@@ -1,5 +1,6 @@
 local Class = require "hump.class"
 local Toolbar = require "interface.toolbar"
+local Tilebar = require "interface.tilebar"
 
 local tools = require "tools"
 
@@ -10,6 +11,7 @@ function Interface:init(project)
 
     self.panes = {
         Toolbar(self),
+        Tilebar(self),
     }
     
     self.action = nil

@@ -65,7 +65,10 @@ function Notebox:draw(editing)
     end
     love.graphics.pop()
 
-    --self.shape:draw()
+    if editing then
+        love.graphics.setColor(colour.cursor(0))
+        self.shape:draw()
+    end
 end
 
 function Notebox:move(dx, dy)

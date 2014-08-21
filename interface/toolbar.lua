@@ -1,6 +1,11 @@
 local Class = require "hump.class"
+local Pane = require "interface.pane"
+
+local colour = require "colour"
 
 local Toolbar = Class {
+    __includes = Pane,
+
     buttons = {
         {love.graphics.newImage("images/pencil.png"), function(toolbar)
             toolbar.interface.active = toolbar.interface.tools.draw
@@ -38,16 +43,12 @@ local Toolbar = Class {
     }
 }
 
-function Toolbar:init(interface)
-    self.interface = interface
-end
-
 function Toolbar:draw()
     local margin = 4
 
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setBlendMode("premultiplied")
-    love.graphics.rectangle("fill", margin-1, margin-1, 32+2, #self.buttons*(32+1)+1)
+    love.graphics.rectangle("fill", margin-1, margin-1, 32+3, #self.buttons*(32+1)+1)
 
     --love.graphics.setColor(self.interface.tools.draw.colour)
     love.graphics.setColor(0, 0, 0, 255)
@@ -55,7 +56,23 @@ function Toolbar:draw()
     for i, button in ipairs(self.buttons) do
         local graphic, action = unpack(button)
 
-        love.graphics.draw(graphic, margin, margin + (i-1) * 33, 0, 1, 1)
+        love.graphics.draw(graphic, margin, margin + (i-1) * 33 + 1, 0, 1, 1)
+    end
+
+    local tools = {
+        self.interface.tools.draw,
+        self.interface.tools.tile,
+        self.interface.tools.wall,
+        self.interface.tools.marker,
+    }
+
+    love.graphics.setBlendMode("alpha")
+    for i, tool in ipairs(tools) do
+        if tool == self.interface.active then
+            local x, y = margin, margin + (i - 1) * (32 + 1)
+            love.graphics.setColor(colour.cursor(0))
+            love.graphics.rectangle("line", x+0.5, y+0.5, 32, 32)
+        end
     end
 end
 
@@ -70,18 +87,6 @@ function Toolbar:mousepressed(button, sx, sy, wx, wy)
             return true
         end
     end
-end
-
-function Toolbar:mousereleased()
-end
-
-function Toolbar:keypressed()
-end
-
-function Toolbar:keyreleased()
-end
-
-function Toolbar:textinput()
 end
 
 return Toolbar
