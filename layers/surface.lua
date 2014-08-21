@@ -74,10 +74,10 @@ function SurfaceLayer:serialise(saves)
         tiles[y][x] = tile[1]
     end
 
-    local walls = {[0]={[0]=false}}
+    local walls = {[0]={[0]=""}}
 
     for wall, x, y in self.wallmap:items() do
-        walls[y] = walls[y] or {[0]=false}
+        walls[y] = walls[y] or {[0]=""}
         walls[y][x] = wall
     end
 
@@ -130,7 +130,9 @@ function SurfaceLayer:deserialise(data, saves)
 
     for y, row in pairs(data.walls or {}) do
         for x, wall in pairs(row) do
-            self.wallmap:set(wall or nil, tonumber(x), tonumber(y))
+            if wall ~= "" then
+                self.wallmap:set(wall, tonumber(x), tonumber(y))
+            end
         end
     end
 
@@ -220,6 +222,8 @@ function SurfaceLayer:getWall(gx, gy)
     local tile = self:getTile(gx, gy) or 0
     local wall = self.wallmap:get(gx, gy)
 
+    print(wall, self.wall_index[tile])
+
     return (wall == nil and self.wall_index[tile]) or wall 
 end
 
@@ -241,7 +245,7 @@ function SurfaceLayer:setWall(solid, gx, gy, clone)
         end
     else
         self.wallmap:set(solid or nil, gx, gy)
-        return true
+        return (not instance) ~= (not solid)
     end
 
     return false

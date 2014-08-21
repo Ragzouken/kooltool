@@ -8,15 +8,12 @@ end
 
 local Camera = require "hump.camera"
 local Project = require "project"
-local InterfaceWrong = require "interfacewrong"
+local Interface = require "interfacewrong"
 
 FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 love.graphics.setFont(FONT)
 
 function love.load()
-    --love.mouse.setCursor(love.mouse.newCursor("images/pencil.png", 0, 0))
-
-    --love.filesystem.mount("projects", "saved_projects")
     love.keyboard.setKeyRepeat(true)
     CAMERA = Camera(128, 128, 2)
     ZOOM = 2
@@ -49,7 +46,6 @@ function SETPROJECT(project)
         PROJECT = Project.default(Project.name_generator:generate():gsub(" ", "_"))
     end
 
-    MODE = PIXELMODE
     INTERFACE.draw = function() end
 
     love.window.setTitle("kooltool sketch (" .. PROJECT.name .. ")")

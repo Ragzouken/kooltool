@@ -55,6 +55,8 @@ function love.update(dt)
 
     TIMER:update(dt)
 
+    colour.walls(dt, 0)
+
     if CAMERA.scale % 1 == 0 then CAMERA.x, CAMERA.y = math.floor(CAMERA.x), math.floor(CAMERA.y) end
 
     if PROJECT then
@@ -82,7 +84,8 @@ local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
 local pencil = love.graphics.newImage("images/pencil.png")
-local tiles = love.graphics.newImage("images/walls.png")
+local tiles = love.graphics.newImage("images/tiles.png")
+local walls = love.graphics.newImage("images/walls.png")
 local marker = love.graphics.newImage("images/marker.png")
 local entity = love.graphics.newImage("images/entity.png")
 local note = love.graphics.newImage("images/note.png")
@@ -117,7 +120,7 @@ function love.draw()
 
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.setBlendMode("premultiplied")
-        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 7*(32+1)+1)
+        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 8*(32+1)+1)
 
         love.graphics.setColor(PALETTE.colours[3])
         love.graphics.draw(pencil, 4, 4 + 0 * 33, 0, 1, 1)
@@ -131,6 +134,7 @@ function love.draw()
         love.graphics.draw(note, 4, 4 + 4 * 33, 0, 1, 1)
         love.graphics.draw(save, 4, 4 + 5 * 33, 0, 1, 1)
         love.graphics.draw(export, 4, 4 + 6 * 33, 0, 1, 1)
+        love.graphics.draw(walls, 4, 4 + 7 * 33, 0, 1, 1)
     else
         INTERFACE:draw()
         POO:draw()
@@ -171,7 +175,6 @@ function love.mousepressed(x, y, button)
                 local notebox = PROJECT:newNotebox(wx, wy)
                 INTERFACE_.action = INTERFACE_.tools.drag
                 INTERFACE_.action:grab(notebox, x, y, wx, wy)
-                --INTERFACE_.tools.type.target = notebox
                 return
             elseif y <= 201 then
                 SAVESOUND:play()
@@ -183,6 +186,9 @@ function love.mousepressed(x, y, button)
                 PROJECT:save("projects/" .. PROJECT.name)
                 PROJECT:export()
                 love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
+                return
+            elseif y <= 267 then
+                INTERFACE_.active = INTERFACE_.tools.wall
                 return
             end
         end

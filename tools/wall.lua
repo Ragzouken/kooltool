@@ -18,32 +18,51 @@ function Wall:init(project, tile)
 end
 
 function Wall:cursor(sx, sy, wx, wy)
-    if not self.project:objectAt(wx, wy) then
-        local layer = self.project.layers.surface
+    local size = 32
+    local layer = self.project.layers.surface
+
+    for tile, gx, gy in layer.tilemap:items() do
+        local wall = layer.wallmap:get(gx, gy)
+
+        if wall == nil and layer.wall_index[tile[1]] then
+            love.graphics.setColor(colour.walls(0, 0))
+            love.graphics.rectangle("fill", gx * size, gy * size, size, size)
+        end
+    end
+
+    for wall, gx, gy in layer.wallmap:items() do
+        if wall then
+            love.graphics.setColor(colour.walls(0, 0))
+        else
+            love.graphics.setColor(colour.walls(0, 85))
+        end
+
+        love.graphics.rectangle("fill", gx * size, gy * size, size, size)
+    end
+
+    if self.drag or not self.project:objectAt(wx, wy) then
         local gx, gy = layer.tilemap:gridCoords(wx, wy)
-        local size = 32
         local quad = layer.tileset.quads[self.tile]
 
-        love.graphics.setColor(255, 255, 255, 128)
+        if self.drag and self.drag.erase then
+            love.graphics.setColor(0, 255, 0, 128)
+        else
+            love.graphics.setColor(255, 0, 0, 128)
+        end
+
         love.graphics.rectangle("fill", gx*size, gy*size, size, size)
+        love.graphics.setColor(colour.cursor(0))
+        love.graphics.rectangle("line", gx*size, gy*size, size, size)
     end
 end
 
 function Wall:mousepressed(button, sx, sy, wx, wy)
     if button == "l" then
-        if love.keyboard.isDown("lalt") then
-            local layer = self.project.layers.surface
-            local gx, gy = layer.tilemap:gridCoords(wx, wy)
-            self.tile = layer:getWall(gx, gy) or self.tile
+        if self.project:objectAt(wx, wy) then return false end
 
-            return true
-        else
-            if self.project:objectAt(wx, wy) then return false end
+        self:startdrag("draw")
 
-            self:startdrag("draw")
-
-            return true, "begin"
-        end
+        return true, "begin"
     elseif self.drag and button == "r" then
         self.drag.erase = true
 
@@ -60,10 +79,10 @@ function Wall:mousedragged(action, screen, world)
         local x2, y2 = layer.tilemap:gridCoords(wx, wy)
 
         local change = false
-        local index = not self.drag.erase and self.tile or nil
+        local clone = love.keyboard.isDown("lctrl")
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
-            change = change or layer:setWall(index, lx, ly)
+            change = change or layer:setWall(not self.drag.erase, lx, ly, clone)
         end
 
         if change then
@@ -74,7 +93,7 @@ function Wall:mousedragged(action, screen, world)
 end
 
 function Wall:mousereleased(button, sx, sy, wx, wy)
-    if button == "l" or button == "r" then
+    if button == "l" or (self.drag and button == "r") then
         self:enddrag()
 
         return true, "end"

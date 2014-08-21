@@ -35,8 +35,6 @@ function Player:move(vector)
 
     local wall = PROJECT.layers.surface:getWall(dx, dy)
 
-    if self == PLAYER then print(dx, dy, wall) end
-
     if not wall and not self.movement then
         local period = self.speed
         local t = 0

@@ -96,7 +96,7 @@ end
 function Project:draw(annotations)
     self.layers.surface:draw()
 
-    if INTERFACE_.active ~= INTERFACE_.tools.draw then
+    if INTERFACE_ and INTERFACE_.active ~= INTERFACE_.tools.draw then
         for entity in pairs(self.layers.surface.entities) do
             entity:border()
         end

@@ -18,7 +18,7 @@ function Tile:init(project, tile)
 end
 
 function Tile:cursor(sx, sy, wx, wy)
-    if not self.project:objectAt(wx, wy) then
+    if self.drag or not self.project:objectAt(wx, wy) then
         local layer = self.project.layers.surface
         local gx, gy = layer.tilemap:gridCoords(wx, wy)
         local size = 32
@@ -76,7 +76,7 @@ function Tile:mousedragged(action, screen, world)
 end
 
 function Tile:mousereleased(button, sx, sy, wx, wy)
-    if button == "l" or button == "r" then
+    if button == "l" or (self.drag and button == "r") then
         self:enddrag()
 
         return true, "end"
