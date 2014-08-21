@@ -6,6 +6,8 @@ local tools = require "tools"
 local Interface = Class {}
 
 function Interface:init(project)
+    self.project = project
+
     self.panes = {
         Toolbar(self),
     }
@@ -37,6 +39,9 @@ function Interface:update(dt, sx, sy, wx, wy)
 end
 
 function Interface:draw()
+    for i, pane in ipairs(self.panes) do
+        pane:draw()
+    end
 end
 
 function Interface:cursor(sx, sy, wx, wy)
@@ -60,6 +65,10 @@ function Interface:cursor(sx, sy, wx, wy)
 end
 
 function Interface:input(callback, ...)
+    for i, pane in ipairs(self.panes) do
+        if pane[callback](pane, ...) then return true end
+    end
+
     local function input(tool, ...)
         local block, change = tool[callback](tool, ...)
 

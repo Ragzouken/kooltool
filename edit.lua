@@ -83,15 +83,6 @@ end
 local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
-local pencil = love.graphics.newImage("images/pencil.png")
-local tiles = love.graphics.newImage("images/tiles.png")
-local walls = love.graphics.newImage("images/walls.png")
-local marker = love.graphics.newImage("images/marker.png")
-local entity = love.graphics.newImage("images/entity.png")
-local note = love.graphics.newImage("images/note.png")
-local save = love.graphics.newImage("images/save.png")
-local export = love.graphics.newImage("images/export.png")
-
 function love.draw()
     if PROJECT then
         CAMERA:attach()
@@ -116,25 +107,7 @@ function love.draw()
 
         PROJECT.layers.surface.tileset:draw()
 
-        INTERFACE:draw()
-
-        love.graphics.setColor(255, 255, 255, 255)
-        love.graphics.setBlendMode("premultiplied")
-        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 8*(32+1)+1)
-
-        love.graphics.setColor(PALETTE.colours[3])
-        love.graphics.draw(pencil, 4, 4 + 0 * 33, 0, 1, 1)
-        love.graphics.setColor(0, 0, 0, 255)
-        love.graphics.draw(tiles, 4, 4 + 1 * 33, 0, 1, 1)
-        love.graphics.setColor(colour.cursor(0))
-        love.graphics.draw(marker, 4, 4 + 2 * 33, 0, 1, 1)
-        love.graphics.setColor(0, 0, 0, 255)
-        love.graphics.draw(entity, 4, 4 + 3 * 33, 0, 1, 1)
-        love.graphics.setColor(0, 0, 0, 255)
-        love.graphics.draw(note, 4, 4 + 4 * 33, 0, 1, 1)
-        love.graphics.draw(save, 4, 4 + 5 * 33, 0, 1, 1)
-        love.graphics.draw(export, 4, 4 + 6 * 33, 0, 1, 1)
-        love.graphics.draw(walls, 4, 4 + 7 * 33, 0, 1, 1)
+        INTERFACE_:draw()
     else
         INTERFACE:draw()
         POO:draw()
@@ -156,43 +129,6 @@ function love.mousepressed(x, y, button)
     local wx, wy = CAMERA:worldCoords(x, y)
 
     if PROJECT then
-        if x <= 35 then
-            if y <= 36 then
-                INTERFACE_.active = INTERFACE_.tools.draw
-                return
-            elseif y <= 70 then
-                INTERFACE_.active = INTERFACE_.tools.tile
-                return
-            elseif y <= 106 then
-                INTERFACE_.active = INTERFACE_.tools.marker
-                return
-            elseif y <= 125 then
-                local entity = PROJECT:newEntity(wx, wy)
-                INTERFACE_.action = INTERFACE_.tools.drag
-                INTERFACE_.action:grab(entity, x, y, wx, wy)
-                return
-            elseif y <= 168 then
-                local notebox = PROJECT:newNotebox(wx, wy)
-                INTERFACE_.action = INTERFACE_.tools.drag
-                INTERFACE_.action:grab(notebox, x, y, wx, wy)
-                return
-            elseif y <= 201 then
-                SAVESOUND:play()
-                PROJECT:save("projects/" .. PROJECT.name)
-                love.system.openURL("file://"..love.filesystem.getSaveDirectory())
-                return
-            elseif y <= 234 then
-                SAVESOUND:play()
-                PROJECT:save("projects/" .. PROJECT.name)
-                PROJECT:export()
-                love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
-                return
-            elseif y <= 267 then
-                INTERFACE_.active = INTERFACE_.tools.wall
-                return
-            end
-        end
-
         if button == "l" then
             local index = PROJECT.layers.surface.tileset:click(x, y)
             if index then
