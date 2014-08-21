@@ -2,8 +2,8 @@ local Timer = require "hump.timer"
 
 local Project = require "project"
 local InterfaceWrong = require "interfacewrong"
-local Interface = require "interface"
 
+local interface = require "interface"
 local generators = require "generators"
 local colour = require "colour"
 
@@ -45,7 +45,7 @@ local dirs = {
 
 function love.update(dt)
     if PROJECT and not INTERFACE_ then 
-        INTERFACE_ = Interface(PROJECT)
+        INTERFACE_ = interface.Interface(PROJECT)
     end
 
     local sx, sy = love.mouse.getPosition()
