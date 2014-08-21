@@ -77,6 +77,7 @@ function Tileset:draw()
         love.graphics.draw(self.canvas, quad, x, y, 0, 1, 1)
     end
 
+    local TILE = INTERFACE_.tools.tile.tile
     local x, y = love.window:getWidth() - 32 - 4, 4 + (TILE - 1) * (32 + 1)
     love.graphics.setColor(colour.cursor(0))
     love.graphics.rectangle("line", x, y, 32, 32)

@@ -1,8 +1,9 @@
 local Class = require "hump.class"
 local Collider = require "collider"
+local History = require "history"
 local SurfaceLayer = require "layers.surface"
 local AnnotationLayer = require "layers.annotation"
-local DragDeleteMode, PixelMode, TileMode, AnnotateMode = unpack(require "modez")
+local PixelMode, TileMode, AnnotateMode = unpack(require "modez")
 
 local Entity = require "entity"
 local Notebox = require "notebox"
@@ -33,8 +34,6 @@ function Project.default(name)
     project.layers.surface = generators.surface.default(project)
     project.layers.annotation = AnnotationLayer(project)
 
-    DRAGDELETEMODE = DragDeleteMode()
-    PIXELMODE = PixelMode(project.layers.surface)
     TILEMODE = TileMode(project.layers.surface)
     ANNOTATEMODE = AnnotateMode(project.layers.annotation)
     
@@ -47,7 +46,7 @@ function Project:init(name)
     self.dragables = Collider(128)
 
     self.layers = {}
-    self.history = {}
+    self.history = History()
 end
 
 function Project:load(folder_path)
@@ -64,8 +63,6 @@ function Project:load(folder_path)
     self.layers.annotation = AnnotationLayer(self)
     self.layers.annotation:deserialise(json.decode(data), folder_path)
 
-    DRAGDELETEMODE = DragDeleteMode()
-    PIXELMODE = PixelMode(self.layers.surface)
     TILEMODE = TileMode(self.layers.surface)
     ANNOTATEMODE = AnnotateMode(self.layers.annotation)
 end
@@ -106,7 +103,7 @@ end
 function Project:draw(annotations)
     self.layers.surface:draw()
 
-    if MODE ~= PIXELMODE then
+    if INTERFACE_.active ~= INTERFACE_.tools.draw then
         for entity in pairs(self.layers.surface.entities) do
             entity:border()
         end
@@ -130,7 +127,6 @@ function Project:newEntity(x, y)
     entity:blank(x, y)
 
     self.layers.surface:addEntity(entity)
-    MODE = TILEMODE
 
     table.insert(self.history, function()
         self.layers.surface:removeEntity(entity)
@@ -142,8 +138,6 @@ end
 function Project:newNotebox(x, y)
     local notebox = Notebox(self.layers.annotation, x, y, "[note]")
     self.layers.annotation:addNotebox(notebox)
-    MODE = ANNOTATEMODE
-    DRAGDELETEMODE.state.selected = notebox
 
     table.insert(self.history, function()
         self.layers.annotation:removeNotebox(notebox)
@@ -153,8 +147,8 @@ function Project:newNotebox(x, y)
 end
 
 function Project:undo()
-    local action = table.remove(self.history)
-    action()
+    --local action = table.remove(self.history)
+    --if action then action() end
 end
 
 Project.export = export.export

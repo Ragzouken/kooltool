@@ -8,7 +8,7 @@ end
 
 local Camera = require "hump.camera"
 local Project = require "project"
-local Interface = require "interface"
+local InterfaceWrong = require "interfacewrong"
 
 FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 love.graphics.setFont(FONT)

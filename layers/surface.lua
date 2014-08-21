@@ -202,12 +202,16 @@ function SurfaceLayer:setTile(index, gx, gy)
         end
 
         self.tilemap:set({index, id}, gx, gy)
+
+        return (not current) or (current[1] ~= index)
     else
         if id then
             self.tilebatch:set(id, gx * tw, gy * th, 0, 0, 0)
         end
 
         self.tilemap:set(nil, gx, gy)
+
+        return current or false
     end
 end
 

@@ -70,8 +70,15 @@ function AnnotationLayer:init()
     self.collider = Collider(256)
 
     self.collider:setCallbacks(function(dt, shape_one, shape_two, dx, dy)
-        shape_one.notebox:move( dx/2,  dy/2)
-        shape_two.notebox:move(-dx/2, -dy/2)
+        local notebox_one, notebox_two = shape_one.notebox, shape_two.notebox
+
+        PROJECT.history:push(function()
+            notebox_one:move( dx/2,  dy/2)
+            notebox_two:move(-dx/2, -dy/2)
+        end, function()
+            notebox_one:move(-dx/2, -dy/2)
+            notebox_two:move( dx/2,  dy/2)
+        end)
     end)
 end
 
@@ -96,7 +103,7 @@ function AnnotationLayer:draw()
     love.graphics.setColor(255, 255, 255, 255)
 
     for notebox in pairs(self.noteboxes) do
-        notebox:draw(DRAGDELETEMODE.state.selected == notebox)
+        notebox:draw()--MODE.state.selected == notebox)
     end
 end
 

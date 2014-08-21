@@ -1,20 +1,17 @@
 local Timer = require "hump.timer"
 
 local Project = require "project"
+local InterfaceWrong = require "interfacewrong"
 local Interface = require "interface"
 
 local generators = require "generators"
 local colour = require "colour"
 
-local Pan = require "actions.pan"
-
 function love.load()
-    TILESOUND = love.audio.newSource("sounds/marker pen.wav")
     CLONESOUND = love.audio.newSource("sounds/clone.wav")
     SAVESOUND = love.audio.newSource("sounds/save.wav")
     TIMER = Timer()
     PALETTE = generators.Palette.generate(3)
-    TILE = 1
     FULL = false
     BRUSHSIZE = 1
 
@@ -36,8 +33,7 @@ function love.load()
     tutorial:loadIcon("tutorial")
     table.insert(projects, 1, tutorial)
 
-    INTERFACE = Interface(projects)
-    MODE = INTERFACE.modes.select_project
+    INTERFACE = InterfaceWrong(projects).modes.select_project
     ACTION = nil
 end
 
@@ -49,8 +45,14 @@ local dirs = {
 }
 
 function love.update(dt)
+    if PROJECT and not INTERFACE_ then 
+        INTERFACE_ = Interface(PROJECT)
+    end
+
     local sx, sy = love.mouse.getPosition()
-    if ACTION then ACTION:update(dt, sx, sy, CAMERA:mousepos()) end
+    local wx, wy = CAMERA:mousepos()
+
+    if INTERFACE_ then INTERFACE_:update(dt, sx, sy, wx, wy) end
 
     TIMER:update(dt)
 
@@ -58,14 +60,6 @@ function love.update(dt)
 
     if PROJECT then
         PROJECT:update(dt)
-        DRAGDELETEMODE:update(dt)
-        MODE:update(dt)
-
-        local mx, my = CAMERA:mousepos()
-        mx, my = math.floor(mx), math.floor(my)
-
-        if MODE ~= PIXELMODE and DRAGDELETEMODE:hover(mx, my, dt) then
-        else MODE:hover(mx, my, dt) end
     end
 
     if not love.keyboard.isDown("lshift") then
@@ -101,20 +95,22 @@ function love.draw()
         CAMERA:attach()
 
         PROJECT:draw(true)
-
-        local mx, my = CAMERA:mousepos()
-        love.graphics.setColor(colour.random())
-        MODE:draw(mx, my)
+        
+        local sx, sy = love.mouse.getPosition()
+        local wx, wy = CAMERA:mousepos()
+        INTERFACE_:cursor(sx, sy, wx, wy)
 
         CAMERA:detach()
 
-        local o = 4-1+32+2
-        love.graphics.setBlendMode("alpha")
-        love.graphics.setColor(0, 0, 0, 255)
-        love.graphics.rectangle("fill", 0, 0, 512, 16 + 3)
-        love.graphics.setColor(255, 255, 255, 255)
-        love.graphics.setFont(large)
-        love.graphics.print(" " .. MODE.name, 3+o, 5)
+        if INTERFACE_.active then
+            local o = 4-1+32+2
+            love.graphics.setBlendMode("alpha")
+            love.graphics.setColor(0, 0, 0, 255)
+            love.graphics.rectangle("fill", 0, 0, 512, 16 + 3)
+            love.graphics.setColor(255, 255, 255, 255)
+            love.graphics.setFont(large)
+            love.graphics.print(" " .. INTERFACE_.active.name, 3+o, 5)
+        end
 
         PROJECT.layers.surface.tileset:draw()
 
@@ -122,7 +118,7 @@ function love.draw()
 
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.setBlendMode("premultiplied")
-        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 8*(32+1)+1)
+        love.graphics.rectangle("fill", 4-1, 4-1, 32+2, 7*(32+1)+1)
 
         love.graphics.setColor(PALETTE.colours[3])
         love.graphics.draw(pencil, 4, 4 + 0 * 33, 0, 1, 1)
@@ -138,7 +134,6 @@ function love.draw()
         love.graphics.draw(export, 4, 4 + 6 * 33, 0, 1, 1)
     else
         INTERFACE:draw()
-        MODE:draw()
     end
 
     if NOCANVAS then
@@ -153,145 +148,74 @@ function love.draw()
     love.graphics.setColor(255, 255, 255, 255)
 end
 
-function zoom_on(mx, my)
-    if TWEEN then TIMER:cancel(TWEEN) end
-    ZOOM = math.min(ZOOM * 2, 16)
-    
-    local dx, dy, dz = CAMERA.x - mx, CAMERA.y - my, ZOOM - CAMERA.scale
-    local oscale = CAMERA.scale
-    local factor = ZOOM / CAMERA.scale
-    local t = 0
-
-    TWEEN = TIMER:do_for(0.25, function(dt)
-        t = t + dt
-        local u = t / 0.25
-        local du = factor - 1
-
-        CAMERA.scale = oscale*factor - (1 - u) * dz
-        CAMERA.x, CAMERA.y = mx + dx / (1 + du*u), my + dy / (1 + du*u)
-    end)
-end
-
-function zoom_out()
-    if TWEEN then TIMER:cancel(TWEEN) end
-    ZOOM = math.max(ZOOM / 2, 1 / 16)
-    TWEEN = TIMER:tween(0.25, CAMERA, {scale = ZOOM}, "out-quad")
-end
-
 function love.mousepressed(x, y, button)
     local wx, wy = CAMERA:worldCoords(x, y)
-    if ACTION then ACTION:mousepressed(button, x, y, wx, wy) return end
-
-    local mx, my = CAMERA:worldCoords(x, y)
-    mx, my = math.floor(mx), math.floor(my)
-
-    if x <= 35 then
-        if y <= 36 then MODE = PIXELMODE return
-        elseif y <= 70 then MODE = TILEMODE return
-        elseif y <= 106 then MODE = ANNOTATEMODE return
-        elseif y <= 125 then
-            MODE = TILEMODE
-            MODE.state.selected = PROJECT:newEntity(mx, my)
-            DRAGDELETEMODE:mousepressed(mx, my, button)
-            return
-        elseif y <= 168 then
-            MODE = ANNOTATEMODE
-            MODE.state.selected = PROJECT:newNotebox(mx, my)
-            DRAGDELETEMODE:mousepressed(mx, my, button)
-            return
-        elseif y <= 201 then
-            SAVESOUND:play()
-            PROJECT:save("projects/" .. PROJECT.name)
-            love.system.openURL("file://"..love.filesystem.getSaveDirectory())
-            return
-        elseif y <= 234 then
-            SAVESOUND:play()
-            PROJECT:save("projects/" .. PROJECT.name)
-            PROJECT:export()
-            love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
-            return
-        end
-    end
 
     if PROJECT then
-        if button == "wu" or (love.keyboard.isDown("tab") and button == "l") then
-            zoom_on(mx, my)
-        elseif button == "wd" or (love.keyboard.isDown("tab") and button == "r") then
-            zoom_out()
-        elseif button == "r" then
-            ACTION = Pan(function() ACTION = nil end)
-            ACTION:mousepressed(button, x, y, CAMERA:mousepos())
-            return
+        if x <= 35 then
+            if y <= 36 then
+                INTERFACE_.active = INTERFACE_.tools.draw
+                return
+            elseif y <= 70 then
+                INTERFACE_.active = INTERFACE_.tools.tile
+                return
+            elseif y <= 106 then
+                INTERFACE_.active = INTERFACE_.tools.marker
+                return
+            elseif y <= 125 then
+                local entity = PROJECT:newEntity(wx, wy)
+                INTERFACE_.action = INTERFACE_.tools.drag
+                INTERFACE_.action:grab(entity, x, y, wx, wy)
+                return
+            elseif y <= 168 then
+                local notebox = PROJECT:newNotebox(wx, wy)
+                INTERFACE_.action = INTERFACE_.tools.drag
+                INTERFACE_.action:grab(notebox, x, y, wx, wy)
+                return
+            elseif y <= 201 then
+                SAVESOUND:play()
+                PROJECT:save("projects/" .. PROJECT.name)
+                love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+                return
+            elseif y <= 234 then
+                SAVESOUND:play()
+                PROJECT:save("projects/" .. PROJECT.name)
+                PROJECT:export()
+                love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
+                return
+            end
         end
-    end
 
-    local w, h = love.window.getDimensions()
-    if x <= 0 or y <= 0 or x >= w or y >= w then return end
-
-    if PROJECT then
         if button == "l" then
             local index = PROJECT.layers.surface.tileset:click(x, y)
             if index then
-                TILE = index 
-                MODE = TILEMODE
+                INTERFACE_.active = INTERFACE_.tools.tile
+                INTERFACE_.active.tile = index
                 return true
             end
         end
-    end
 
-    if not love.keyboard.isDown("tab") then
-        if PROJECT and MODE ~= PIXELMODE and DRAGDELETEMODE:mousepressed(mx, my, button) then return end
-        if MODE:mousepressed(mx, my, button) then return end
+        if INTERFACE_:input("mousepressed", button, x, y, wx, wy) then
+            return
+        end
+    else
+        INTERFACE:mousepressed(x, y, button)
     end
 end
 
 function love.mousereleased(x, y, button)
     local wx, wy = CAMERA:worldCoords(x, y)
-    if ACTION then ACTION:mousereleased(button, x, y, wx, wy) return end
-
+    
     if PROJECT then
-        local mx, my = CAMERA:worldCoords(x, y)
-        mx, my = math.floor(mx), math.floor(my)
-        
-        DRAGDELETEMODE:mousereleased(mx, my, button)
-        MODE:mousereleased(mx, my, button)
+        if INTERFACE_:input("mousereleased", button, x, y, wx, wy) then
+            return
+        end
     end
 end
 
 function love.keypressed(key, isrepeat)
-    if DRAGDELETEMODE:keypressed(key, isrepeat) then return
-    elseif MODE:keypressed(key, isrepeat) then return
-    end
-
-    local function switch(mode)
-        MODE:defocus()
-        MODE = mode
-        MODE:focus()
-    end
-
     if PROJECT then
-        local modes = {
-            q = PIXELMODE,
-            w = TILEMODE,
-            e = ANNOTATEMODE,
-        } 
-
-        if modes[key] then
-            if love.keyboard.isDown("tab") then
-                --modes[key].layer.active = not modes[key].layer.active
-            else
-                switch(modes[key])
-            end
-        end
-
-        local mx, my = CAMERA:mousepos()
-        mx, my = math.floor(mx), math.floor(my)
-
-        if key == "t" then 
-            PROJECT:newEntity(mx, my)
-        elseif key == "y" then
-            PROJECT:newNotebox(mx, my)
-        elseif key == "f10" and not isrepeat then
+        if key == "f10" and not isrepeat then
             --local w, h, flags = love.window.getMode()
             --flags.vsync = not flags.vsync
             --love.window.setMode(w, h, flags)
@@ -306,25 +230,35 @@ function love.keypressed(key, isrepeat)
                 love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
             end
         elseif key == "z" and love.keyboard.isDown("lctrl") then
-            PROJECT:undo()
+            PROJECT.history:undo()
+        end
+
+        local sx, sy = love.mouse.getPosition()
+        local wx, wy = CAMERA:mousepos()
+
+        if not isrepeat then
+            INTERFACE_:input("keypressed", key, sx, sy, wx, wy)
         end
     end
 end
 
 function love.keyreleased(key)
-    MODE:keyreleased(key)
+    if PROJECT then
+        local sx, sy = love.mouse.getPosition()
+        local wx, wy = CAMERA:mousepos()
+
+        INTERFACE_:input("keyreleased", key, sx, sy, wx, wy)
+    end
 end
 
 function love.textinput(character)
-    if not DRAGDELETEMODE:textinput(character) then
-        MODE:textinput(character)
+    if PROJECT then
+        local sx, sy = love.mouse.getPosition()
+        local wx, wy = CAMERA:mousepos()
+
+        INTERFACE_:input("textinput", character, sx, sy, wx, wy)
     end
 end
 
 function love.focus(focus)
-    if not focus then
-        MODE:defocus()
-    else
-        MODE:focus()
-    end
 end

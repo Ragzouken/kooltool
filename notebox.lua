@@ -3,7 +3,8 @@ local shapes = require "collider.shapes"
 local colour = require "colour"
 
 local Notebox = Class {
-    font = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
+    font = love.graphics.newFont("fonts/PressStart2P.ttf", 8),
+    typing_sound = love.audio.newSource("sounds/typing.wav"),
 }
 
 Notebox.font:setFilter("linear", "nearest")
@@ -63,6 +64,8 @@ function Notebox:draw(editing)
         love.graphics.printf(lines[#lines]:gsub(".", "_") .. "*", x*2, y*2 + oy + (#lines - 1) * font_height, self.memo.width)
     end
     love.graphics.pop()
+
+    --self.shape:draw()
 end
 
 function Notebox:move(dx, dy)
@@ -92,7 +95,7 @@ function Notebox:refresh()
     local x, y = self.x - math.ceil(width*2), self.y - math.ceil(height*2)
 
     local x1, y1 = 0, 0
-    local x2, y2 = width/2+3, height/2+3
+    local x2, y2 = (width+2)/2, (height+2)/2
 
     local shape = shapes.newPolygonShape(x1, y1, x2, y1, x2, y2, x1, y2)
     shape:moveTo(self.x, self.y)
@@ -101,13 +104,24 @@ function Notebox:refresh()
     self.shape = shape
 end
 
-function Notebox:keypressed(key)
-    if key == "backspace" then self.text = string.sub(self.text, 1, #self.text-1) end
-    if key == "return" then self.text = self.text .. "\n" end
-    
-    self:refresh()
+function Notebox:type(string)
+    self.text = self.text .. string
 
-    if key == "backspace" or key == "return" then
+    self.typing_sound:stop()
+    self.typing_sound:play()
+
+    self:refresh()
+end
+
+function Notebox:keypressed(key)
+    if key == "backspace" then
+        self.text = string.sub(self.text, 1, #self.text-1)
+        self:type("")
+        
+        return true
+    elseif key == "return" then
+        self:type("\n")
+
         return true
     end
 
@@ -115,8 +129,7 @@ function Notebox:keypressed(key)
 end
 
 function Notebox:textinput(character)
-    self.text = self.text .. character
-    self:refresh()
+    self:type(character)
 
     return true
 end
