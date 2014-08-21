@@ -3,7 +3,6 @@ local Collider = require "collider"
 local History = require "history"
 local SurfaceLayer = require "layers.surface"
 local AnnotationLayer = require "layers.annotation"
-local PixelMode, TileMode, AnnotateMode = unpack(require "modez")
 
 local Entity = require "entity"
 local Notebox = require "notebox"
@@ -33,9 +32,6 @@ function Project.default(name)
     project.palette = PALETTE
     project.layers.surface = generators.surface.default(project)
     project.layers.annotation = AnnotationLayer(project)
-
-    TILEMODE = TileMode(project.layers.surface)
-    ANNOTATEMODE = AnnotateMode(project.layers.annotation)
     
     return project
 end
@@ -62,9 +58,6 @@ function Project:load(folder_path)
     local data = love.filesystem.read(folder_path .. "/notelayer.json")
     self.layers.annotation = AnnotationLayer(self)
     self.layers.annotation:deserialise(json.decode(data), folder_path)
-
-    TILEMODE = TileMode(self.layers.surface)
-    ANNOTATEMODE = AnnotateMode(self.layers.annotation)
 end
 
 function Project:save(folder_path)

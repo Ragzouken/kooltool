@@ -4,7 +4,10 @@ local Brush = require "brush"
 
 local colour = require "colour"
 
-local Draw = Class { __includes = Tool, name = "draw", }
+local Draw = Class {
+    __includes = Tool,
+    name = "draw",
+}
 
 function Draw:init(project, colour)
     Tool.init(self)
@@ -24,7 +27,13 @@ function Draw:cursor(sx, sy, wx, wy)
     else
         local object = self.project:objectAt(wx, wy)
 
-        if object and object.applyBrush then object:border() end
+        if object then
+            if object.applyBrush then 
+                object:border()
+            else
+                return
+            end
+        end
     end
 
     local bo = math.floor(self.size / 2)
@@ -114,6 +123,8 @@ function Draw:keypressed(key, sx, sy, wx, wy)
         return true
     elseif key == " " then
         self.colour = {colour.random(0, 255)}
+
+        return true
     end
 end
 

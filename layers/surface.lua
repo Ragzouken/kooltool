@@ -11,6 +11,7 @@ local common = require "common"
 local SurfaceLayer = Class {
     __includes = Layer,
     tilesize = {32, 32},
+    clone_sound = love.audio.newSource("sounds/clone.wav"),
 }
 
 function SurfaceLayer:deserialise_entity(data, saves)
@@ -316,8 +317,8 @@ function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
 
     if cloned then
         self:refresh()
-        CLONESOUND:stop()
-        CLONESOUND:play()
+        self.clone_sound:stop()
+        self.clone_sound:play()
     end
 end
 

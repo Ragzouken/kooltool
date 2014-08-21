@@ -52,7 +52,7 @@ function Notebox:draw(editing)
     love.graphics.scale(0.5)
 
     love.graphics.setColor(0, 0, 0, 255)
-    love.graphics.rectangle("fill", x*2-1, y*2, width+2, height+2)
+    love.graphics.rectangle("fill", x*2-1, y*2-1, width+2, height+2)
 
     love.graphics.setColor(255, 255, 255, 255)
     for i, line in ipairs(lines) do

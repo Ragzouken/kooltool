@@ -8,12 +8,10 @@ local generators = require "generators"
 local colour = require "colour"
 
 function love.load()
-    CLONESOUND = love.audio.newSource("sounds/clone.wav")
-    SAVESOUND = love.audio.newSource("sounds/save.wav")
     TIMER = Timer()
     PALETTE = generators.Palette.generate(3)
+    SAVESOUND = love.audio.newSource("sounds/save.wav")
     FULL = false
-    BRUSHSIZE = 1
 
     local projects = {}
     local proj_path = "projects"
@@ -33,7 +31,8 @@ function love.load()
     tutorial:loadIcon("tutorial")
     table.insert(projects, 1, tutorial)
 
-    INTERFACE = InterfaceWrong(projects).modes.select_project
+    POO = InterfaceWrong(projects)
+    INTERFACE = POO.modes.select_project
     ACTION = nil
 end
 
@@ -83,7 +82,7 @@ local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
 local pencil = love.graphics.newImage("images/pencil.png")
-local tiles = love.graphics.newImage("images/tiles.png")
+local tiles = love.graphics.newImage("images/walls.png")
 local marker = love.graphics.newImage("images/marker.png")
 local entity = love.graphics.newImage("images/entity.png")
 local note = love.graphics.newImage("images/note.png")
@@ -134,6 +133,7 @@ function love.draw()
         love.graphics.draw(export, 4, 4 + 6 * 33, 0, 1, 1)
     else
         INTERFACE:draw()
+        POO:draw()
     end
 
     if NOCANVAS then
@@ -171,6 +171,7 @@ function love.mousepressed(x, y, button)
                 local notebox = PROJECT:newNotebox(wx, wy)
                 INTERFACE_.action = INTERFACE_.tools.drag
                 INTERFACE_.action:grab(notebox, x, y, wx, wy)
+                --INTERFACE_.tools.type.target = notebox
                 return
             elseif y <= 201 then
                 SAVESOUND:play()
@@ -203,13 +204,11 @@ function love.mousepressed(x, y, button)
     end
 end
 
-function love.mousereleased(x, y, button)
-    local wx, wy = CAMERA:worldCoords(x, y)
-    
+function love.mousereleased(x, y, button)    
     if PROJECT then
-        if INTERFACE_:input("mousereleased", button, x, y, wx, wy) then
-            return
-        end
+        local wx, wy = CAMERA:worldCoords(x, y)
+
+        INTERFACE_:input("mousereleased", button, x, y, wx, wy)
     end
 end
 

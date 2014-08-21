@@ -1,18 +1,34 @@
 local Class = require "hump.class"
 local Tool = require "tools.tool"
-
 local Brush = require "brush"
 
-local Marker = Class { __includes = Tool, name = "annotate", }
+local colour = require "colour"
+
+local Marker = Class {
+    __includes = Tool,
+    name = "annotate",
+}
 
 function Marker:init(project)
     Tool.init(self)
     
     self.project = project
+    self.size = 1
+end
+
+function Marker:cursor(sx, sy, wx, wy)
+    if not self.project:objectAt(wx, wy) then
+        local bo = math.floor(self.size / 2)
+        local x, y = math.floor(wx) - bo, math.floor(wy) - bo
+
+        love.graphics.setBlendMode("alpha")
+        love.graphics.setColor(colour.cursor(0))
+        love.graphics.rectangle("fill", x, y, self.size, self.size)
+    end
 end
 
 function Marker:mousepressed(button, sx, sy, wx, wy)
-    if button == "l" then
+    if button == "l" and not self.project:objectAt(wx, wy) then
         self:startdrag("draw")
 
         local object = self.project:objectAt(wx, wy)
@@ -31,7 +47,7 @@ end
 function Marker:mousedragged(action, screen, world)
     if action == "draw" then
         local colour = not self.drag.erase and {255, 255, 255, 255} or nil
-        local size = not self.drag.erase and BRUSHSIZE or BRUSHSIZE * 3
+        local size = not self.drag.erase and self.size or self.size * 3
         local wx, wy, dx, dy = unpack(world)
 
         local x1, y1 = math.floor(wx-dx), math.floor(wy-dy)
@@ -47,6 +63,20 @@ function Marker:mousereleased(button, sx, sy, wx, wy)
         self:enddrag()
 
         return true, "end"
+    end
+end
+
+local digits = {}
+
+for i=1,9 do
+    digits[tostring(i)] = i
+end
+
+function Marker:keypressed(key, sx, sy, wx, wy)
+    if digits[key] then
+        self.size = digits[key]
+
+        return true
     end
 end
 

@@ -15,10 +15,13 @@ function Interface:init(project)
         drag = tools.Drag(project),
         draw = tools.Draw(project, PALETTE.colours[3]),
         tile = tools.Tile(project, TILE),
+        wall = tools.Wall(project),
         marker = tools.Marker(project),
+        type = tools.Type(project),
     }
 
     self.global = {
+        self.tools.type,
         self.tools.pan,
         self.tools.drag,
     }

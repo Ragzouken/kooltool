@@ -4,20 +4,20 @@ local Tool = require "tools.tool"
 local bresenham = require "utilities.bresenham"
 local colour = require "colour"
 
-local Tile = Class {
+local Wall = Class {
     __includes = Tool,
-    name = "tile",
+    name = "walls",
     sound = love.audio.newSource("sounds/marker pen.wav"),
 }
 
-function Tile:init(project, tile)
+function Wall:init(project, tile)
     Tool.init(self)
     
     self.project = project
     self.tile = 1
 end
 
-function Tile:cursor(sx, sy, wx, wy)
+function Wall:cursor(sx, sy, wx, wy)
     if not self.project:objectAt(wx, wy) then
         local layer = self.project.layers.surface
         local gx, gy = layer.tilemap:gridCoords(wx, wy)
@@ -25,18 +25,16 @@ function Tile:cursor(sx, sy, wx, wy)
         local quad = layer.tileset.quads[self.tile]
 
         love.graphics.setColor(255, 255, 255, 128)
-        love.graphics.draw(layer.tileset.canvas, quad, gx * size, gy * size)
-        love.graphics.setColor(colour.cursor(0))
-        love.graphics.rectangle("line", gx*size, gy*size, size, size)
+        love.graphics.rectangle("fill", gx*size, gy*size, size, size)
     end
 end
 
-function Tile:mousepressed(button, sx, sy, wx, wy)
+function Wall:mousepressed(button, sx, sy, wx, wy)
     if button == "l" then
         if love.keyboard.isDown("lalt") then
             local layer = self.project.layers.surface
             local gx, gy = layer.tilemap:gridCoords(wx, wy)
-            self.tile = layer:getTile(gx, gy) or self.tile
+            self.tile = layer:getWall(gx, gy) or self.tile
 
             return true
         else
@@ -53,7 +51,7 @@ function Tile:mousepressed(button, sx, sy, wx, wy)
     end
 end
 
-function Tile:mousedragged(action, screen, world)
+function Wall:mousedragged(action, screen, world)
     if action == "draw" then
         local layer = self.project.layers.surface
         local wx, wy, dx, dy = unpack(world)
@@ -65,7 +63,7 @@ function Tile:mousedragged(action, screen, world)
         local index = not self.drag.erase and self.tile or nil
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
-            change = change or layer:setTile(index, lx, ly)
+            change = change or layer:setWall(index, lx, ly)
         end
 
         if change then
@@ -75,7 +73,7 @@ function Tile:mousedragged(action, screen, world)
     end
 end
 
-function Tile:mousereleased(button, sx, sy, wx, wy)
+function Wall:mousereleased(button, sx, sy, wx, wy)
     if button == "l" or button == "r" then
         self:enddrag()
 
@@ -83,4 +81,4 @@ function Tile:mousereleased(button, sx, sy, wx, wy)
     end
 end
 
-return Tile
+return Wall
