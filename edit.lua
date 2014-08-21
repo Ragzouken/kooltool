@@ -62,22 +62,6 @@ function love.update(dt)
     if PROJECT then
         PROJECT:update(dt)
     end
-
-    if not love.keyboard.isDown("lshift") then
-        for key, vector in pairs(dirs) do
-            if love.keyboard.isDown(key) then
-                local vx, vy = unpack(vector)
-                local speed = 256 / CAMERA.scale
-                CAMERA:move(vx * speed * dt, vy * speed * dt)
-            end
-        end
-    else
-        if love.keyboard.isDown("down") then
-            CAMERA.scale = CAMERA.scale - CAMERA.scale * dt
-        elseif love.keyboard.isDown("up") then
-            CAMERA.scale = CAMERA.scale + CAMERA.scale * dt
-        end
-    end
 end
 
 local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
@@ -156,22 +140,9 @@ end
 
 function love.keypressed(key, isrepeat)
     if PROJECT then
-        if key == "f10" and not isrepeat then
-            --local w, h, flags = love.window.getMode()
-            --flags.vsync = not flags.vsync
-            --love.window.setMode(w, h, flags)
-        elseif key == "f11" and not isrepeat then
+        if key == "f11" and not isrepeat then
             love.window.setFullscreen(not FULL, "desktop")
             FULL = not FULL
-        elseif (key == "f12" or (key == "s" and love.keyboard.isDown("lctrl"))) and not isrepeat then
-            PROJECT:save("projects/" .. PROJECT.name)
-
-            if love.keyboard.isDown("lshift") then
-                PROJECT:export()
-                love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
-            end
-        elseif key == "z" and love.keyboard.isDown("lctrl") then
-            PROJECT.history:undo()
         end
 
         local sx, sy = love.mouse.getPosition()
