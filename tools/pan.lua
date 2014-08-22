@@ -46,7 +46,7 @@ function Pan:mousepressed(button, sx, sy, wx, wy)
         self.drag.camera = {self.camera.x, self.camera.y}
         self.drag.dx, self.drag.dy = 0, 0
 
-        return true
+        return true, "begin"
     elseif button == "wu" then
         self:zoomin(wx, wy)
 
@@ -57,7 +57,7 @@ function Pan:mousepressed(button, sx, sy, wx, wy)
         return true
     end
 
-    return false, false
+    return true
 end
 
 function Pan:mousedragged(action, screen, world)
@@ -77,7 +77,7 @@ function Pan:mousereleased(button, sx, sy, wx, wy)
     if button == "r" and self.drag then
         self:enddrag()
 
-        return true, false
+        return true, "end"
     end
 end
 
