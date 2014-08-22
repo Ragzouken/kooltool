@@ -137,9 +137,7 @@ function love.keypressed(key, isrepeat)
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
 
-        if not isrepeat then
-            INTERFACE_:input("keypressed", key, sx, sy, wx, wy)
-        end
+        INTERFACE_:input("keypressed", key, isrepeat, sx, sy, wx, wy)
     end
 end
 

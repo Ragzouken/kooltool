@@ -106,7 +106,9 @@ for i=1,9 do
     digits[tostring(i)] = i
 end
 
-function Draw:keypressed(key, sx, sy, wx, wy)
+function Draw:keypressed(key, isrepreat, sx, sy, wx, wy)
+    if isrepeat then return end
+
     if key == "lctrl" then
         self.state.cloning = {}
 

@@ -72,11 +72,9 @@ for i=1,9 do
     digits[tostring(i)] = i
 end
 
-function Marker:keypressed(key, sx, sy, wx, wy)
-    if digits[key] then
+function Marker:keypressed(key, isrepeat, sx, sy, wx, wy)
+    if not isrepeat and digits[key] then
         self.size = digits[key]
-
-        print("dum")
 
         return true
     end
