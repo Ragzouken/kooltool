@@ -103,7 +103,7 @@ function AnnotationLayer:draw()
     love.graphics.setColor(255, 255, 255, 255)
 
     for notebox in pairs(self.noteboxes) do
-        notebox:draw(INTERFACE_.tools.type.target == notebox)
+        notebox:draw(INTERFACE_.tools.drag.target == notebox)
     end
 end
 

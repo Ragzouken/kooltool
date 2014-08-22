@@ -76,6 +76,8 @@ function Marker:keypressed(key, sx, sy, wx, wy)
     if digits[key] then
         self.size = digits[key]
 
+        print("dum")
+
         return true
     end
 end

@@ -19,7 +19,7 @@ end
 
 function Drag:drop()
     if self.drag and not self.drag.object.sprite then
-        INTERFACE_.tools.type.target = self.drag.object
+        self.target = self.drag.object
     end
 
     self:enddrag()
@@ -45,7 +45,7 @@ function Drag:mousepressed(button, sx, sy, wx, wy)
             return true, "begin"
         end
 
-        INTERFACE_.tools.type.target = nil
+        self.target = nil
     end
 
     return false
@@ -68,6 +68,23 @@ function Drag:mousereleased(button, sx, sy, wx, wy)
     end
 
     return 
+end
+
+function Drag:keypressed(key, sx, sy, wx, wy)
+    if self.target then
+        if key == "escape" or (key == "return" and love.keyboard.isDown("lshift")) then
+            self.target = nil
+            return true
+        end
+
+        return self.target:keypressed(key)
+    end
+end
+
+function Drag:textinput(character)
+    if self.target then
+        return self.target:textinput(character)
+    end
 end
 
 return Drag

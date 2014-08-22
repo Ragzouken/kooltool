@@ -24,11 +24,9 @@ function Interface:init(project)
         tile = tools.Tile(project, TILE),
         wall = tools.Wall(project),
         marker = tools.Marker(project),
-        type = tools.Type(project),
     }
 
     self.global = {
-        self.tools.type,
         self.tools.pan,
         self.tools.drag,
     }

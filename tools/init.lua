@@ -5,5 +5,4 @@ return {
     Tile = require "tools.tile",
     Wall = require "tools.wall",
     Marker = require "tools.marker",
-    Type = require "tools.type",
 }
