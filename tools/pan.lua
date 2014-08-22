@@ -56,8 +56,6 @@ function Pan:mousepressed(button, sx, sy, wx, wy)
         
         return true
     end
-
-    return true
 end
 
 function Pan:mousedragged(action, screen, world)

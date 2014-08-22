@@ -1,1 +1,1 @@
-{"sprites":[{"pivot":[16,16]},{"pivot":[16,16]},{"pivot":[16,16]},{"pivot":[16,16]},{"pivot":[47,16]}],"entities":[{"y":79,"x":624,"sprite":1},{"y":305,"x":752,"sprite":2},{"y":-63,"x":993,"sprite":5},{"y":-75,"x":911,"sprite":3}],"sprites_id":5}
+{"sprites":[{"pivot":[16,16]},{"pivot":[16,16]},{"pivot":[16,16]},{"pivot":[16,16]},{"pivot":[47,16]}],"entities":[{"y":-75,"x":911,"sprite":3},{"y":305,"x":752,"sprite":2},{"y":79,"x":624,"sprite":1},{"y":-63,"x":993,"sprite":5}],"sprites_id":5}

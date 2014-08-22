@@ -23,7 +23,7 @@ function Draw:cursor(sx, sy, wx, wy)
         local gx, gy = unpack(self.state.lock)
 
         love.graphics.setColor(colour.cursor(0))
-        love.graphics.rectangle("line", gx*32, gy*32, 32, 32)
+        love.graphics.rectangle("line", gx*32-0.5, gy*32-0.5, 32+1, 32+1)
     else
         local object = self.project:objectAt(wx, wy)
 
@@ -94,7 +94,7 @@ end
 function Draw:mousereleased(button, sx, sy, wx, wy)
     if button == "l" or (self.drag and button == "r") then
         self:enddrag()
-        self.state.cloning = nil
+        self.state.cloning = self.state.cloning and {} or nil
 
         return true, "end"
     end
@@ -106,7 +106,7 @@ for i=1,9 do
     digits[tostring(i)] = i
 end
 
-function Draw:keypressed(key, isrepreat, sx, sy, wx, wy)
+function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
     if isrepeat then return end
 
     if key == "lctrl" then

@@ -45,6 +45,8 @@ local dirs = {
 
 function love.update(dt)
     if PROJECT and not INTERFACE_ then 
+        for k, v in pairs(interface) do print(k, v) end
+
         INTERFACE_ = interface.Interface(PROJECT)
     end
 
