@@ -27,7 +27,9 @@ function Draw:cursor(sx, sy, wx, wy)
     else
         local object = self.project:objectAt(wx, wy)
 
-        if object then
+        if self.drag and self.drag.subject and self.drag.subject.sprite then
+            self.drag.subject:border()
+        elseif object then
             if object.applyBrush then 
                 object:border()
             else
@@ -87,7 +89,7 @@ function Draw:mousedragged(action, screen, world)
 
         local brush, ox, oy = Brush.line(x1, y1, x2, y2, self.size, colour)
         self.drag.subject:applyBrush(ox, oy, brush, 
-            self.state.lock or self.drag.sprite, self.state.cloning)
+            self.state.lock or self.state.resize, self.state.cloning)
     end
 end
 
@@ -114,7 +116,11 @@ function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
 
         return true
     elseif key == "lshift" then
-        if self.project:objectAt(wx, wy) then return true end
+        if self.project:objectAt(wx, wy) then
+            self.state.resize = true
+
+            return true
+        end
 
         self.state.lock = {self.project.layers.surface.tilemap:gridCoords(wx, wy)}
     
@@ -137,6 +143,7 @@ function Draw:keyreleased(key, sx, sy, wx, wy)
         return true
     elseif key == "lshift" then
         self.state.lock = nil
+        self.state.resize = nil
 
         return true
     end
