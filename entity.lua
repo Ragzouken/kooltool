@@ -52,6 +52,7 @@ function Entity:move(dx, dy)
 end
 
 function Entity:moveTo(x, y)
+    x, y = math.floor(x), math.floor(y)
     local px, py = unpack(self.sprite.pivot)
     local w, h = unpack(self.sprite.size)
 

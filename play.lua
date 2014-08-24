@@ -1,5 +1,8 @@
 local Player = require "player"
 
+PLAYERS = nil
+PLAYER = nil
+
 function love.load()
     PLAYERS = {}
 

@@ -29,7 +29,7 @@ function Sprite:applyBrush(bx, by, brush, lock)
         local sprite_rect = {0, 0, sw, sh}
         
         local rect = common.expandRectangle(sprite_rect, brush_rect)
-        dx, dy, nw, nh = unpack(rect)
+        local dx, dy, nw, nh = unpack(rect)
 
         if dx < 0 or dy < 0 or nw ~= sw or nh ~= sh then
             self.canvas = common.resizeCanvas(self.canvas, nw, nh, -dx, -dy)

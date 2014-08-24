@@ -1,7 +1,7 @@
 local Class = require "hump.class"
 local Tool = require "tools.tool"
 
-local Pan = Class { __includes = Tool, name == "pan", }
+local Pan = Class { __includes = Tool, name = "pan", }
 
 function Pan:init(camera)
     Tool.init(self)

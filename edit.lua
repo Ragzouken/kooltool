@@ -7,10 +7,17 @@ local interface = require "interface"
 local generators = require "generators"
 local colour = require "colour"
 
+TIMER = nil
+PALETTE = nil
+SAVESOUND = love.audio.newSource("sounds/save.wav")
+FULL = nil
+POO = nil
+INTERFACE = nil
+INTERFACE_ = nil
+
 function love.load()
     TIMER = Timer()
     PALETTE = generators.Palette.generate(3)
-    SAVESOUND = love.audio.newSource("sounds/save.wav")
     FULL = false
 
     local projects = {}
@@ -33,7 +40,6 @@ function love.load()
 
     POO = InterfaceWrong(projects)
     INTERFACE = POO.modes.select_project
-    ACTION = nil
 end
 
 local dirs = {

@@ -5,6 +5,9 @@ local colour = require "colour"
 local Notebox = Class {
     font = love.graphics.newFont("fonts/PressStart2P.ttf", 8),
     typing_sound = love.audio.newSource("sounds/typing.wav"),
+    
+    padding = 4,
+    spacing = 4,
 }
 
 Notebox.font:setFilter("linear", "nearest")
@@ -43,31 +46,34 @@ function Notebox:draw(editing)
     local lines, width = self.memo.lines, self.memo.width
 
     local font_height = self.font:getHeight()
-    local height = font_height * #lines
-    local oy = self.font:getAscent() - self.font:getBaseline()
+    local height = (font_height+self.spacing) * #lines
+    local oy = self.font:getAscent() - self.font:getBaseline() + self.spacing/2
 
-    local x, y = self.x - math.ceil(width / 4), self.y - math.ceil(height / 4)
+    local x, y = self.x - width / 4, self.y - height / 4
 
     love.graphics.push()
     love.graphics.scale(0.5)
 
     love.graphics.setColor(0, 0, 0, 255)
-    love.graphics.rectangle("fill", x*2-1, y*2-1, width+2, height+2)
+    love.graphics.rectangle("fill", x*2-self.padding, y*2-self.padding, 
+                                    width+2*self.padding, height+2*self.padding)
 
     love.graphics.setColor(255, 255, 255, 255)
     for i, line in ipairs(lines) do
-        love.graphics.printf(line, x*2, y*2 + oy + (i - 1) * font_height, self.memo.width)
+        love.graphics.printf(line, x*2, y*2 + oy + (i - 1) * (font_height+self.spacing), self.memo.width)
     end
 
     if editing then
         love.graphics.setColor(colour.cursor(0))
-        love.graphics.printf(lines[#lines]:gsub(".", "_") .. "*", x*2, y*2 + oy + (#lines - 1) * font_height, self.memo.width)
+        love.graphics.printf(lines[#lines]:gsub(".", "_") .. "*", x*2, y*2 + oy + (#lines - 1) * (font_height+self.spacing), self.memo.width)
     end
     love.graphics.pop()
 
     if editing then
         love.graphics.setColor(colour.cursor(0))
+        love.graphics.setLineWidth(0.5)
         self.shape:draw()
+        love.graphics.setLineWidth(1)
     end
 end
 
@@ -77,6 +83,8 @@ function Notebox:move(dx, dy)
 end
 
 function Notebox:moveTo(x, y)
+    x, y = math.floor(x * 2) / 2, math.floor(y * 2) / 2
+
     self.shape:moveTo(x, y)
     self.x, self.y = x, y
 end
@@ -92,13 +100,11 @@ function Notebox:refresh()
 
     self.memo = {lines = lines, width = width}
 
-    local height = self.font:getHeight() * #lines
+    local height = (self.font:getHeight() + self.spacing) * #lines
     local oy = self.font:getAscent() - self.font:getBaseline()
 
-    local x, y = self.x - math.ceil(width*2), self.y - math.ceil(height*2)
-
     local x1, y1 = 0, 0
-    local x2, y2 = (width+2)/2, (height+2)/2
+    local x2, y2 = (width)/2+self.padding, (height)/2+self.padding
 
     local shape = shapes.newPolygonShape(x1, y1, x2, y1, x2, y2, x1, y2)
     shape:moveTo(self.x, self.y)

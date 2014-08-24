@@ -21,7 +21,7 @@ function Interface:init(project)
         pan = tools.Pan(CAMERA),
         drag = tools.Drag(project),
         draw = tools.Draw(project, PALETTE.colours[3]),
-        tile = tools.Tile(project, TILE),
+        tile = tools.Tile(project, 1),
         wall = tools.Wall(project),
         marker = tools.Marker(project),
     }

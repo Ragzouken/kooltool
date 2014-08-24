@@ -56,7 +56,7 @@ function Drag:mousedragged(action, screen, world)
         local px, py = unpack(self.drag.pivot)
         local wx, wy = unpack(world)
 
-        self.drag.object:moveTo(math.floor(wx+px), math.floor(wy+py))
+        self.drag.object:moveTo(wx+px, wy+py)
     end
 end
 

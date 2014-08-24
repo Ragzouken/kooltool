@@ -54,7 +54,7 @@ function Marker:mousedragged(action, screen, world)
         local x2, y2 = math.floor(wx), math.floor(wy)
 
         local brush, ox, oy = Brush.line(x1, y1, x2, y2, size, colour)
-        self.project.layers.annotation:applyBrush(ox, oy, brush, lock, clone)
+        self.project.layers.annotation:applyBrush(ox, oy, brush)
     end
 end
 

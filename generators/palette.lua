@@ -5,7 +5,7 @@ local colour = require "colour"
 local Palette = Class {}
 
 function Palette.generate(colour_count)
-    colours = {}
+    local colours = {}
 
     local offset = love.math.random() * 255
 

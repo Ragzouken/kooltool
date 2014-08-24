@@ -40,9 +40,12 @@ function Tilebar:mousepressed(button, sx, sy, wx, wy)
 
     if sx > edge-32-margin and sy > margin and sx < edge-margin then
         local i = math.floor((sy - margin) / 33) + 1
-        self.interface.active = self.interface.tools.tile
-        self.interface.tools.tile.tile = i
-        return true
+        
+        if i <= self.tileset.tiles then
+            self.interface.active = self.interface.tools.tile
+            self.interface.tools.tile.tile = i
+            return true
+        end
     end
 end
 

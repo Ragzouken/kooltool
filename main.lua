@@ -1,10 +1,21 @@
-require "utilities.strict"
+do
+    require "utilities.strict"
+
+    class_commons = nil
+    common = nil
+    CAMERA = nil
+    ZOOM = nil
+    PROJECT = nil
+    NOCANVAS = not love.graphics.isSupported("canvas")
+    INTERFACE = nil
+    INTERFACE_ = nil
+end
 
 if jit then require "utilities.imagedata-ffi" end
 
 love.graphics.setDefaultFilter("nearest", "nearest")
 
-if not love.graphics.isSupported("canvas") then
+if NOCANVAS then
     require "nocanvas"
 end
 
