@@ -1,16 +1,15 @@
 local Class = require "hump.class"
 local Collider = require "collider"
-local History = require "history"
 local SurfaceLayer = require "layers.surface"
 local AnnotationLayer = require "layers.annotation"
 
-local Entity = require "entity"
-local Notebox = require "notebox"
+local Entity = require "components.entity"
+local Notebox = require "components.notebox"
 
 local generators = require "generators"
-local common = require "common"
-local export = require "export"
-local colour = require "colour"
+local common = require "utilities.common"
+local export = require "utilities.export"
+local colour = require "utilities.colour"
 
 require "utilities.json" -- ugh
 
@@ -42,7 +41,6 @@ function Project:init(name)
     self.dragables = Collider(128)
 
     self.layers = {}
-    self.history = History()
 end
 
 function Project:load(folder_path)
@@ -121,10 +119,6 @@ function Project:newEntity(x, y)
 
     self.layers.surface:addEntity(entity)
 
-    table.insert(self.history, function()
-        self.layers.surface:removeEntity(entity)
-    end)
-
     return entity
 end
 
@@ -132,9 +126,6 @@ function Project:newNotebox(x, y)
     local notebox = Notebox(self.layers.annotation, x, y, "[note]")
     self.layers.annotation:addNotebox(notebox)
 
-    table.insert(self.history, function()
-        self.layers.annotation:removeNotebox(notebox)
-    end)
 
     return notebox
 end

@@ -1,9 +1,8 @@
 local Class = require "hump.class"
-local EditMode = require "editmode"
 
-local colour = require "colour"
+local colour = require "utilities.colour"
 
-local ProjectSelectMode = Class { __includes = EditMode, name = "select project", }
+local ProjectSelectMode = Class { name = "select project", }
 
 local Interface = Class {
     images = {
@@ -93,6 +92,10 @@ function Interface:draw()
 create a new project, for now it is named for you randomly]]
 
     love.graphics.printf(text, lx + 64 + 8, ly + oy + 8 + 24, 512 - 64 - 64)
+end
+
+function ProjectSelectMode:init(layer)
+    self.layer = layer
 end
 
 function ProjectSelectMode:draw()

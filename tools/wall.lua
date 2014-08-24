@@ -2,7 +2,7 @@ local Class = require "hump.class"
 local Tool = require "tools.tool"
 
 local bresenham = require "utilities.bresenham"
-local colour = require "colour"
+local colour = require "utilities.colour"
 
 local Wall = Class {
     __includes = Tool,
@@ -84,7 +84,7 @@ function Wall:mousedragged(action, screen, world)
         local clone = love.keyboard.isDown("lctrl")
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
-            change = change or layer:setWall(not self.drag.erase, lx, ly, clone)
+            change = layer:setWall(not self.drag.erase, lx, ly, clone) or change
         end
 
         if change then

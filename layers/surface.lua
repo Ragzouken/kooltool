@@ -1,12 +1,13 @@
 local Class = require "hump.class"
 local Collider = require "collider"
 local Layer = require "layers.layer"
-local SparseGrid = require "utilities.sparsegrid"
-local Tileset = require "tileset"
-local Sprite = require "sprite"
-local Entity = require "entity"
 
-local common = require "common"
+local Tileset = require "components.tileset"
+local Sprite = require "components.sprite"
+local Entity = require "components.entity"
+
+local SparseGrid = require "utilities.sparsegrid"
+local common = require "utilities.common"
 
 local SurfaceLayer = Class {
     __includes = Layer,

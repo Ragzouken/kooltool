@@ -1,6 +1,6 @@
 local Class = require "hump.class"
 local shapes = require "collider.shapes"
-local colour = require "colour"
+local colour = require "utilities.colour"
 
 local Notebox = Class {
     font = love.graphics.newFont("fonts/PressStart2P.ttf", 8),

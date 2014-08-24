@@ -1,8 +1,8 @@
 local Class = require "hump.class"
 local Brush = require "brush"
 
-local common = require "common"
-local colour = require "colour"
+local common = require "utilities.common"
+local colour = require "utilities.colour"
 
 local Tileset = Class {
     SIZE = 32,

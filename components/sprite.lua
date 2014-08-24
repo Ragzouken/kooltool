@@ -1,5 +1,5 @@
 local Class = require "hump.class"
-local common = require "common"
+local common = require "utilities.common"
 
 local Sprite = Class {}
 

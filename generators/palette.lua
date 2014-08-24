@@ -1,6 +1,6 @@
 local Class = require "hump.class"
 
-local colour = require "colour"
+local colour = require "utilities.colour"
 
 local Palette = Class {}
 

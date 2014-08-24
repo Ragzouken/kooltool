@@ -1,7 +1,7 @@
 local Class = require "hump.class"
 local Pane = require "interface.pane"
 
-local colour = require "colour"
+local colour = require "utilities.colour"
 
 local Toolbar = Class {
     __includes = Pane,

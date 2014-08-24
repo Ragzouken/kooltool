@@ -1,10 +1,10 @@
 local Class = require "hump.class"
 local Collider = require "collider"
 local SparseGrid = require "utilities.sparsegrid"
-local Notebox = require "notebox"
+local Notebox = require "components.notebox"
 
-local colour = require "colour"
-local common = require "common"
+local colour = require "utilities.colour"
+local common = require "utilities.common"
 
 local AnnotationLayer = Class {
     BLOCK_SIZE = 256,
@@ -72,13 +72,13 @@ function AnnotationLayer:init()
     self.collider:setCallbacks(function(dt, shape_one, shape_two, dx, dy)
         local notebox_one, notebox_two = shape_one.notebox, shape_two.notebox
 
-        PROJECT.history:push(function()
+        --PROJECT.history:push(function()
             notebox_one:move( dx/2,  dy/2)
             notebox_two:move(-dx/2, -dy/2)
-        end, function()
-            notebox_one:move(-dx/2, -dy/2)
-            notebox_two:move( dx/2,  dy/2)
-        end)
+        --end, function()
+        --    notebox_one:move(-dx/2, -dy/2)
+        --    notebox_two:move( dx/2,  dy/2)
+        --end)
     end)
 end
 

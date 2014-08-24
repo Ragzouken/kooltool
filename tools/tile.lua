@@ -2,7 +2,7 @@ local Class = require "hump.class"
 local Tool = require "tools.tool"
 
 local bresenham = require "utilities.bresenham"
-local colour = require "colour"
+local colour = require "utilities.colour"
 
 local Tile = Class {
     __includes = Tool,
@@ -65,7 +65,7 @@ function Tile:mousedragged(action, screen, world)
         local index = not self.drag.erase and self.tile or nil
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
-            change = change or layer:setTile(index, lx, ly)
+            change = layer:setTile(index, lx, ly) or change
         end
 
         if change then

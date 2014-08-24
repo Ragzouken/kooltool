@@ -2,7 +2,7 @@ local Class = require "hump.class"
 local Tool = require "tools.tool"
 local Brush = require "brush"
 
-local colour = require "colour"
+local colour = require "utilities.colour"
 
 local Marker = Class {
     __includes = Tool,

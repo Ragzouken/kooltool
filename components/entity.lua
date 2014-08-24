@@ -1,9 +1,9 @@
 local Class = require "hump.class"
-local Sprite = require "sprite"
+local Sprite = require "components.sprite"
 
-local common = require "common"
+local common = require "utilities.common"
 local shapes = require "collider.shapes"
-local colour = require "colour"
+local colour = require "utilities.colour"
 
 local Entity = Class {}
 

@@ -5,7 +5,7 @@ local InterfaceWrong = require "interfacewrong"
 
 local interface = require "interface"
 local generators = require "generators"
-local colour = require "colour"
+local colour = require "utilities.colour"
 
 TIMER = nil
 PALETTE = nil
