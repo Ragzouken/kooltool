@@ -172,10 +172,10 @@ local function ImageData_FFI_blit(destination, source, quad, x, y, blend)
 
     local idw, idh = dw, dh
     
-    ix = x or 0
-    iy = y or 0
-    iw = qw --or idw
-    ih = qh --or idh
+    local ix = x or 0
+    local iy = y or 0
+    local iw = qw --or idw
+    local ih = qh --or idh
 
     assert(inside(ix, iy, idw, idh) and inside(ix+iw-1, iy+ih-1, idw, idh), "Invalid rectangle dimensions")
 

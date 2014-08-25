@@ -16,7 +16,7 @@ if jit then require "utilities.imagedata-ffi" end
 love.graphics.setDefaultFilter("nearest", "nearest")
 
 if NOCANVAS then
-    require "nocanvas"
+    require "utilities.nocanvas"
 end
 
 local Camera = require "hump.camera"

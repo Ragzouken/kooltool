@@ -4,10 +4,10 @@
 --do return end
 
 local broken = love.graphics.newImage("images/broken.png")
-local common = require "common"
+local common = require "utilities.common"
 
 local Brush = require "brush"
-local bresenham = require "bresenham"
+local bresenham = require "utilities.bresenham"
 
 NOCANVAS = true
 
@@ -26,6 +26,8 @@ local function FakeCanvas(canvas)
     function canvas:getData()
         return self.image:getData()
     end
+
+    canvas.getImageData = canvas.getData
 
     function canvas:getPixel(...)
         return self.image:getData():getPixel(...)
@@ -113,8 +115,6 @@ function blit(source, destination, ...)
 end
 
 function Brush:apply(canvas, quad, bx, by)
-    LASTBRUSH = self.canvas
-
     local cdata = canvas:getData()
     local cw, ch = canvas:getDimensions()
 
@@ -131,8 +131,6 @@ function Brush:apply(canvas, quad, bx, by)
     local dx2, dy2 = math.min(qx+qw, bw), math.min(qy+qh, bh)
 
     quad:setViewport(dx1, dy1, dx2 - dx1, dy2 - dy1)
-
-    print("VIEWPORT", quad:getViewport())
 
     blit(bdata, cdata, quad, bx+dx1-qx, by+dy1-qy, self.mode == "erase" and "multiplicative")
 
