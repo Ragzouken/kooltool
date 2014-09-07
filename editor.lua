@@ -1,3 +1,4 @@
+local Class = require "hump.class"
 local Timer = require "hump.timer"
 
 local Project = require "project"
@@ -7,18 +8,15 @@ local interface = require "interface"
 local generators = require "generators"
 local colour = require "utilities.colour"
 
-TIMER = nil
 PALETTE = nil
-SAVESOUND = love.audio.newSource("sounds/save.wav")
-FULL = nil
 POO = nil
 INTERFACE = nil
 INTERFACE_ = nil
 
-function love.load()
-    TIMER = Timer()
+local Editor = Class {}
+
+function Editor:init(project)
     PALETTE = generators.Palette.generate(3)
-    FULL = false
 
     local projects = {}
     local proj_path = "projects"
@@ -42,17 +40,8 @@ function love.load()
     INTERFACE = POO.modes.select_project
 end
 
-local dirs = {
-    up = {0, -1},
-    left = {-1, 0},
-    down = {0, 1},
-    right = {1, 0},
-}
-
-function love.update(dt)
-    if PROJECT and not INTERFACE_ then 
-        for k, v in pairs(interface) do print(k, v) end
-
+function Editor:update(dt)
+    if PROJECT and not INTERFACE_ then
         INTERFACE_ = interface.Interface(PROJECT)
     end
 
@@ -60,8 +49,6 @@ function love.update(dt)
     local wx, wy = CAMERA:mousepos()
 
     if INTERFACE_ then INTERFACE_:update(dt, sx, sy, wx, wy) end
-
-    TIMER:update(dt)
 
     colour.walls(dt, 0)
 
@@ -75,7 +62,7 @@ end
 local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
-function love.draw()
+function Editor:draw()
     if PROJECT then
         CAMERA:attach()
 
@@ -115,7 +102,7 @@ function love.draw()
     love.graphics.setColor(255, 255, 255, 255)
 end
 
-function love.mousepressed(x, y, button)
+function Editor:mousepressed(x, y, button)
     if PROJECT then
         local wx, wy = CAMERA:worldCoords(x, y)
 
@@ -127,7 +114,7 @@ function love.mousepressed(x, y, button)
     end
 end
 
-function love.mousereleased(x, y, button)    
+function Editor:mousereleased(x, y, button)    
     if PROJECT then
         local wx, wy = CAMERA:worldCoords(x, y)
 
@@ -135,11 +122,10 @@ function love.mousereleased(x, y, button)
     end
 end
 
-function love.keypressed(key, isrepeat)
+function Editor:keypressed(key, isrepeat)
     if PROJECT then
         if key == "f11" and not isrepeat then
-            love.window.setFullscreen(not FULL, "desktop")
-            FULL = not FULL
+            love.window.setFullscreen(not love.window.getFullscreen(), "desktop")
         end
 
         local sx, sy = love.mouse.getPosition()
@@ -149,7 +135,7 @@ function love.keypressed(key, isrepeat)
     end
 end
 
-function love.keyreleased(key)
+function Editor:keyreleased(key)
     if PROJECT then
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
@@ -158,7 +144,7 @@ function love.keyreleased(key)
     end
 end
 
-function love.textinput(character)
+function Editor:textinput(character)
     if PROJECT then
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
@@ -167,5 +153,4 @@ function love.textinput(character)
     end
 end
 
-function love.focus(focus)
-end
+return Editor

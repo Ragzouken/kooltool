@@ -223,8 +223,6 @@ function SurfaceLayer:getWall(gx, gy)
     local tile = self:getTile(gx, gy) or 0
     local wall = self.wallmap:get(gx, gy)
 
-    print(wall, self.wall_index[tile])
-
     return (wall == nil and self.wall_index[tile]) or wall 
 end
 

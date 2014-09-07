@@ -4,11 +4,12 @@ do
     class_commons = nil
     common = nil
     CAMERA = nil
-    ZOOM = nil
     PROJECT = nil
     NOCANVAS = not love.graphics.isSupported("canvas")
     INTERFACE = nil
     INTERFACE_ = nil
+    MODE = nil
+    EDITOR = nil
 end
 
 if jit then require "utilities.imagedata-ffi" end
@@ -20,27 +21,24 @@ if NOCANVAS then
 end
 
 local Camera = require "hump.camera"
+local Editor = require "editor"
+local Game = require "engine.game"
 local Project = require "project"
 local Interface = require "interfacewrong"
-
-FONT = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
-love.graphics.setFont(FONT)
 
 function love.load()
     love.keyboard.setKeyRepeat(true)
     CAMERA = Camera(128, 128, 2)
-    ZOOM = 2
 
     if love.filesystem.isDirectory("embedded") then
         INTERFACE = Interface({})
         SETPROJECT(Project("embedded"))
 
-        require "play"
+        MODE = Game(PROJECT)
     else
-        require "edit"
+        MODE = Editor(PROJECT)
+        EDITOR = MODE
     end
-
-    love.load()
 end
 
 function SETPROJECT(project)
@@ -62,4 +60,38 @@ function SETPROJECT(project)
     INTERFACE.draw = function() end
 
     love.window.setTitle("kooltool sketch (" .. PROJECT.name .. ")")
+end
+
+function love.update(dt)
+    MODE:update(dt)
+end
+
+function love.draw()
+    MODE:draw()
+end
+
+function love.mousepressed(...)
+    MODE:mousepressed(...)
+end
+
+function love.mousereleased(...)    
+    MODE:mousereleased(...)
+end
+
+function love.keypressed(...)
+    (function (key, irepeat)
+        if key == "escape" and EDITOR and MODE ~= EDITOR then
+            MODE = EDITOR
+        end
+    end)(...)
+
+    MODE:keypressed(...)
+end
+
+function love.keyreleased(...)
+    MODE:keyreleased(...)
+end
+
+function love.textinput(...)
+    MODE:textinput(...)
 end

@@ -1,7 +1,13 @@
 local Class = require "hump.class"
 local Pane = require "interface.pane"
 
+local Game = require "engine.game"
+
 local colour = require "utilities.colour"
+
+local Interface = require "interfacewrong"
+
+local savesound = love.audio.newSource("sounds/save.wav")
 
 local Toolbar = Class {
     __includes = Pane,
@@ -30,15 +36,19 @@ local Toolbar = Class {
             toolbar.interface.action:grab(notebox, sx, sy, wx, wy)
         end},
         {love.graphics.newImage("images/save.png"), function(toolbar)
-            SAVESOUND:play()
+            savesound:play()
             toolbar.interface.project:save("projects/" .. toolbar.interface.project.name)
             love.system.openURL("file://"..love.filesystem.getSaveDirectory())
         end},
         {love.graphics.newImage("images/export.png"), function(toolbar)
-            SAVESOUND:play()
+            savesound:play()
             toolbar.interface.project:save("projects/" .. toolbar.interface.project.name)
-            toolbar.interface.project:export()
-            love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
+            INTERFACE = Interface({})
+
+            MODE = Game(toolbar.interface.project)
+
+            --toolbar.interface.project:export()
+            --love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
         end},
     }
 }

@@ -3,13 +3,29 @@ local Timer = require "hump.timer"
 
 local Player = Class {}
 
-function Player:init(entity)
+local controls = {
+    up = {0, -1},
+    left = {-1, 0},
+    down = {0, 1},
+    right = {1, 0},
+}
+
+function Player:init(game, entity)
+    self.game = game
     self.timer = Timer()
     self.entity = entity
 end
 
 function Player:update(dt)
     self.timer:update(dt)
+
+    if not self.movement and self == self.game.player then
+        for key, vector in pairs(controls) do
+            if love.keyboard.isDown(key) then
+                self:move(vector)
+            end
+        end
+    end
 end
 
 local directions = {
@@ -17,11 +33,6 @@ local directions = {
     {-1, 0},
     {0, 1},
     {1, 0},
-
-    up = {0, -1},
-    left = {-1, 0},
-    down = {0, 1},
-    right = {1, 0},
 }
 
 function Player:rando()
@@ -49,12 +60,6 @@ function Player:move(vector)
             self.entity.x, self.entity.y = x + vx * 32, y + vy * 32
             self.movement = nil
         end)
-    end
-end
-
-function Player:keypressed(key, isrepeat)
-    if not self.movement and directions[key] then
-        self:move(directions[key])
     end
 end
 

@@ -7,16 +7,17 @@ function Pan:init(camera)
     Tool.init(self)
 
     self.camera = camera
+    self.zoom = 2
 end
 
 function Pan:zoomin(wx, wy)
     if self.tween then self.timer:cancel(self.tween) end
 
-    ZOOM = math.min(ZOOM * 2, 16)
+    self.zoom = math.min(self.zoom * 2, 16)
     
-    local dx, dy, dz = self.camera.x - wx, self.camera.y - wy, ZOOM - self.camera.scale
+    local dx, dy, dz = self.camera.x - wx, self.camera.y - wy, self.zoom - self.camera.scale
     local oscale = self.camera.scale
-    local factor = ZOOM / self.camera.scale
+    local factor = self.zoom / self.camera.scale
     local t = 0
 
     self.tween = self.timer:do_for(0.25, function(dt)
@@ -32,9 +33,21 @@ end
 function Pan:zoomout(wx, wy)
     if self.tween then self.timer:cancel(self.tween) end
 
-    ZOOM = math.max(ZOOM / 2, 1 / 16)
+    self.zoom = math.max(self.zoom / 2, 1 / 16)
+    
+    local dx, dy, dz = self.camera.x - wx, self.camera.y - wy, self.zoom - self.camera.scale
+    local oscale = self.camera.scale
+    local factor = self.zoom / self.camera.scale
+    local t = 0
 
-    self.tween = self.timer:tween(0.25, self.camera, {scale = ZOOM}, "out-quad")
+    self.tween = self.timer:do_for(0.25, function(dt)
+        t = t + dt
+        local u = t / 0.25
+        local du = factor - 1
+
+        self.camera.scale = oscale*factor - (1 - u) * dz
+        self.camera:lookAt(wx + dx / (1 + du*u), wy + dy / (1 + du*u))
+    end, nil, "out-quad")
 end
 
 function Pan:mousepressed(button, sx, sy, wx, wy)

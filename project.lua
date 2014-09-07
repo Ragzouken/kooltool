@@ -91,10 +91,10 @@ function Project:update(dt)
     colour.walls(dt, 0)
 end
 
-function Project:draw(annotations)
+function Project:draw(annotations, play)
     self.layers.surface:draw()
 
-    if INTERFACE_ and INTERFACE_.active ~= INTERFACE_.tools.draw then
+    if INTERFACE_ and INTERFACE_.active ~= INTERFACE_.tools.draw and not play then
         for entity in pairs(self.layers.surface.entities) do
             entity:border()
         end
