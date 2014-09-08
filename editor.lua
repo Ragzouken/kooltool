@@ -1,7 +1,7 @@
 local Class = require "hump.class"
 local Timer = require "hump.timer"
 
-local Project = require "project"
+local Project = require "components.project"
 local InterfaceWrong = require "interfacewrong"
 
 local interface = require "interface"

@@ -1,10 +1,13 @@
 local Class = require "hump.class"
+local Panel = require "interface.elements.panel"
 local Toolbar = require "interface.toolbar"
 local Tilebar = require "interface.tilebar"
 
 local tools = require "tools"
 
-local Interface = Class {}
+local Interface = Class {
+    __includes = Panel,
+}
 
 function Interface:init(project)
     self.project = project
@@ -14,6 +17,8 @@ function Interface:init(project)
         Tilebar(self),
     }
     
+    --self:addChild(Tilebar(self))
+
     self.action = nil
     self.active = nil
 
@@ -66,7 +71,7 @@ end
 
 function Interface:input(callback, ...)
     for i, pane in ipairs(self.panes) do
-        if pane[callback](pane, ...) then return true end
+        if pane[callback] and pane[callback](pane, ...) then return true end
     end
 
     local function input(tool, ...)

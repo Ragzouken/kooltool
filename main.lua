@@ -23,8 +23,9 @@ end
 local Camera = require "hump.camera"
 local Editor = require "editor"
 local Game = require "engine.game"
-local Project = require "project"
+local Project = require "components.project"
 local Interface = require "interfacewrong"
+local interface = require "interface"
 
 function love.load()
     love.keyboard.setKeyRepeat(true)
@@ -66,8 +67,20 @@ function love.update(dt)
     MODE:update(dt)
 end
 
+local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
+
 function love.draw()
     MODE:draw()
+
+    if EDITOR and MODE ~= EDITOR then
+        local o = 4-1+2
+        love.graphics.setBlendMode("alpha")
+        love.graphics.setColor(0, 0, 0, 255)
+        love.graphics.rectangle("fill", 0, 0, 512, 16 + 3)
+        love.graphics.setColor(255, 255, 255, 255)
+        love.graphics.setFont(large)
+        love.graphics.print("press escape to end playtest", 3+o, 5)
+    end
 end
 
 function love.mousepressed(...)
@@ -82,6 +95,11 @@ function love.keypressed(...)
     (function (key, irepeat)
         if key == "escape" and EDITOR and MODE ~= EDITOR then
             MODE = EDITOR
+        elseif key == "f12" then
+            SETPROJECT(Project("tutorial"))
+            EDITOR = Editor(PROJECT)
+            MODE = EDITOR
+            INTERFACE_ = interface.Interface(PROJECT)
         end
     end)(...)
 

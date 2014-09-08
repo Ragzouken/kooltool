@@ -1,5 +1,5 @@
 local Class = require "hump.class"
-local Brush = require "brush"
+local Brush = require "tools.brush"
 
 local common = require "utilities.common"
 local colour = require "utilities.colour"

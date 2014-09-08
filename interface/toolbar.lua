@@ -1,5 +1,5 @@
 local Class = require "hump.class"
-local Pane = require "interface.pane"
+local Panel = require "interface.elements.panel"
 
 local Game = require "engine.game"
 
@@ -10,7 +10,7 @@ local Interface = require "interfacewrong"
 local savesound = love.audio.newSource("sounds/save.wav")
 
 local Toolbar = Class {
-    __includes = Pane,
+    __includes = Panel,
 
     buttons = {
         {love.graphics.newImage("images/pencil.png"), function(toolbar)
@@ -53,6 +53,12 @@ local Toolbar = Class {
     }
 }
 
+function Toolbar:init(interface)
+    Panel.init(self)
+
+    self.interface = interface
+end
+
 function Toolbar:draw()
     local margin = 4
 
@@ -87,13 +93,17 @@ function Toolbar:draw()
 end
 
 function Toolbar:mousepressed(button, sx, sy, wx, wy)
+    return self:click(button, sx, sy, wx, wy)
+end
+
+function Toolbar:click(button, x, y, wx, wy)
     local margin = 4
 
-    if sx > margin and sy > margin and sx < margin + 32 + 2 then
-        local i = math.floor((sy - margin) / 33) + 1
+    if x > margin and y > margin and x < margin + 32 + 2 then
+        local i = math.floor((y - margin) / 33) + 1
 
         if i <= #self.buttons then
-            self.buttons[i][2](self, sx, sy, wx, wy)
+            self.buttons[i][2](self, x, y, wx, wy)
             return true
         end
     end

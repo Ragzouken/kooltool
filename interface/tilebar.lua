@@ -1,15 +1,16 @@
 local Class = require "hump.class"
-local Pane = require "interface.pane"
+local Panel = require "interface.elements.panel"
 
 local colour = require "utilities.colour"
 
 local Tilebar = Class {
-    __includes = Pane,
+    __includes = Panel,
 }
 
-function Tilebar:init(...)
-    Pane.init(self, ...)
+function Tilebar:init(interface)
+    Panel.init(self)
 
+    self.interface = interface
     self.tileset = self.interface.project.layers.surface.tileset
 end
 
@@ -35,11 +36,15 @@ function Tilebar:draw()
 end
 
 function Tilebar:mousepressed(button, sx, sy, wx, wy)
+    return self:click(button, sx, sy)
+end
+
+function Tilebar:click(button, x, y)
     local margin = 4
     local edge = love.graphics.getWidth()
 
-    if sx > edge-32-margin and sy > margin and sx < edge-margin then
-        local i = math.floor((sy - margin) / 33) + 1
+    if x > edge-32-margin and y > margin and x < edge-margin then
+        local i = math.floor((y - margin) / 33) + 1
         
         if i <= self.tileset.tiles then
             self.interface.active = self.interface.tools.tile

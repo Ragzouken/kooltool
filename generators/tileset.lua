@@ -1,5 +1,5 @@
 local Tileset = require "components.tileset"
-local Brush = require "brush"
+local Brush = require "tools.brush"
 
 local tileset = {}
 
