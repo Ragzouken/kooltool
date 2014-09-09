@@ -94,6 +94,7 @@ end
 function love.keypressed(...)
     (function (key, irepeat)
         if key == "escape" and EDITOR and MODE ~= EDITOR then
+            MODE:undo()
             MODE = EDITOR
         elseif key == "f12" then
             SETPROJECT(Project("tutorial"))

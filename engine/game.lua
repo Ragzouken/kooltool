@@ -16,15 +16,24 @@ function Game:init(project)
         return math.floor(value * resolution) / resolution
     end
 
+    local choice = {}
+
     for entity in pairs(self.project.layers.surface.entities) do
         local actor = Player(self, entity)
         self.actors[actor] = true
-        self.player = actor
         actor.speed = 0.75
+
+        table.insert(choice, actor)
 
         local x, y = round(entity.x, 1/32)+16, round(entity.y, 1/32)+16
         entity:moveTo(x, y)
+
+        if actor.speech == "[PLAYER]" then
+            self.player = actor
+        end
     end
+
+    if not self.player then self.player = choice[love.math.random(#choice)] end
 
     if self.player then self.player.speed = 0.25 end
 end
@@ -34,7 +43,7 @@ function Game:update(dt)
         for actor in pairs(self.actors) do
             self.occupied:set(nil, actor.tx, actor.ty)
             actor:update(dt)
-            self.occupied:set(true, actor.tx, actor.ty)
+            self.occupied:set(actor, actor.tx, actor.ty)
         end
     end
 
@@ -53,7 +62,8 @@ local function box(message)
     
     w, h = w + 16, (h + 2) * 16
     
-    local dx, dy = (512 - w) / 2, (512 - h) / 2
+    local sw, sh = love.window.getDimensions()
+    local dx, dy = (sw - w) / 2, (sh - h) / 2
 
     love.graphics.setColor(0, 0, 0, 255)
     love.graphics.setBlendMode("alpha")
@@ -71,6 +81,12 @@ function Game:draw()
 
     if self.TEXT then
         box(self.TEXT)
+    end
+end
+
+function Game:undo()
+    for actor in pairs(self.actors) do
+        actor.entity:moveTo(actor.ox, actor.oy)
     end
 end
 

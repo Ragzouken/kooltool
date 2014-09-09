@@ -19,6 +19,8 @@ function Player:init(game, entity)
 
     self.tx, self.ty = PROJECT.layers.surface.tilemap:gridCoords(entity.x, entity.y)
 
+    self.ox, self.oy = self.entity.x, self.entity.y
+
     local annotations = PROJECT.layers.annotation
     local w, h = unpack(self.entity.sprite.size)
     local px, py = unpack(self.entity.sprite.pivot)
@@ -71,7 +73,7 @@ function Player:move(vector, input)
     local occupier = self.game.occupied:get(dx, dy)
 
     if occupier then
-        self.game.TEXT = self.speech
+        self.game.TEXT = occupier.speech
         speech:play()
         return
     end
@@ -87,9 +89,9 @@ function Player:move(vector, input)
             t = t + dt
             local u = t / period
 
-            self.entity.x, self.entity.y = x + vx * 32 * u, y + vy * 32 * u
+            self.entity:moveTo(x + vx * 32 * u, y + vy * 32 * u)
         end, function()
-            self.entity.x, self.entity.y = x + vx * 32, y + vy * 32
+            self.entity:moveTo(x + vx * 32, y + vy * 32)
             self.movement = nil
         end)
     end

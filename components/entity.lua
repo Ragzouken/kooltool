@@ -43,7 +43,7 @@ end
 
 function Entity:draw()
     self.camera:attach()
-    self.script:draw()
+    --self.script:draw()
     self.camera:detach()
 
     love.graphics.setColor(255, 255, 255, 255)
