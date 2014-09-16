@@ -20,6 +20,8 @@ end
 function Drag:drop()
     if self.drag and not self.drag.object.sprite then
         self.target = self.drag.object
+    else
+        self.target = nil
     end
 
     self:enddrag()

@@ -1,6 +1,7 @@
 local Class = require "hump.class"
 local Timer = require "hump.timer"
 
+local shapes = require "collider.shapes"
 local Player = Class {}
 
 local speech = love.audio.newSource("sounds/tempspeech.wav")
@@ -26,8 +27,16 @@ function Player:init(game, entity)
     local px, py = unpack(self.entity.sprite.pivot)
     local x, y = self.entity.x-px, self.entity.y-py
 
+    self.notes = {}
+
+    local x1, y1, x2, y2 = x, y, x+w, y+h
+    self.shape = shapes.newPolygonShape(x1, y1, x1, y2, x2, y2, x2, y1)
+    self.shape:moveTo(x+w/2, y+h/2)
+
     for shape in pairs(annotations.collider:shapesInRange(x, y, x+w, y+h)) do
-        self.speech = shape.notebox.text
+        if shape:collidesWith(self.shape) then
+            self.speech = shape.notebox.text
+        end
     end
 end
 
@@ -53,6 +62,9 @@ function Player:update(dt)
     end
 end
 
+function Player:draw()
+end
+
 local directions = {
     {0, -1},
     {-1, 0},
@@ -72,7 +84,7 @@ function Player:move(vector, input)
     local wall = PROJECT.layers.surface:getWall(dx, dy)
     local occupier = self.game.occupied:get(dx, dy)
 
-    if occupier then
+    if occupier and self == self.game.player then
         self.game.TEXT = occupier.speech
         speech:play()
         return

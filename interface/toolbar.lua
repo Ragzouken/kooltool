@@ -103,6 +103,7 @@ function Toolbar:click(button, x, y, wx, wy)
         local i = math.floor((y - margin) / 33) + 1
 
         if i <= #self.buttons then
+            self.interface.tools.drag.target = nil
             self.buttons[i][2](self, x, y, wx, wy)
             return true
         end

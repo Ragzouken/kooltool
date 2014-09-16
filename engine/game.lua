@@ -77,6 +77,9 @@ end
 function Game:draw()
     self.camera:attach()
     self.project:draw(false, true)
+    for actor in pairs(self.actors) do
+        actor:draw()
+    end
     self.camera:detach()
 
     if self.TEXT then
