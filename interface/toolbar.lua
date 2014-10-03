@@ -43,8 +43,8 @@ local Toolbar = Class {
         {love.graphics.newImage("images/export.png"), function(toolbar)
             savesound:play()
             toolbar.interface.project:save("projects/" .. toolbar.interface.project.name)
+            
             INTERFACE = Interface({})
-
             MODE = Game(toolbar.interface.project)
 
             --toolbar.interface.project:export()

@@ -4,7 +4,7 @@ local common = require "utilities.common"
 local Sprite = Class {}
 
 function Sprite:init(sprite)
-    self.canvas = sprite and common.cloneCanvas(sprite.canvas) or love.graphics.newCanvas(32, 32)
+    self.canvas = sprite and common.canvasFromImage(sprite.canvas) or love.graphics.newCanvas(32, 32)
     self.pivot = {16, 16}
     self.size = {32, 32}
 end

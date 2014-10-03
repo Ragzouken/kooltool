@@ -8,8 +8,6 @@ local Tilebar = Class {
 }
 
 function Tilebar:init(interface)
-    Panel.init(self)
-
     self.interface = interface
     self.tileset = self.interface.project.layers.surface.tileset
 end

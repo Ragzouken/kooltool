@@ -116,8 +116,10 @@ function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
 
         return true
     elseif key == "lshift" then
-        if self.project:objectAt(wx, wy) then
-            self.state.resize = true
+        local object = self.project:objectAt(wx, wy)
+
+        if object then
+            self.state.resize = object
 
             return true
         end

@@ -10,6 +10,7 @@ do
     INTERFACE_ = nil
     MODE = nil
     EDITOR = nil
+    TEST = nil
 end
 
 if jit then require "utilities.imagedata-ffi" end
@@ -24,10 +25,15 @@ local Camera = require "hump.camera"
 local Editor = require "editor"
 local Game = require "engine.game"
 local Project = require "components.project"
-local Interface = require "interfacewrong"
 local interface = require "interface"
 
-function love.load()
+function love.load(arg)
+    if arg[#arg] == "-debug" then
+        require("mobdebug").start()
+    end
+    
+    io.stdout:setvbuf('no')
+    
     love.keyboard.setKeyRepeat(true)
     CAMERA = Camera(128, 128, 2)
 

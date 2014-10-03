@@ -7,22 +7,40 @@ function Pan:init(camera)
     Tool.init(self)
 
     self.camera = camera
-    self.zoom = 2
+    self.zoom = 22
+    self.camera.scale = zoom_from_level(self.zoom)
 end
+
+local zoom_levels = 32
+
+function mix(a, b, u)
+    return a * (1 - u) + b * u
+end
+
+function zoom_from_level(level)
+    local u = level / (zoom_levels - 1)
+
+    u = math.pow(u, 8)
+
+    return mix(32, 1 / 16, 1 - u)
+end
+
+local zooms = 1 / 3
 
 function Pan:zoomin(wx, wy)
     if self.tween then self.timer:cancel(self.tween) end
 
-    self.zoom = math.min(self.zoom * 2, 16)
+    self.zoom = math.min(self.zoom + 1, zoom_levels - 1)
     
-    local dx, dy, dz = self.camera.x - wx, self.camera.y - wy, self.zoom - self.camera.scale
+    local scale = zoom_from_level(self.zoom)
+    local dx, dy, dz = self.camera.x - wx, self.camera.y - wy, scale - self.camera.scale
     local oscale = self.camera.scale
-    local factor = self.zoom / self.camera.scale
+    local factor = scale / self.camera.scale
     local t = 0
 
-    self.tween = self.timer:do_for(0.25, function(dt)
-        t = t + dt
-        local u = t / 0.25
+    self.tween = self.timer:do_for(zooms, function(dt)
+        t = math.min(t + dt, zooms)
+        local u = t / zooms
         local du = factor - 1
 
         self.camera.scale = oscale*factor - (1 - u) * dz
@@ -33,21 +51,23 @@ end
 function Pan:zoomout(wx, wy)
     if self.tween then self.timer:cancel(self.tween) end
 
-    self.zoom = math.max(self.zoom / 2, 1 / 16)
+    self.zoom = math.max(self.zoom - 1, 0)
     
-    local dx, dy, dz = self.camera.x - wx, self.camera.y - wy, self.zoom - self.camera.scale
+    local scale = zoom_from_level(self.zoom)
+    print(self.zoom, scale)
+    local dx, dy, dz = self.camera.x - wx, self.camera.y - wy, scale - self.camera.scale
     local oscale = self.camera.scale
-    local factor = self.zoom / self.camera.scale
+    local factor = scale / self.camera.scale
     local t = 0
 
-    self.tween = self.timer:do_for(0.25, function(dt)
-        t = t + dt
-        local u = t / 0.25
+    self.tween = self.timer:do_for(zooms, function(dt)
+        t = math.min(t + dt, zooms)
+        local u = t / zooms
         local du = factor - 1
 
         self.camera.scale = oscale*factor - (1 - u) * dz
-        self.camera:lookAt(wx + dx / (1 + du*u), wy + dy / (1 + du*u))
-    end, nil, "out-quad")
+        --self.camera:lookAt(wx + dx / (1 + du*u), wy + dy / (1 + du*u))
+    end, nil, "in-quad")
 end
 
 function Pan:mousepressed(button, sx, sy, wx, wy)
