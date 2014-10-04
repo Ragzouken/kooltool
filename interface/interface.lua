@@ -154,7 +154,7 @@ function Interface:cursor(sx, sy, wx, wy)
 end
 
 function Interface:input(callback, ...)
-    if callback == "mousereleased" or callback == "mousepressed" then
+    if callback == "mousepressed" then
         local b, sx, sy, wx, wy = unpack{...}
         local event = { action = "press", coords = {sx, sy, wx, wy}, }
         
