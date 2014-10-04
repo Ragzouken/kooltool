@@ -2,6 +2,8 @@ local Class = require "hump.class"
 local Button = require "interface.elements.button"
 local shapes = require "interface.elements.shapes"
 
+local colour = require "utilities.colour"
+
 local Radio = Class { __includes = Button, }
 
 function Radio:init(params)
@@ -11,13 +13,13 @@ function Radio:init(params)
 end
 
 function Radio:draw()
-    Button.draw(self)
-    
     if self.group.selected[self] then
-        love.graphics.setBlendMode("alpha")
-        love.graphics.setColor(255, 255, 255, 255)
-        self.shape:draw("line")
+        self.colour = {colour.cursor(0)}
+    else
+        self.colour = nil
     end
+    
+    Button.draw(self)
 end
 
 function Radio:event(event)

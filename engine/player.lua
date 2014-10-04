@@ -33,9 +33,18 @@ function Player:init(game, entity)
     self.shape = shapes.newPolygonShape(x1, y1, x1, y2, x2, y2, x2, y1)
     self.shape:moveTo(x+w/2, y+h/2)
 
+    self.tags = {}
+    self.speech = {}
+
     for shape in pairs(annotations.collider:shapesInRange(x, y, x+w, y+h)) do
         if shape:collidesWith(self.shape) then
-            self.speech = shape.notebox.text
+            local text = shape.notebox.text
+            
+            if text:sub(1, 1) == "[" then
+                self.tags[text:lower()] = true
+            else
+                table.insert(self.speech, text)
+            end
         end
     end
 end
@@ -50,7 +59,7 @@ function Player:update(dt)
                     self:move(vector, true)
                 end
             end
-        elseif self.game.player then
+        elseif self.game.player and not self.tags["[stop]"] then
             local player = self.game.player.entity
             local dx, dy = self.entity.x - player.x, self.entity.y - player.y
             local d = math.sqrt(dx * dx + dy * dy)
@@ -85,7 +94,7 @@ function Player:move(vector, input)
     local occupier = self.game.occupied:get(dx, dy)
 
     if occupier and self == self.game.player then
-        self.game.TEXT = occupier.speech
+        self.game.TEXT = occupier.speech[love.math.random(#occupier.speech)]
         speech:play()
         return
     end

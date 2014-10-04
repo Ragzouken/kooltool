@@ -18,7 +18,7 @@ end
 
 function Button:draw()
     love.graphics.setBlendMode("premultiplied")
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setColor(self.colour or {255, 255, 255, 255})
     
     love.graphics.draw(self.icon.image,
                        self.icon.quad,

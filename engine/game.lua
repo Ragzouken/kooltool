@@ -28,7 +28,7 @@ function Game:init(project)
         local x, y = round(entity.x, 1/32)+16, round(entity.y, 1/32)+16
         entity:moveTo(x, y)
 
-        if actor.speech == "[PLAYER]" then
+        if actor.tags["[player]"] then
             self.player = actor
         end
     end
