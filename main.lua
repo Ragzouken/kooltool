@@ -70,8 +70,6 @@ function SETPROJECT(project)
         PROJECT = Project.default(Project.name_generator:generate():gsub(" ", "_"), TILESIZE)
     end
 
-    INTERFACE.draw = function() end
-
     love.window.setTitle("kooltool sketch (" .. PROJECT.name .. ")")
 end
 

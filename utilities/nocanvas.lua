@@ -3,7 +3,6 @@
 --function love.draw() love.graphics.draw(image, 0, 0) end
 --do return end
 
-local broken = love.graphics.newImage("images/broken.png")
 local common = require "utilities.common"
 
 local Brush = require "brush"

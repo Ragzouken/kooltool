@@ -49,7 +49,7 @@ end
 function Rectangle:draw(mode)
     local x1, y1, x2, y2 = self:coords()
     
-    love.graphics.rectangle(mode, x1, y1, x2-x1, y2-y1)
+    love.graphics.rectangle(mode, x1, y1, x2-x1-1, y2-y1-1)
 end
 
 function Rectangle:coords()

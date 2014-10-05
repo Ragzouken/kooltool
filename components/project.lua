@@ -26,21 +26,23 @@ do
 end
 
 function Project.default(name, tilesize)
-local project = Project(name)
+    local project = Project(name)
 
-project.palette = PALETTE
-project.layers.surface = generators.surface.default(project, tilesize)
-project.layers.annotation = AnnotationLayer(project)
+    project.palette = PALETTE
+    project.layers.surface = generators.surface.default(project, tilesize)
+    project.layers.annotation = AnnotationLayer(project)
 
-return project
+    return project
 end
 
 function Project:init(name)
-self.name = name:match("[^/]+$")
+    self.name = name:match("[^/]+$")
 
-self.dragables = Collider(128)
+    self.dragables = Collider(128)
 
-self.layers = {}
+    self.layers = {}
+    
+    self.description = "this is a description but just for testing purposes soon you'll be able to edit this and the project icon but not yet"
 end
 
 function Project:load(folder_path)
@@ -59,75 +61,77 @@ function Project:load(folder_path)
 end
 
 function Project:save(folder_path)
-love.filesystem.createDirectory(folder_path)
-local file = love.filesystem.newFile(folder_path .. "/tilelayer.json", "w")
-file:write(json.encode(self.layers.surface:serialise(folder_path)))
-file:close()
+    love.filesystem.createDirectory(folder_path)
+    local file = love.filesystem.newFile(folder_path .. "/tilelayer.json", "w")
+    file:write(json.encode(self.layers.surface:serialise(folder_path)))
+    file:close()
 
-local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
-file:write(json.encode(self.layers.annotation:serialise(folder_path)))
-file:close()
+    local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
+    file:write(json.encode(self.layers.annotation:serialise(folder_path)))
+    file:close()
 
-local file = love.filesystem.newFile(folder_path .. "/entitylayer.json", "w")
-file:write(json.encode(self.layers.surface:serialise_entity(folder_path)))
-file:close()
+    local file = love.filesystem.newFile(folder_path .. "/entitylayer.json", "w")
+    file:write(json.encode(self.layers.surface:serialise_entity(folder_path)))
+    file:close()
 
-self.layers.surface:exportRegions(folder_path)
+    self.layers.surface:exportRegions(folder_path)
 end
+
+local broken = love.graphics.newImage("images/broken.png")
 
 function Project:loadIcon(folder_path)
-local file = folder_path .. "/icon.png"
+    local file = folder_path .. "/icon.png"
 
     if not pcall(function() self.icon = common.loadCanvas(file) end) then
-    self.icon = love.graphics.newCanvas(32, 32)
-end
-end
-
-function Project:update(dt)
-self.layers.surface:update(dt)
-self.layers.annotation:update(dt)
-
-colour.cursor(dt)
-colour.walls(dt, 0)
-end
-
-function Project:draw(annotations, play)
-self.layers.surface:draw()
-
-if INTERFACE_ and INTERFACE_.active ~= INTERFACE_.tools.draw and not play then
-    for entity in pairs(self.layers.surface.entities) do
-        entity:border()
+        self.icon = broken
     end
 end
 
-if annotations then self.layers.annotation:draw() end
+function Project:update(dt)
+    self.layers.surface:update(dt)
+    self.layers.annotation:update(dt)
+
+    colour.cursor(dt)
+    colour.walls(dt, 0)
+end
+
+function Project:draw(annotations, play)
+    self.layers.surface:draw()
+
+    if INTERFACE_ and INTERFACE_.active ~= INTERFACE_.tools.draw and not play then
+        for entity in pairs(self.layers.surface.entities) do
+            entity:border()
+        end
+    end
+
+    if annotations then self.layers.annotation:draw() end
 end
 
 function Project:objectAt(x, y)
-local entity = self.layers.surface:objectAt(x, y)
-local notebox = self.layers.annotation:objectAt(x, y)
+    local entity = self.layers.surface:objectAt(x, y)
+    local notebox = self.layers.annotation:objectAt(x, y)
 
-return notebox or entity
+    return notebox or entity
 end
 
 function Project:sample(x, y)
 end
 
 function Project:newEntity(x, y)
-local entity = Entity(self.layers.surface)
-entity:blank(x, y)
+    local entity = Entity(self.layers.surface)
+    entity:blank(x, y)
 
-self.layers.surface:addEntity(entity)
+    self.layers.surface:addEntity(entity)
 
-return entity
+    return entity
 end
 
 function Project:newNotebox(x, y)
-local notebox = Notebox(self.layers.annotation, x, y, "[note]")
-self.layers.annotation:addNotebox(notebox)
+    local notebox = Notebox(self.layers.annotation, x, y, "[note]")
+    self.layers.annotation:addNotebox(notebox)
 
 
-return notebox
+    return notebox
 end
 
 function Project:undo()

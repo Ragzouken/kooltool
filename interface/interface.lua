@@ -1,18 +1,16 @@
 local Class = require "hump.class"
 local Panel = require "interface.elements.panel"
-local Toolbar = require "interface.toolbar"
-local Tilebar = require "interface.tilebar"
 
 local Test = require "interface.interface_real"
 local shapes = require "interface.elements.shapes"
 
-local Toolbar_ = require "interface.panels.toolbar"
+local Toolbar = require "interface.panels.toolbar"
 
 local tools = require "tools"
 
 local Game = require "engine.game"
-local Interface_ = require "interfacewrong"
 local savesound = love.audio.newSource("sounds/save.wav")
+local PS = require "interface.panels.projectselect"
 
 local Interface = Class {}
 
@@ -93,13 +91,20 @@ function Interface:init(project)
     end},
     }
     
-    TEST = Panel{}
+    TEST = Panel{shape = shapes.Plane(0.5, 0.5)}
     
-    self.toolbar = Toolbar_{x=1.5, y=1.5, buttons=buttons, anchor={-1, -1}, size={32, 32}}
-    self.tilebar = Toolbar_{x=1.5, y=1.5, buttons=buttons, anchor={ 1, -1}, size=self.project.layers.surface.tileset.dimensions}
+    self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={-1, -1}, size={32, 32}}
+    self.tilebar = Toolbar{x=1, y=1, buttons=buttons, anchor={ 1, -1}, size=self.project.layers.surface.tileset.dimensions}
     
     TEST:add(self.toolbar)
     TEST:add(self.tilebar)
+    
+    self.ps = PS{}
+    self.ps.active = false
+    
+    self.ps:SetProjects(PROJECTS)
+    
+    TEST:add(self.ps)
 end
 
 function Interface:update(dt, sx, sy, wx, wy)
@@ -117,7 +122,7 @@ function Interface:update(dt, sx, sy, wx, wy)
                              action})
     end
     
-    self.tilebar:init{x=love.window.getWidth() - 1.5, y=1.5, buttons=tiles, anchor={1, -1}, size=self.project.layers.surface.tileset.dimensions}
+    self.tilebar:init{x=love.window.getWidth() - 1, y=1, buttons=tiles, anchor={1, -1}, size=self.project.layers.surface.tileset.dimensions}
     
     for name, tool in pairs(self.tools) do
         tool:update(dt, sx, sy, wx, wy)

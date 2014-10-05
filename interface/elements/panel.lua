@@ -7,15 +7,18 @@ local Panel = Class {
 }
 
 function Panel:init(params)
+    params = params or {}
+    
     self.depth = params.depth or 0
     self.shape = params.shape or shapes.Plane(0, 0)
     self.actions = params.actions or {}
+    self.colours = params.colours or {stroke = {255, 0, 255, 255}, fill = {255, 0, 255, 64}}
     
     for i, action in ipairs(self.actions) do
         self.actions[action] = true
     end
     
-    self.visible = true
+    self.active = true
     self.children = {}
     
     self:resort()
@@ -29,6 +32,15 @@ end
 function Panel:remove(panel)
     self.children[panel] = false
     self:resort()
+end
+
+function Panel:clear()
+    local children = self.children
+    
+    self.children = {}
+    self:resort()
+    
+    return children
 end
 
 local function forwards(table)
@@ -62,17 +74,16 @@ end
 
 function Panel:draw()
     love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(255, 0, 255, 64)
-    if self.boing then love.graphics.setColor(0, 255, 0, 255) end
+    love.graphics.setColor(self.colours.fill)
     self.shape:draw("fill")
-    love.graphics.setColor(255, 0, 255, 255)
+    love.graphics.setColor(self.colours.stroke)
     self.shape:draw("line")
 
     love.graphics.push()
     love.graphics.translate(self.shape:anchor())
     
     for child in self.sorted:upwards() do
-        if child.visible then child:draw() end
+        if child.active then child:draw() end
     end
         
     love.graphics.pop()
@@ -88,9 +99,11 @@ function Panel:target(action, x, y)
     y = y - ay
     
     for child in self.sorted:downwards() do
-        local target = child:target(action, x, y)
-        
-        if target then return target end
+        if child.active then
+            local target = child:target(action, x, y)
+            
+            if target then return target end
+        end
     end
 end
 

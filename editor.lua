@@ -1,8 +1,9 @@
 local Class = require "hump.class"
 local Timer = require "hump.timer"
 
+local Panel = require "interface.elements.panel"
 local Project = require "components.project"
-local InterfaceWrong = require "interfacewrong"
+local ProjectSelect = require "interface.panels.projectselect"
 
 local interface = require "interface"
 local generators = require "generators"
@@ -12,10 +13,13 @@ PALETTE = nil
 POO = nil
 INTERFACE = nil
 INTERFACE_ = nil
+PROJECTS = nil
 
-local Editor = Class {}
+local Editor = Class { __includes = Panel, }
 
 function Editor:init(project)
+    Panel.init(self)
+    
     PALETTE = generators.Palette.generate(3)
 
     local projects = {}
@@ -35,9 +39,13 @@ function Editor:init(project)
     local tutorial = Project("tutorial")
     tutorial:loadIcon("tutorial")
     table.insert(projects, 1, tutorial)
-
-    POO = InterfaceWrong(projects)
-    INTERFACE = POO.modes.select_project
+    
+    PROJECTS = projects
+    
+    self.select = ProjectSelect()
+    self.select:SetProjects(projects)
+    
+    self:add(self.select)
 end
 
 function Editor:update(dt)
@@ -85,9 +93,6 @@ function Editor:draw()
         end
 
         INTERFACE_:draw()
-    else
-        INTERFACE:draw()
-        POO:draw()
     end
 
     if NOCANVAS then
@@ -100,17 +105,24 @@ function Editor:draw()
     end
 
     love.graphics.setColor(255, 255, 255, 255)
+    
+    Panel.draw(self)
 end
 
-function Editor:mousepressed(x, y, button)
+function Editor:mousepressed(sx, sy, button)
+    local wx, wy = CAMERA:worldCoords(sx, sy)
+    
     if PROJECT then
-        local wx, wy = CAMERA:worldCoords(x, y)
-
-        if INTERFACE_:input("mousepressed", button, x, y, wx, wy) then
+        if INTERFACE_:input("mousepressed", button, sx, sy, wx, wy) then
             return
         end
-    else
-        INTERFACE:mousepressed(x, y, button)
+    end
+    
+    local event = { action = "press", coords = {sx, sy, wx, wy}, }
+    local target = self:target("press", sx, sy)
+    
+    if target then
+        target:event(event)
     end
 end
 
@@ -126,6 +138,11 @@ function Editor:keypressed(key, isrepeat)
     if PROJECT then
         if key == "f11" and not isrepeat then
             love.window.setFullscreen(not love.window.getFullscreen(), "desktop")
+        end
+
+        if key == "escape" and PROJECT then
+            INTERFACE_.ps.active = not INTERFACE_.ps.active
+            return
         end
 
         local sx, sy = love.mouse.getPosition()
