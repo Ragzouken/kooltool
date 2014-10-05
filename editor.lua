@@ -2,6 +2,12 @@ local Class = require "hump.class"
 local Timer = require "hump.timer"
 
 local Panel = require "interface.elements.panel"
+local Frame = require "interface.elements.frame"
+local Text = require "interface.elements.text"
+
+local elements = require "interface.elements"
+local Toolbar = require "interface.panels.toolbar"
+
 local Project = require "components.project"
 local ProjectSelect = require "interface.panels.projectselect"
 
@@ -9,11 +15,11 @@ local interface = require "interface"
 local generators = require "generators"
 local colour = require "utilities.colour"
 
+local Game = require "engine.game"
+local savesound = love.audio.newSource("sounds/save.wav")
+
 PALETTE = nil
-POO = nil
 INTERFACE = nil
-INTERFACE_ = nil
-PROJECTS = nil
 
 local Editor = Class { __includes = Panel, }
 
@@ -40,30 +46,161 @@ function Editor:init(project)
     tutorial:loadIcon("tutorial")
     table.insert(projects, 1, tutorial)
     
-    PROJECTS = projects
+    --PROJECTS = projects
     
-    self.select = ProjectSelect()
+    self.nocanvas = Text{
+        shape = elements.shapes.Rectangle(32+4, 0, 512, 32 + 4, {-1, -1}),
+        colours = {
+            stroke = {255,   0,   0, 255},
+            fill =   {192,   0,   0, 255},
+            text =   {255, 255, 255, 255},
+        },
+        
+        font = Text.fonts.small,
+        text = "WARNING| pixel edit may misbehave due to unsupported features\n"
+            .. "-------' please email ragzouken@gmail.com or tweet @ragzouken",
+    }
+
+    self.toolname = Text{
+        shape = elements.shapes.Rectangle(32+4, 0, 512, 32 + 4, {-1, -1}),
+        colours = {
+            stroke = {  0,   0,   0, 255},
+            fill =   {  0,   0,   0, 255},
+            text =   {255, 255, 255, 255},
+        },
+
+        font = Text.fonts.medium,
+        text = "",
+    }
+
+    self.nocanvas.active = NOCANVAS
+
+    self.select = ProjectSelect(self)
     self.select:SetProjects(projects)
     
-    self:add(self.select)
+    self.view = Frame()
+
+    self.tilebar = Toolbar {
+        x=1, y=1, 
+        buttons={},
+        anchor={ 1, -1},
+        size={0, 0},
+    }
+
+    self.tilebar.active = false
+
+    self:add(self.select, -math.huge)
+    self:add(self.view)
+    self:add(self.nocanvas, -math.huge)
+    self:add(self.toolname, -math.huge)
+    self:add(self.tilebar,  -math.huge)
+
+    self.view.camera = CAMERA
+end
+
+function Editor:SetProject(project)
+    SETPROJECT(project)
+    self.view:clear()
+    self.view:add(project.layers.surface, -1)
+    self.view:add(project.layers.annotation, -2)
+
+    INTERFACE = interface.Interface(project)
+
+    self.tilebar.active = true
+
+    local function icon(path)
+        local image = love.graphics.newImage(path)
+        local w, h = image:getDimensions()
+        
+        return {
+            image = image,
+            quad = love.graphics.newQuad(0, 0, w, h, w, h),
+        }
+    end
+    
+    local buttons = {
+    {icon("images/pencil.png"), function()
+        INTERFACE.active = INTERFACE.tools.draw
+    end},
+    {icon("images/tiles.png"), function()
+        INTERFACE.active = INTERFACE.tools.tile
+    end},
+    {icon("images/walls.png"), function()
+        INTERFACE.active = INTERFACE.tools.wall
+    end},
+    {icon("images/marker.png"), function()
+        INTERFACE.active = INTERFACE.tools.marker
+    end},
+    {icon("images/entity.png"), function(button, event)
+        local sx, sy, wx, wy = unpack(event.coords)
+        local entity = INTERFACE.project:newEntity(wx, wy)
+        INTERFACE.action = INTERFACE.tools.drag
+        INTERFACE.action:grab(entity, sx, sy, wx, wy)
+    end},
+    {icon("images/note.png"), function(button, event)
+        local sx, sy, wx, wy = unpack(event.coords)
+        local notebox = INTERFACE.project:newNotebox(wx, wy)
+        INTERFACE.action = INTERFACE.tools.drag
+        INTERFACE.action:grab(notebox, sx, sy, wx, wy)
+    end},
+    {icon("images/save.png"), function()
+        savesound:play()
+        INTERFACE.project:save("projects/" .. INTERFACE.project.name)
+        love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+    end},
+    {icon("images/export.png"), function()
+        savesound:play()
+        INTERFACE.project:save("projects/" ..INTERFACE.project.name)
+        
+        INTERFACE = Interface_({})
+        MODE = Game(INTERFACE.project)
+
+        --toolbar.interface.project:export()
+        --love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
+    end},
+    }
+    
+    self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={-1, -1}, size={32, 32}}
+    
+    self:add(self.toolbar, -math.huge)
 end
 
 function Editor:update(dt)
-    if PROJECT and not INTERFACE_ then
-        INTERFACE_ = interface.Interface(PROJECT)
+    if INTERFACE then
+        local sx, sy = love.mouse.getPosition()
+        local wx, wy = CAMERA:mousepos()
+        INTERFACE:update(dt, sx, sy, wx, wy)
+
+        if INTERFACE.active then
+            self.toolname.text = INTERFACE.active.name
+        end
     end
-
-    local sx, sy = love.mouse.getPosition()
-    local wx, wy = CAMERA:mousepos()
-
-    if INTERFACE_ then INTERFACE_:update(dt, sx, sy, wx, wy) end
-
-    colour.walls(dt, 0)
-
-    if CAMERA.scale % 1 == 0 then CAMERA.x, CAMERA.y = math.floor(CAMERA.x), math.floor(CAMERA.y) end
 
     if PROJECT then
         PROJECT:update(dt)
+        colour.walls(dt, 0)
+
+        -- tilebar
+        local tiles = {}
+        local tileset = PROJECT.layers.surface.tileset
+        
+        for i, quad in ipairs(tileset.quads) do
+            local function action()
+                INTERFACE.active = INTERFACE.tools.tile
+                INTERFACE.tools.tile.tile = i
+            end
+            
+            table.insert(tiles, {{image = tileset.canvas,
+                                  quad = quad},
+                                 action})
+        end
+        
+        self.tilebar:init {
+            x=love.window.getWidth() - 1, y=1,
+            buttons=tiles,
+            anchor={1, -1},
+            size=PROJECT.layers.surface.tileset.dimensions
+        }
     end
 end
 
@@ -71,58 +208,34 @@ local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
 function Editor:draw()
+    Panel.draw(self)
+
     if PROJECT then
         CAMERA:attach()
 
-        PROJECT:draw(true)
-        
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
-        INTERFACE_:cursor(sx, sy, wx, wy)
+        INTERFACE:cursor(sx, sy, wx, wy)
 
         CAMERA:detach()
-
-        if INTERFACE_.active then
-            local o = 4-1+32+2
-            love.graphics.setBlendMode("alpha")
-            love.graphics.setColor(0, 0, 0, 255)
-            love.graphics.rectangle("fill", 0, 0, 512, 16 + 3)
-            love.graphics.setColor(255, 255, 255, 255)
-            love.graphics.setFont(large)
-            love.graphics.print(" " .. INTERFACE_.active.name, 3+o, 5)
-        end
-
-        INTERFACE_:draw()
     end
-
-    if NOCANVAS then
-        love.graphics.setColor(255, 0, 0, 255)
-        love.graphics.rectangle("fill", 0, 17, 512, 19)
-        love.graphics.setColor(0, 0, 0, 255)
-        love.graphics.setFont(medium)
-        love.graphics.print(" WARNING: pixel edit may misbehave due to unsupported features", 1, 4+16)
-        love.graphics.print("          please email ragzouken@gmail.com or tweet @ragzouken", 1, 4+16+9)
-    end
-
-    love.graphics.setColor(255, 255, 255, 255)
-    
-    Panel.draw(self)
 end
 
 function Editor:mousepressed(sx, sy, button)
     local wx, wy = CAMERA:worldCoords(sx, sy)
     
-    if PROJECT then
-        if INTERFACE_:input("mousepressed", button, sx, sy, wx, wy) then
-            return
-        end
-    end
-    
     local event = { action = "press", coords = {sx, sy, wx, wy}, }
     local target = self:target("press", sx, sy)
-    
+
     if target then
         target:event(event)
+        return
+    end
+
+    if PROJECT then
+        if INTERFACE:input("mousepressed", button, sx, sy, wx, wy) then
+            return
+        end
     end
 end
 
@@ -130,7 +243,7 @@ function Editor:mousereleased(x, y, button)
     if PROJECT then
         local wx, wy = CAMERA:worldCoords(x, y)
 
-        INTERFACE_:input("mousereleased", button, x, y, wx, wy)
+        INTERFACE:input("mousereleased", button, x, y, wx, wy)
     end
 end
 
@@ -141,14 +254,14 @@ function Editor:keypressed(key, isrepeat)
         end
 
         if key == "escape" and PROJECT then
-            INTERFACE_.ps.active = not INTERFACE_.ps.active
+            self.select.active = not self.select.active
             return
         end
 
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
 
-        INTERFACE_:input("keypressed", key, isrepeat, sx, sy, wx, wy)
+        INTERFACE:input("keypressed", key, isrepeat, sx, sy, wx, wy)
     end
 end
 
@@ -157,7 +270,7 @@ function Editor:keyreleased(key)
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
 
-        INTERFACE_:input("keyreleased", key, sx, sy, wx, wy)
+        INTERFACE:input("keyreleased", key, sx, sy, wx, wy)
     end
 end
 
@@ -166,7 +279,7 @@ function Editor:textinput(character)
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
 
-        INTERFACE_:input("textinput", character, sx, sy, wx, wy)
+        INTERFACE:input("textinput", character, sx, sy, wx, wy)
     end
 end
 

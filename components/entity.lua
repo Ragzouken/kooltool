@@ -29,15 +29,15 @@ end
 function Entity:init(layer, x, y)
     self.layer = layer
 
-    self.script = ScriptLayer()
+    --self.script = ScriptLayer()
     self.camera = Camera()
 end
 
 function Entity:blank(x, y)
     self.x, self.y = x, y
     self.sprite = Sprite()
-    self.layer:addSprite(self.sprite)
-    self.script:addNode(DialogueNode(self.script, 0, 40))
+    --self.layer:addSprite(self.sprite)
+    --self.script:addNode(DialogueNode(self.script, 0, 40))
     self:refresh()
 end
 

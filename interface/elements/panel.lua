@@ -12,7 +12,8 @@ function Panel:init(params)
     self.depth = params.depth or 0
     self.shape = params.shape or shapes.Plane(0, 0)
     self.actions = params.actions or {}
-    self.colours = params.colours or {stroke = {255, 0, 255, 255}, fill = {255, 0, 255, 64}}
+    self.colours = params.colours or {stroke = {255, 0, 255, 255}, 
+                                      fill   = {255, 0, 255,  64}}
     
     for i, action in ipairs(self.actions) do
         self.actions[action] = true
@@ -20,17 +21,17 @@ function Panel:init(params)
     
     self.active = true
     self.children = {}
-    
+
     self:resort()
 end
 
-function Panel:add(panel)
-    self.children[panel] = true
+function Panel:add(panel, depth)
+    self.children[panel] = depth or panel.depth or 0
     self:resort()
 end
 
 function Panel:remove(panel)
-    self.children[panel] = false
+    self.children[panel] = nil
     self:resort()
 end
 
@@ -69,7 +70,11 @@ function Panel:resort()
         table.insert(self.sorted, child)
     end
     
-    table.sort(self.sorted, function (a, b) return a.depth > b.depth end)
+    local function depth(a, b)
+        return self.children[a] > self.children[b]
+    end
+
+    table.sort(self.sorted, depth)
 end
 
 function Panel:draw()

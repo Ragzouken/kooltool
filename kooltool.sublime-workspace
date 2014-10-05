@@ -1,0 +1,1155 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"SETPROJ",
+				"SETPROJECT"
+			],
+			[
+				"zoom",
+				"zoom_level"
+			],
+			[
+				"com",
+				"components"
+			],
+			[
+				"set",
+				"setBlendMode"
+			],
+			[
+				"Scrip",
+				"ScriptLayer"
+			],
+			[
+				"re",
+				"rectangle"
+			],
+			[
+				"INT",
+				"INTERFACE"
+			],
+			[
+				"ke",
+				"keypressed"
+			],
+			[
+				"Int",
+				"Interface"
+			],
+			[
+				"INTE",
+				"INTERFACE_"
+			],
+			[
+				"mouse",
+				"mousepressed"
+			],
+			[
+				"world",
+				"world_delta"
+			],
+			[
+				"screen",
+				"screen_delta"
+			],
+			[
+				"remove",
+				"removeEntity"
+			],
+			[
+				"ne",
+				"newSource"
+			],
+			[
+				"st",
+				"startPos"
+			],
+			[
+				"to",
+				"to_linear"
+			],
+			[
+				"hr",
+				"hrad_extremum"
+			],
+			[
+				"l",
+				"local	local x = 1"
+			],
+			[
+				"tile",
+				"tilemap"
+			],
+			[
+				"or",
+				"original"
+			],
+			[
+				"new",
+				"newImage"
+			],
+			[
+				"ty",
+				"typing_sound"
+			],
+			[
+				"k",
+				"keypressed"
+			],
+			[
+				"text",
+				"text"
+			],
+			[
+				"DR",
+				"DRAGDELETEMODE"
+			],
+			[
+				"not",
+				"notebox"
+			],
+			[
+				"Anno",
+				"AnnotateMode"
+			],
+			[
+				"wal",
+				"wallmap"
+			],
+			[
+				"wall",
+				"wall_index"
+			],
+			[
+				"key",
+				"keyboard"
+			],
+			[
+				"lock",
+				"locked_entity"
+			],
+			[
+				"parse",
+				"parseLink"
+			],
+			[
+				"sour",
+				"source_pixel"
+			],
+			[
+				"des",
+				"dest_pixel"
+			],
+			[
+				"get",
+				"getData"
+			],
+			[
+				"app",
+				"applyBrush"
+			],
+			[
+				"newIm",
+				"newImageData"
+			],
+			[
+				"canva",
+				"canvas"
+			],
+			[
+				"ren",
+				"renderTo"
+			],
+			[
+				"love",
+				"love-binary-win"
+			],
+			[
+				"export",
+				"export-resources"
+			],
+			[
+				"exp",
+				"exporters"
+			],
+			[
+				"copy",
+				"copyFile"
+			],
+			[
+				"entit",
+				"entities"
+			],
+			[
+				"C",
+				"CAMERA"
+			],
+			[
+				"remo",
+				"removeDirectory"
+			],
+			[
+				"cop",
+				"copyFile"
+			],
+			[
+				"pro",
+				"proj_path"
+			],
+			[
+				"ex",
+				"export_test"
+			],
+			[
+				"ent",
+				"entity"
+			],
+			[
+				"enti",
+				"entitylayer"
+			],
+			[
+				"se",
+				"selected"
+			],
+			[
+				"en",
+				"entitylayer_path"
+			],
+			[
+				"sprites_",
+				"sprites_id"
+			],
+			[
+				"rect",
+				"rect_a"
+			],
+			[
+				"EN",
+				"EntityLayer"
+			],
+			[
+				"En",
+				"EntityLayer"
+			],
+			[
+				"PRO",
+				"PROFILER"
+			],
+			[
+				"Sele",
+				"ProjectSelect"
+			],
+			[
+				"PROJE",
+				"PROJECT"
+			],
+			[
+				"PROJ",
+				"PROJECT"
+			],
+			[
+				"canvas",
+				"canvasFromImage"
+			],
+			[
+				"n",
+				"neighbour"
+			],
+			[
+				"Tile",
+				"TileLayer"
+			],
+			[
+				"note",
+				"notelayer"
+			],
+			[
+				"tilse",
+				"tileset"
+			],
+			[
+				"TILE",
+				"TILESOUND"
+			],
+			[
+				"ti",
+				"tiles"
+			],
+			[
+				"cell",
+				"cell_height"
+			],
+			[
+				"cel",
+				"cell_height"
+			],
+			[
+				"PROJEC",
+				"PROJECTP"
+			],
+			[
+				"Note",
+				"NoteLayer"
+			],
+			[
+				"sel",
+				"selected"
+			],
+			[
+				"in",
+				"input_state"
+			],
+			[
+				"no",
+				"notebox"
+			],
+			[
+				"No",
+				"NoteLayer"
+			],
+			[
+				"TI",
+				"Tileset"
+			],
+			[
+				"draw",
+				"draw_line"
+			],
+			[
+				"PL",
+				"PALETTE"
+			],
+			[
+				"PI",
+				"pixel_coords"
+			],
+			[
+				"file",
+				"filesystem"
+			],
+			[
+				"MAP",
+				"MAPI"
+			],
+			[
+				"dra",
+				"drawObjects"
+			],
+			[
+				"swit",
+				"switch_flash_duration"
+			],
+			[
+				"B",
+				"BOULDERS"
+			],
+			[
+				"TE",
+				"TELEPORTS"
+			],
+			[
+				"p",
+				"positions"
+			],
+			[
+				"boun",
+				"bound_right"
+			],
+			[
+				"bou",
+				"bound_right"
+			],
+			[
+				"bound_",
+				"bound_left"
+			],
+			[
+				"NPC",
+				"NPCMode"
+			],
+			[
+				"Object",
+				"ObjectMode"
+			],
+			[
+				"Editor",
+				"EditorMode"
+			],
+			[
+				"walk",
+				"walk_speed"
+			],
+			[
+				"rig",
+				"right_bound"
+			],
+			[
+				"left",
+				"left_bound"
+			],
+			[
+				"cl",
+				"climb_hand_offset"
+			],
+			[
+				"anim",
+				"animation"
+			],
+			[
+				"ladder",
+				"ladder_shape"
+			],
+			[
+				"act",
+				"actor_shape"
+			],
+			[
+				"col",
+				"collider"
+			],
+			[
+				"object",
+				"object_images"
+			],
+			[
+				"math",
+				"matchstick"
+			],
+			[
+				"text-",
+				"text-align"
+			],
+			[
+				"ran",
+				"random_int"
+			],
+			[
+				"rand",
+				"random_int"
+			],
+			[
+				"shader_f",
+				"shader_fragment_source"
+			],
+			[
+				"RE",
+				"RENDERER"
+			],
+			[
+				"expre",
+				"expressions"
+			],
+			[
+				"sha",
+				"shape_one"
+			],
+			[
+				"cr",
+				"creatures"
+			],
+			[
+				"the",
+				"then"
+			],
+			[
+				"front",
+				"front_tex"
+			],
+			[
+				"EX",
+				"Expression"
+			],
+			[
+				"inp",
+				"inputs"
+			],
+			[
+				"SHA",
+				"SHADER_PROGRAM"
+			],
+			[
+				"enem",
+				"enemies"
+			],
+			[
+				"angle",
+				"angle_diff"
+			],
+			[
+				"compa",
+				"compass_angle"
+			],
+			[
+				"angle_di",
+				"angle_distance"
+			],
+			[
+				"add",
+				"add_collision"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "editor.lua",
+			"settings":
+			{
+				"buffer_size": 4585,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "interface/interface.lua",
+			"settings":
+			{
+				"buffer_size": 5702,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 151,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "interface/panels/projectselect.lua",
+			"settings":
+			{
+				"buffer_size": 2332,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "layers/surface.lua",
+			"settings":
+			{
+				"buffer_size": 9238,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/User/love2d.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 153.0,
+		"history":
+		[
+			"view.encoding()"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers"
+	],
+	"file_history":
+	[
+		"/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/relevant-tools.txt",
+		"/C/Users/ragzouken/AppData/Local/Temp/scp26805/srv/ragzouken/var/www/press/kooltool/data.xml",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/credits.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/article-disection-in-tongues.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/article-disection-kidpix.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/player.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/game.lua",
+		"/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/User/love2d-build.sublime-build",
+		"/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/User/love2d.sublime-build",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/panel.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/main.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/interface_real.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/interface.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/toolbar.lua",
+		"/C/Program Files (x86)/ZeroBrane/packages/edgemark.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/draw.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/surface.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/pan.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/drag.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/sprite.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/notes.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/guiding-principles.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/tool.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/article-disection-eroticism.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/article-disection-daydreaming.txt",
+		"/C/Users/ragzouken/AppData/Local/Temp/scp32947/srv/ragzouken/var/www/press/kooltool/data.xml",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/notebox.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/entity.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/editor.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/element.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/projectselect.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interfacewrong.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/tilebar.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/annotation.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/ARCHIVE/cyberdekay/messages.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/ARCHIVE/noise/quickie/button.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/ARCHIVE/noise/quickie/mouse.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/ARCHIVE/noise/quickie/core.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/ARCHIVE/noise/quickie/init.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/ARCHIVE/noise/quickie/group.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/bounds.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/init.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/button.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/projectselect.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/frame.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/pane.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/marker.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/tileset.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/tileset.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/scripting.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/project.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/edit.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/play.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/scripting/scriptnode.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/scripting/bumpnode.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/scripting/dialoguenode.lua",
+		"/C/Users/ragzouken/mark‮ ɯɐɹʞ.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/colour.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/brain.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/layer.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/resources.lua",
+		"/C/Users/ragzouken/Documents/method-2014-06/7_lovely-garden/main.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/imagedata-ffi.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/nocanvas.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/scripting/node.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/tile.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/wall.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/init.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/grid.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/init.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/palette.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/string.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/surface.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/entity.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notebox.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/sprite.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/common.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/colour.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/hump/class.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/player.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/type.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/conf.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/strict.lua",
+		"/C/Users/ragzouken/Downloads/PIERCER/How to Pierce.txt",
+		"/C/Users/ragzouken/AppData/Local/Temp/7zO5CFA.tmp/interface.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tileset.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface.lua",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/tutorial_copy/tilelayer.json",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/modez.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/walls.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/tool.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/pan.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/drag.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/init.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/draw.lua",
+		"/C/Users/ragzouken/Downloads/weird weird woods/README.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/mouse.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/history.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/brush.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/mouse.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/husl/ports/lua/husl.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/mouse.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/pixeledit.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/mouse.lua",
+		"/C/Users/ragzouken/Downloads/SW1/GM_Source/todo.txt",
+		"/C/Users/ragzouken/Downloads/SW1/GM_Source/readme.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tilepalette.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/husl/ports/lua/husl_test.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/husl/ports/lua/json.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/json.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/husl/husl.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/husl/main.lua",
+		"/C/Users/ragzouken/Downloads/74-78-68_Win/74-78-68-README.txt",
+		"/C/Users/ragzouken/AppData/Local/Temp/scp22612/srv/ragzouken/var/www/press/kooltool/data.xml",
+		"/C/Users/ragzouken/Documents/method-2014-06/front.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/editmode.lua",
+		"/C/Users/ragzouken/Documents/method-2014-06/6_syntax/README.md",
+		"/C/Users/ragzouken/Documents/method-2014-06/4_Quil-Image/doc.txt",
+		"/C/Users/ragzouken/Documents/method-2014-06/2_Cliffords-Tower/download-link.txt",
+		"/C/Users/ragzouken/Documents/method-2014-06/1_Cyberpunk-Prophecies/documentation.txt",
+		"/C/Users/ragzouken/Documents/method-2014-06/1_Cyberpunk-Prophecies/designer_handgun.txt",
+		"/C/Users/ragzouken/Documents/method-2014-06/7_lovely-garden/download-link.txt",
+		"/C/Users/ragzouken/Documents/method-2014-06/7_lovely-garden/writeup.txt",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/tutorial_copy/entitylayer.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/jake/notelayer.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Journal_of_the_Room/entitylayer.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Journal_of_the_Room/tilelayer.json"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"self.zoom",
+			"Button",
+			"Pane",
+			"brush",
+			"Editor",
+			"EDITOR",
+			"POO",
+			"TIMER",
+			"FULL",
+			"SAVESOUND",
+			"print",
+			"directions",
+			"brain",
+			"project",
+			"margin",
+			":draw",
+			"Tileset",
+			"Toolbar",
+			"INTERFACE_",
+			"Tile",
+			"end",
+			"Marker",
+			"then",
+			"TILE",
+			"false",
+			"INTER",
+			"Draw",
+			"false",
+			"Draw",
+			"PAN",
+			"actions",
+			"INTER",
+			"PAN",
+			"Mouse",
+			"Interface",
+			"Drag",
+			"DRAG",
+			"Pan",
+			"ACTION:",
+			"DRAG",
+			"huslp",
+			"from_linear",
+			"from_lin",
+			"xyz_to_rgb",
+			"max_",
+			"degrees",
+			"lch",
+			"\\(test_",
+			" test_",
+			"']",
+			"colors\\['",
+			"self.assertTuplesClose",
+			"print",
+			"bEnded",
+			"triple",
+			"from",
+			"def ",
+			"DragDeleteMode",
+			"Place",
+			"colour.random\\([^)]*\\)",
+			"random",
+			"PlaceMode",
+			"entity",
+			"1\\}",
+			"f}",
+			"2",
+			"*2",
+			"* 2",
+			"json",
+			"tilelayer",
+			"entitylayer",
+			"notelayer",
+			"    PIXELMODE = PixelMode(self.layers.surface)\n    TILEMODE = TileMode(self.layers.surface)\n    PLACEMODE = PlaceMode(self.layers.surface)\n    ANNOTATEMODE = AnnotateMode(self.layers.annotation)",
+			"Annotate",
+			"NoteLayer",
+			"EntityLayer:(de)*serialise",
+			"PROJECT.layers.surface",
+			"EntityLayer",
+			"common",
+			"self.collider",
+			"self",
+			"pixel",
+			"pixelmode",
+			"collider",
+			"focus",
+			"subject",
+			"applyBrush",
+			"self.layer.project.layers.surface",
+			"setWall",
+			"items",
+			"wall_index",
+			"walls",
+			"wall",
+			"wall_index",
+			"_index",
+			"brush",
+			"generator",
+			"parseLink",
+			"href",
+			"\\t",
+			"print",
+			"    \n",
+			"        \n",
+			"TIMER",
+			"palette",
+			"tab",
+			"DRAG",
+			"ending",
+			"line end",
+			"\\\\",
+			"%",
+			"releases",
+			"name",
+			"draw",
+			"function",
+			"print",
+			"Pal",
+			"parseLink",
+			"Project",
+			"uca",
+			"us",
+			"contact us",
+			"cyberdekay",
+			"layer",
+			"state",
+			"[^a-z \\n\\-\\.]",
+			" \\n",
+			"\\(.*\\)"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"Panel",
+			"Element",
+			"Game",
+			"MODE",
+			"controls",
+			"padding",
+			"Tilebar",
+			"Pane",
+			"Wall",
+			"Type",
+			"Marker",
+			"Tile",
+			"tools",
+			"Tool",
+			"InterfaceWrong",
+			"Draw",
+			"Drag",
+			"(unpack(test_",
+			"local test_",
+			"",
+			"colors.",
+			"assert_tuples_close",
+			"function husl.",
+			"ObjectMode",
+			"colour.cursor(0)",
+			"AnnotateMode",
+			"AnnotationLayer",
+			"SurfaceLayer:serialise_entity",
+			"self",
+			"SurfaceLayer",
+			"PROJECT.layers.surface.collider",
+			"self.layer",
+			"    ",
+			"/",
+			"$",
+			"me",
+			"kooltool",
+			"",
+			"\\n",
+			"",
+			"\"0\"",
+			"0",
+			"false",
+			"state",
+			"NoteLayer",
+			"CAMERA",
+			"brush",
+			"tilelayer",
+			"TileLayer",
+			"MAP",
+			"tiles",
+			"Transform",
+			"love.math.random",
+			"Sensor"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "editor.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4585,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1660,
+								1660
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 228.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "interface/interface.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5702,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3061,
+								3061
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 151,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								148,
+								148
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "interface/panels/projectselect.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2332,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2309,
+								2309
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 855.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "layers/surface.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9238,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8469,
+								8469
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4959.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 124.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "kooltool.sublime-project",
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 223.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

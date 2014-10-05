@@ -1,26 +1,10 @@
 local Class = require "hump.class"
-local Panel = require "interface.elements.panel"
-
-local Test = require "interface.interface_real"
-local shapes = require "interface.elements.shapes"
-
-local Toolbar = require "interface.panels.toolbar"
-
 local tools = require "tools"
-
-local Game = require "engine.game"
-local savesound = love.audio.newSource("sounds/save.wav")
-local PS = require "interface.panels.projectselect"
 
 local Interface = Class {}
 
 function Interface:init(project)
     self.project = project
-
-    self.panes = {
-    }
-    
-    --self:addChild(Tilebar(self))
 
     self.action = nil
     self.active = nil
@@ -38,103 +22,12 @@ function Interface:init(project)
         self.tools.pan,
         self.tools.drag,
     }
-    
-    local function icon(path)
-        local image = love.graphics.newImage(path)
-        local w, h = image:getDimensions()
-        
-        return {
-            image = image,
-            quad = love.graphics.newQuad(0, 0, w, h, w, h),
-        }
-    end
-    
-    local buttons = {
-    {icon("images/pencil.png"), function()
-        INTERFACE_.active = INTERFACE_.tools.draw
-    end},
-    {icon("images/tiles.png"), function()
-        INTERFACE_.active = INTERFACE_.tools.tile
-    end},
-    {icon("images/walls.png"), function()
-        INTERFACE_.active = INTERFACE_.tools.wall
-    end},
-    {icon("images/marker.png"), function()
-        INTERFACE_.active = INTERFACE_.tools.marker
-    end},
-    {icon("images/entity.png"), function(button, event)
-        local sx, sy, wx, wy = unpack(event.coords)
-        local entity = self.project:newEntity(wx, wy)
-        self.action = self.tools.drag
-        self.action:grab(entity, sx, sy, wx, wy)
-    end},
-    {icon("images/note.png"), function(button, event)
-        local sx, sy, wx, wy = unpack(event.coords)
-        local notebox = self.project:newNotebox(wx, wy)
-        self.action = self.tools.drag
-        self.action:grab(notebox, sx, sy, wx, wy)
-    end},
-    {icon("images/save.png"), function()
-        savesound:play()
-        INTERFACE_.project:save("projects/" .. INTERFACE_.project.name)
-        love.system.openURL("file://"..love.filesystem.getSaveDirectory())
-    end},
-    {icon("images/export.png"), function()
-        savesound:play()
-        INTERFACE_.project:save("projects/" ..INTERFACE_.project.name)
-        
-        INTERFACE = Interface_({})
-        MODE = Game(INTERFACE_.project)
-
-        --toolbar.interface.project:export()
-        --love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
-    end},
-    }
-    
-    TEST = Panel{shape = shapes.Plane(0.5, 0.5)}
-    
-    self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={-1, -1}, size={32, 32}}
-    self.tilebar = Toolbar{x=1, y=1, buttons=buttons, anchor={ 1, -1}, size=self.project.layers.surface.tileset.dimensions}
-    
-    TEST:add(self.toolbar)
-    TEST:add(self.tilebar)
-    
-    self.ps = PS{}
-    self.ps.active = false
-    
-    self.ps:SetProjects(PROJECTS)
-    
-    TEST:add(self.ps)
 end
 
-function Interface:update(dt, sx, sy, wx, wy)
-    local tiles = {}
-    local tileset = self.project.layers.surface.tileset
-    
-    for i, quad in ipairs(tileset.quads) do
-        local function action()
-            self.active = self.tools.tile
-            self.tools.tile.tile = i
-        end
-        
-        table.insert(tiles, {{image = tileset.canvas,
-                              quad = quad},
-                             action})
-    end
-    
-    self.tilebar:init{x=love.window.getWidth() - 1, y=1, buttons=tiles, anchor={1, -1}, size=self.project.layers.surface.tileset.dimensions}
-    
+function Interface:update(dt, sx, sy, wx, wy)    
     for name, tool in pairs(self.tools) do
         tool:update(dt, sx, sy, wx, wy)
     end
-end
-
-function Interface:draw()
-    for i, pane in ipairs(self.panes) do
-        --pane:draw()
-    end
-    
-    TEST:draw()
 end
 
 function Interface:cursor(sx, sy, wx, wy)
@@ -158,19 +51,6 @@ function Interface:cursor(sx, sy, wx, wy)
 end
 
 function Interface:input(callback, ...)
-    if callback == "mousepressed" then
-        local b, sx, sy, wx, wy = unpack{...}
-        local event = { action = "press", coords = {sx, sy, wx, wy}, }
-        
-        local target = TEST:target("press", sx, sy)
-        
-        if target then
-            target:event(event)
-            return true
-        end
-    end
-
-    
     for i, pane in ipairs(self.panes) do
         if pane[callback] and pane[callback](pane, ...) then return true end
     end

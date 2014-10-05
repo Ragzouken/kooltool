@@ -2,11 +2,13 @@ local Class = require "hump.class"
 local Collider = require "collider"
 local SparseGrid = require "utilities.sparsegrid"
 local Notebox = require "components.notebox"
+local Layer = require "layers.layer"
 
 local colour = require "utilities.colour"
 local common = require "utilities.common"
 
 local AnnotationLayer = Class {
+    __includes = Layer,
     BLOCK_SIZE = 256,
 }
 
@@ -64,6 +66,8 @@ function AnnotationLayer:serialise(saves)
 end
 
 function AnnotationLayer:init()
+    Layer.init(self)
+
     self.noteboxes = {}
     self.blocks = SparseGrid(self.BLOCK_SIZE)
 
@@ -103,7 +107,7 @@ function AnnotationLayer:draw()
     love.graphics.setColor(255, 255, 255, 255)
 
     for notebox in pairs(self.noteboxes) do
-        notebox:draw(INTERFACE_.tools.drag.target == notebox)
+        notebox:draw(INTERFACE.tools.drag.target == notebox)
     end
 end
 

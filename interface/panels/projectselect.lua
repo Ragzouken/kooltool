@@ -48,7 +48,16 @@ function ProjectPanel:init(project, i, project_clicked)
     self:add(button)
 end
 
-local ProjectSelect = Class { __includes = elements.Panel, }
+local ProjectSelect = Class {
+    __includes = elements.Panel,
+    new_image = love.graphics.newImage("images/new_project.png"),
+}
+
+function ProjectSelect:init(editor)
+    elements.Panel.init(self)
+
+    self.editor = editor
+end
 
 function ProjectSelect:SetProjects(projects)
     self.projects = projects
@@ -58,12 +67,25 @@ function ProjectSelect:SetProjects(projects)
     
     for i, project in ipairs(projects) do
         local function project_clicked(event)
-            SETPROJECT(project)
+            self.editor:SetProject(project)
             self.active = false
         end
         
         self:add(ProjectPanel(project, i, project_clicked))
     end
+
+    local project = {
+        name = "new project",
+        description = "create a blank new project",
+        icon = ProjectSelect.new_image,
+    }
+
+    local function new()
+        self.editor:SetProject()
+        self.active = false
+    end
+
+    self:add(ProjectPanel(project, #projects + 1, new))
 end
 
 return ProjectSelect

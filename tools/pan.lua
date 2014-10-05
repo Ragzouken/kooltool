@@ -45,6 +45,10 @@ function Pan:zoomin(wx, wy)
 
         self.camera.scale = oscale*factor - (1 - u) * dz
         self.camera:lookAt(wx + dx / (1 + du*u), wy + dy / (1 + du*u))
+
+        if self.camera.scale % 1 == 0 then
+            self.camera:lookAt(math.floor(self.camera.x), math.floor(self.camera.y))
+        end
     end, nil, "in-quad")
 end
 
@@ -54,7 +58,6 @@ function Pan:zoomout(wx, wy)
     self.zoom = math.max(self.zoom - 1, 0)
     
     local scale = zoom_from_level(self.zoom)
-    print(self.zoom, scale)
     local dx, dy, dz = self.camera.x - wx, self.camera.y - wy, scale - self.camera.scale
     local oscale = self.camera.scale
     local factor = scale / self.camera.scale
@@ -67,6 +70,10 @@ function Pan:zoomout(wx, wy)
 
         self.camera.scale = oscale*factor - (1 - u) * dz
         --self.camera:lookAt(wx + dx / (1 + du*u), wy + dy / (1 + du*u))
+
+        if self.camera.scale % 1 == 0 then
+            self.camera:lookAt(math.floor(self.camera.x), math.floor(self.camera.y))
+        end
     end, nil, "in-quad")
 end
 

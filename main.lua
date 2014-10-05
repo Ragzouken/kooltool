@@ -71,6 +71,8 @@ function SETPROJECT(project)
     end
 
     love.window.setTitle("kooltool sketch (" .. PROJECT.name .. ")")
+    
+    CAMERA:lookAt(128, 128)
 end
 
 function love.update(dt)
