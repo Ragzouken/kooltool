@@ -3,14 +3,14 @@ local tools = require "tools"
 
 local Interface = Class {}
 
-function Interface:init(project)
+function Interface:init(project, camera)
     self.project = project
 
     self.action = nil
     self.active = nil
 
     self.tools = {
-        pan = tools.Pan(CAMERA),
+        pan = tools.Pan(camera),
         drag = tools.Drag(project),
         draw = tools.Draw(project, PALETTE.colours[3]),
         tile = tools.Tile(project, 1),
@@ -51,10 +51,6 @@ function Interface:cursor(sx, sy, wx, wy)
 end
 
 function Interface:input(callback, ...)
-    for i, pane in ipairs(self.panes) do
-        if pane[callback] and pane[callback](pane, ...) then return true end
-    end
-    
     local function input(tool, ...)
         local block, change = tool[callback](tool, ...)
 

@@ -54,7 +54,7 @@ function love.load(arg)
     end
 end
 
-function SETPROJECT(project)
+function SETPROJECT(project, camera)
     if project then
         PROJECT = project
         local path
@@ -72,7 +72,9 @@ function SETPROJECT(project)
 
     love.window.setTitle("kooltool sketch (" .. PROJECT.name .. ")")
     
-    CAMERA:lookAt(128, 128)
+    camera:lookAt(128, 128)
+
+    return PROJECT
 end
 
 function love.update(dt)

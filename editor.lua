@@ -99,12 +99,12 @@ function Editor:init(project)
 end
 
 function Editor:SetProject(project)
-    SETPROJECT(project)
+    project = SETPROJECT(project, self.view.camera)
     self.view:clear()
     self.view:add(project.layers.surface, -1)
     self.view:add(project.layers.annotation, -2)
 
-    INTERFACE = interface.Interface(project)
+    INTERFACE = interface.Interface(project, self.view.camera)
 
     self.tilebar.active = true
 
@@ -168,7 +168,7 @@ end
 function Editor:update(dt)
     if INTERFACE then
         local sx, sy = love.mouse.getPosition()
-        local wx, wy = CAMERA:mousepos()
+        local wx, wy = self.view.camera:mousepos()
         INTERFACE:update(dt, sx, sy, wx, wy)
 
         if INTERFACE.active then
@@ -211,18 +211,18 @@ function Editor:draw()
     Panel.draw(self)
 
     if PROJECT then
-        CAMERA:attach()
+        self.view.camera:attach()
 
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
         INTERFACE:cursor(sx, sy, wx, wy)
 
-        CAMERA:detach()
+        self.view.camera:detach()
     end
 end
 
 function Editor:mousepressed(sx, sy, button)
-    local wx, wy = CAMERA:worldCoords(sx, sy)
+    local wx, wy = self.view.camera:worldCoords(sx, sy)
     
     local event = { action = "press", coords = {sx, sy, wx, wy}, }
     local target = self:target("press", sx, sy)
@@ -241,7 +241,7 @@ end
 
 function Editor:mousereleased(x, y, button)    
     if PROJECT then
-        local wx, wy = CAMERA:worldCoords(x, y)
+        local wx, wy = self.view.camera:worldCoords(x, y)
 
         INTERFACE:input("mousereleased", button, x, y, wx, wy)
     end
@@ -259,7 +259,7 @@ function Editor:keypressed(key, isrepeat)
         end
 
         local sx, sy = love.mouse.getPosition()
-        local wx, wy = CAMERA:mousepos()
+        local wx, wy = self.view.camera:mousepos()
 
         INTERFACE:input("keypressed", key, isrepeat, sx, sy, wx, wy)
     end
@@ -268,7 +268,7 @@ end
 function Editor:keyreleased(key)
     if PROJECT then
         local sx, sy = love.mouse.getPosition()
-        local wx, wy = CAMERA:mousepos()
+        local wx, wy = self.view.camera:mousepos()
 
         INTERFACE:input("keyreleased", key, sx, sy, wx, wy)
     end
@@ -277,7 +277,7 @@ end
 function Editor:textinput(character)
     if PROJECT then
         local sx, sy = love.mouse.getPosition()
-        local wx, wy = CAMERA:mousepos()
+        local wx, wy = self.view.camera:mousepos()
 
         INTERFACE:input("textinput", character, sx, sy, wx, wy)
     end
