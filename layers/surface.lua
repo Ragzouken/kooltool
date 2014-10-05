@@ -11,7 +11,6 @@ local common = require "utilities.common"
 
 local SurfaceLayer = Class {
     __includes = Layer,
-    tilesize = {32, 32},
     clone_sound = love.audio.newSource("sounds/clone.wav"),
 }
 
@@ -121,7 +120,10 @@ function SurfaceLayer:exportRegions(folder_path)
 end
 
 function SurfaceLayer:deserialise(data, saves)
+    self.tileset = Tileset()
     self.tileset:deserialise(data.tileset, saves)
+
+    self:SetTileset(self.tileset)
 
     for y, row in pairs(data.tiles) do
         for x, index in pairs(row) do
@@ -149,12 +151,12 @@ function SurfaceLayer:init(project)
 
     self.collider = Collider(64)
 
-    self.tileset = Tileset()
-    self.tilemap = SparseGrid(unpack(self.tilesize))
+    self.tileset = nil
+    self.tilemap = SparseGrid()
     self.tilebatch = love.graphics.newSpriteBatch(common.BROKEN, 7500)
 
     self.wall_index = {}
-    self.wallmap = SparseGrid(unpack(self.tilesize))
+    self.wallmap = SparseGrid()
     
     self.sprites = {}
     self.sprites_index = {id = 0}
@@ -178,6 +180,13 @@ function SurfaceLayer:draw()
     end
 end
 
+function SurfaceLayer:SetTileset(tileset)
+    self.tileset = tileset
+    
+    self.tilemap:SetCellSize(unpack(self.tileset.dimensions))
+    self.wallmap:SetCellSize(unpack(self.tileset.dimensions))
+end
+
 function SurfaceLayer:objectAt(x, y)
     local shape = self.collider:shapesAt(x, y)[1]
     local entity = shape and shape.entity
@@ -194,7 +203,7 @@ end
 function SurfaceLayer:setTile(index, gx, gy)
     local current = self.tilemap:get(gx, gy)
     local id = current and current[2]
-    local tw, th = unpack(self.tilesize)
+    local tw, th = unpack(self.tileset.dimensions)
 
     if index and index ~= 0 then
         local quad = self.tileset.quads[index]
@@ -288,10 +297,10 @@ function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
     -- split canvas into quads
     -- draw each quad to the corresponding tile TODO: (if unlocked)
     local bw, bh = brush:getDimensions()
-    local size = 32
+    local tw, th = unpack(self.tileset.dimensions)
 
-    local gw, gh = math.ceil((bw + tx) / size), math.ceil((bh + ty) / size)
-    local quad = love.graphics.newQuad(0, 0, size, size, bw, bh)
+    local gw, gh = math.ceil((bw + tx) / tw), math.ceil((bh + ty) / th)
+    local quad = love.graphics.newQuad(0, 0, tw, th, bw, bh)
 
     local cloned
 
@@ -299,7 +308,7 @@ function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
     for y=0,gh-1 do
         for x=0,gw-1 do
             local index = self:getTile(gx + x, gy + y)
-            quad:setViewport(-tx + x * size, -ty + y * size, size, size)
+            quad:setViewport(-tx + x * tw, -ty + y * th, tw, th)
 
             local locked = lock and (lock[1] ~= x+gx or lock[2] ~= y+gy)
             local key = tostring(gx + x) .. "," .. tostring(gy + y)

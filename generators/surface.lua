@@ -2,12 +2,12 @@ local SurfaceLayer = require "layers.surface"
 
 local surface = {}
 
-function surface.default(project)
+function surface.default(project, tilesize)
     local generators = require "generators"
     
-    local layer = SurfaceLayer(project)
+    local layer = SurfaceLayer(project, tilesize)
 
-    layer.tileset = generators.tileset.flat(project)
+    layer:SetTileset(generators.tileset.flat(project, tilesize))
     
     for tile, x, y in generators.grid.dungeon():items() do
         layer:setTile(tile, x, y)

@@ -84,7 +84,7 @@ end
 
 function AnnotationLayer:update(dt)
     for i=1,5 do
-        self.collider:update(dt * 0.2)
+        --self.collider:update(dt * 0.2)
     end
 end
 

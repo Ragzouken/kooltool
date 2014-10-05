@@ -9,6 +9,11 @@ function SparseGrid:init(cell_width, cell_height)
     self:clear()
 end
 
+function SparseGrid:SetCellSize(cell_width, cell_height)
+    self.cell_width = cell_width
+    self.cell_height = cell_height
+end
+
 function SparseGrid:clear()
     self.grid = {}
     self.bounds = {}

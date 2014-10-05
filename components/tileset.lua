@@ -5,12 +5,15 @@ local common = require "utilities.common"
 local colour = require "utilities.colour"
 
 local Tileset = Class {
-    SIZE = 32,
     TILES = 16,
 }
 
 function Tileset:deserialise(data, saves)
-    self.SIZE = data.tilesize
+    if data.dimensions then
+        self.dimensions = data.dimensions
+    else
+        self.dimensions = {data.tilesize, data.tilesize}
+    end
 
     local image = love.graphics.newImage(saves .. "/" .. data.file)
     self.canvas = common.canvasFromImage(image)
@@ -25,13 +28,13 @@ function Tileset:serialise(saves)
     return {
         file = file,
         tiles = self.tiles,
-        tilesize = self.SIZE,
+        dimensions = self.dimensions,
     }
 end
 
-function Tileset:init()
-    local ts = self.SIZE
-    local w, h = ts * 1, ts
+function Tileset:init(tilesize)
+    self.dimensions = tilesize or TILESIZE
+    local w, h = unpack(self.dimensions)
 
     self.canvas = love.graphics.newCanvas(w, h)
     self.quads = {}
@@ -69,12 +72,14 @@ end
 function Tileset:refresh()
     self.quads = {}
 
-    local w, h = self.SIZE * self.tiles, self.SIZE
+    local tw, th = unpack(self.dimensions)
+    local w, h = tw * self.tiles, th
 
     self.canvas = common.resizeCanvas(self.canvas, w, h)
     for i=1,self.tiles do
-        self.quads[i] = love.graphics.newQuad((i - 1) * self.SIZE, 0, 
-            self.SIZE, self.SIZE, w, h)
+        self.quads[i] = love.graphics.newQuad((i - 1) * tw, 0, 
+                                              tw, th,
+                                              w, h)
     end
 end
 
@@ -89,10 +94,12 @@ end
 function Tileset:clone(tile)
     local clone = self:add_tile()
 
+    local tw, th = unpack(self.dimensions)
+
     if tile then
         if NOCANVAS then
             local data = self.canvas:getData()
-            data:paste(data, (self.tiles - 1) * self.SIZE, 0, (tile - 1) * self.SIZE, 0, self.SIZE, self.SIZE)
+            data:paste(data, (self.tiles - 1) * tw, 0, (tile - 1) * tw, 0, tw, th)
             self.canvas.image = love.graphics.newImage(data)
         else
             local brush = Brush.image(self.canvas, self.quads[tile])
@@ -104,17 +111,21 @@ function Tileset:clone(tile)
 end
 
 function Tileset:applyBrush(index, brush, quad)
+    local tw, th = unpack(self.dimensions)
+    
     love.graphics.setStencil(function()
-        love.graphics.rectangle("fill", (index - 1) * self.SIZE, 0, self.SIZE, self.SIZE)
+        love.graphics.rectangle("fill", (index - 1) * tw, 0, tw, th)
     end)
     
-    brush:apply(self.canvas, quad, (index - 1) * self.SIZE, 0)
+    brush:apply(self.canvas, quad, (index - 1) * tw, 0)
     
     love.graphics.setStencil()
 end
 
 function Tileset:sample(tile, tx, ty)
-    return {self.canvas:getPixel(tx + (tile - 1) * 32, ty)}
+    local tw, th = unpack(self.dimensions)
+    
+    return {self.canvas:getPixel(tx + (tile - 1) * tw, ty)}
 end
 
 return Tileset

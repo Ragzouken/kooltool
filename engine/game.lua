@@ -52,6 +52,10 @@ function Game:update(dt)
     end
 end
 
+function Game:destroy()
+    
+end
+
 local font = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
 local function box(message)

@@ -7,10 +7,11 @@ local Radio = require "interface.elements.radio"
 local Toolbar = Class { __includes = Panel, }
 
 function Toolbar:init(params)
-    local height = (32 + 1) * #params.buttons - 1
+    local w, h = unpack(params.size)
+    local height = (h + 1) * #params.buttons - 1
     
     params.shape = shapes.Rectangle(params.x, params.y,
-                                    34, height,
+                                    w+2, height,
                                     params.anchor)
     
     Panel.init(self, params)
@@ -18,7 +19,7 @@ function Toolbar:init(params)
     local group = Radio.Group()
     
     for i, button in ipairs(params.buttons) do
-        local x, y = 1, (32 + 1) * (i - 1) + 1
+        local x, y = 1, (h + 1) * (i - 1) + 1
         local button = Radio{x=x, y=y, icon=button[1], action=button[2], group=group}
         
         self:add(button)

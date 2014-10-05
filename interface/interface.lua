@@ -95,8 +95,8 @@ function Interface:init(project)
     
     TEST = Panel{}
     
-    self.toolbar = Toolbar_{x=1.5, y=1.5, buttons=buttons, anchor={-1, -1}}
-    self.tilebar = Toolbar_{x=1.5, y=1.5, buttons=buttons, anchor={ 1, -1}}
+    self.toolbar = Toolbar_{x=1.5, y=1.5, buttons=buttons, anchor={-1, -1}, size={32, 32}}
+    self.tilebar = Toolbar_{x=1.5, y=1.5, buttons=buttons, anchor={ 1, -1}, size=self.project.layers.surface.tileset.dimensions}
     
     TEST:add(self.toolbar)
     TEST:add(self.tilebar)
@@ -110,7 +110,6 @@ function Interface:update(dt, sx, sy, wx, wy)
         local function action()
             self.active = self.tools.tile
             self.tools.tile.tile = i
-            print("poo", i)
         end
         
         table.insert(tiles, {{image = tileset.canvas,
@@ -118,7 +117,7 @@ function Interface:update(dt, sx, sy, wx, wy)
                              action})
     end
     
-    self.tilebar:init{x=love.window.getWidth() - 1.5, y=1.5, buttons=tiles, anchor={1, -1}}
+    self.tilebar:init{x=love.window.getWidth() - 1.5, y=1.5, buttons=tiles, anchor={1, -1}, size=self.project.layers.surface.tileset.dimensions}
     
     for name, tool in pairs(self.tools) do
         tool:update(dt, sx, sy, wx, wy)

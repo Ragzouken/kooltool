@@ -11,6 +11,7 @@ do
     MODE = nil
     EDITOR = nil
     TEST = nil
+    TILESIZE = nil
 end
 
 if jit then require "utilities.imagedata-ffi" end
@@ -28,9 +29,14 @@ local Project = require "components.project"
 local interface = require "interface"
 
 function love.load(arg)
-    if arg[#arg] == "-debug" then
-        require("mobdebug").start()
-    end
+    --if arg[#arg] == "-debug" then
+    --    require("mobdebug").start()
+    --end
+    
+    local tw = arg[1] and tonumber(arg[1]) or 32
+    local th = arg[2] and tonumber(arg[2]) or tw
+    
+    TILESIZE = {tw, th}
     
     io.stdout:setvbuf('no')
     
@@ -61,7 +67,7 @@ function SETPROJECT(project)
 
         PROJECT:load(path)
     else
-        PROJECT = Project.default(Project.name_generator:generate():gsub(" ", "_"))
+        PROJECT = Project.default(Project.name_generator:generate():gsub(" ", "_"), TILESIZE)
     end
 
     INTERFACE.draw = function() end

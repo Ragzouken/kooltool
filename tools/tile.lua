@@ -21,13 +21,13 @@ function Tile:cursor(sx, sy, wx, wy)
     if self.drag or not self.project:objectAt(wx, wy) then
         local layer = self.project.layers.surface
         local gx, gy = layer.tilemap:gridCoords(wx, wy)
-        local size = 32
+        local tw, th = unpack(layer.tileset.dimensions)
         local quad = layer.tileset.quads[self.tile]
 
         love.graphics.setColor(255, 255, 255, 128)
-        love.graphics.draw(layer.tileset.canvas, quad, gx * size, gy * size)
+        love.graphics.draw(layer.tileset.canvas, quad, gx * tw, gy * th)
         love.graphics.setColor(colour.cursor(0))
-        love.graphics.rectangle("line", gx*size, gy*size, size, size)
+        love.graphics.rectangle("line", gx*tw, gy*th, tw, th)
     end
 end
 

@@ -1,1 +1,4 @@
 *.db
+
+CiderDebugger.lua
+GliderProperties.proj

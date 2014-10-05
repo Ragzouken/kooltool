@@ -22,8 +22,10 @@ function Draw:cursor(sx, sy, wx, wy)
     if self.state.lock then
         local gx, gy = unpack(self.state.lock)
 
+        local tw, th = unpack(self.project.layers.surface.tileset.dimensions)
+
         love.graphics.setColor(colour.cursor(0))
-        love.graphics.rectangle("line", gx*32-0.5, gy*32-0.5, 32+1, 32+1)
+        love.graphics.rectangle("line", gx*tw-0.5, gy*th-0.5, tw+1, th+1)
     else
         local object = self.project:objectAt(wx, wy)
 
