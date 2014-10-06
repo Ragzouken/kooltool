@@ -26,26 +26,17 @@ function Entity:serialise(saves)
     }
 end
 
-function Entity:init(layer, x, y)
+function Entity:init(layer)
     self.layer = layer
-
-    --self.script = ScriptLayer()
-    self.camera = Camera()
 end
 
 function Entity:blank(x, y)
     self.x, self.y = x, y
-    self.sprite = Sprite()
-    --self.layer:addSprite(self.sprite)
-    --self.script:addNode(DialogueNode(self.script, 0, 40))
+    self.sprite = self.layer:newSprite()
     self:refresh()
 end
 
 function Entity:draw()
-    self.camera:attach()
-    --self.script:draw()
-    self.camera:detach()
-
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.setBlendMode("premultiplied")
     self.sprite:draw(self.x, self.y)
@@ -75,8 +66,6 @@ function Entity:moveTo(x, y)
 
     self.shape:moveTo(x + dx, y + dy)
     self.x, self.y = x, y
-
-    self.camera:lookAt(-self.x+256, -self.y+256)
 end
 
 function Entity:applyBrush(bx, by, brush, lock, cloning)

@@ -20,13 +20,8 @@ function SurfaceLayer:deserialise_entity(data, saves)
     self.sprites_index.id = data.sprites_id
 
     for id, sprite_data in pairs(data.sprites) do
-        local file = sprite_path .. "/" .. id .. ".png"
-        local sprite = Sprite()
-        sprite.canvas = common.loadCanvas(file)
-
-        sprite.pivot = sprite_data.pivot
-        sprite:refresh()
-
+        local sprite = Sprite(self, id)
+        sprite:deserialise(sprite_data, sprite_path)
         self:addSprite(sprite, id)
     end
 
@@ -44,13 +39,7 @@ function SurfaceLayer:serialise_entity(saves)
     local sprites = {}
 
     for sprite, id in pairs(self.sprites) do
-        local file = sprite_path .. "/" .. id .. ".png"
-        local data = sprite.canvas:getImageData()
-        data:encode(file)
-
-        sprites[id] = {
-            pivot = sprite.pivot,
-        }
+        sprites[id] = sprite:serialise(sprite_path)
     end
 
     local entities = {}
@@ -259,12 +248,19 @@ function SurfaceLayer:setWall(solid, gx, gy, clone)
     return false
 end
 
-function SurfaceLayer:addSprite(sprite, id)
-    if not id then
-        id = self.sprites_index.id + 1
-        self.sprites_index.id = id
-    end
+function SurfaceLayer:newSprite()
+    local id = self.sprites_index.id + 1
+    self.sprites_index.id = id
 
+    local sprite = Sprite(self, id)
+    sprite:blank()
+
+    self:addSprite(sprite, id)
+
+    return sprite
+end
+
+function SurfaceLayer:addSprite(sprite, id)
     self.sprites[sprite] = id
     self.sprites_index[id] = sprite
 end

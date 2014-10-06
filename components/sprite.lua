@@ -3,10 +3,37 @@ local common = require "utilities.common"
 
 local Sprite = Class {}
 
-function Sprite:init(sprite)
-    self.canvas = sprite and common.canvasFromImage(sprite.canvas) or love.graphics.newCanvas(32, 32)
-    self.pivot = {16, 16}
-    self.size = {32, 32}
+function Sprite:serialise(saves)
+    local file = saves .. "/" .. self.id .. ".png"
+
+    self.canvas:getImageData():encode(file)
+
+    return {
+        pivot = self.pivot,
+    }
+end
+
+function Sprite:deserialise(data, saves)
+    local file = saves .. "/" .. self.id .. ".png"
+
+    self.canvas = common.loadCanvas(file)
+    self.pivot = data.pivot
+
+    self:refresh()
+end
+
+function Sprite:init(layer, id)
+    self.layer = layer
+    self.id = id
+end
+
+function Sprite:blank(w, h)
+    local dw, dh = unpack(self.layer.tileset.dimensions)
+    w, h = w or dw, h or dh
+
+    self.canvas = love.graphics.newCanvas(w, h)
+    self.pivot = {w/2, h/2}
+    self.size = {w, h}
 end
 
 function Sprite:draw(x, y, a, s)
