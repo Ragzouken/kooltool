@@ -1,7 +1,9 @@
 local Class = require "hump.class"
 local common = require "utilities.common"
 
-local Sprite = Class {}
+local Panel = require "interface.elements.panel"
+
+local Sprite = Class { __includes = Panel }
 
 function Sprite:serialise(saves)
     local file = saves .. "/" .. self.id .. ".png"

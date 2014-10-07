@@ -94,7 +94,9 @@ function Player:move(vector, input)
     local occupier = self.game.occupied:get(dx, dy)
 
     if occupier and self == self.game.player then
-        self.game.TEXT = occupier.speech[love.math.random(#occupier.speech)]
+        if #occupier.speech > 0 then
+            self.game.TEXT = occupier.speech[love.math.random(#occupier.speech)]
+        end
         speech:play()
         if occupier.tags["[pop]"] then occupier:destroy() end
         return

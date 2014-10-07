@@ -8,10 +8,11 @@ local Text = require "interface.elements.text"
 local elements = require "interface.elements"
 local Toolbar = require "interface.panels.toolbar"
 
+local tools = require "tools"
+
 local Project = require "components.project"
 local ProjectSelect = require "interface.panels.projectselect"
 
-local interface = require "interface"
 local generators = require "generators"
 local colour = require "utilities.colour"
 
@@ -19,7 +20,6 @@ local Game = require "engine.game"
 local savesound = love.audio.newSource("sounds/save.wav")
 
 PALETTE = nil
-INTERFACE = nil
 
 local Editor = Class { __includes = Panel, }
 
@@ -99,12 +99,13 @@ function Editor:init(project)
 end
 
 function Editor:SetProject(project)
-    project = SETPROJECT(project, self.view.camera)
+    self.project = SETPROJECT(project, self.view.camera)
+    
+    local project = self.project
+
     self.view:clear()
     self.view:add(project.layers.surface, -1)
     self.view:add(project.layers.annotation, -2)
-
-    INTERFACE = interface.Interface(project, self.view.camera)
 
     self.tilebar.active = true
 
@@ -120,40 +121,39 @@ function Editor:SetProject(project)
     
     local buttons = {
     {icon("images/pencil.png"), function()
-        INTERFACE.active = INTERFACE.tools.draw
+        self.active = self.tools.draw
     end},
     {icon("images/tiles.png"), function()
-        INTERFACE.active = INTERFACE.tools.tile
+        self.active = self.tools.tile
     end},
     {icon("images/walls.png"), function()
-        INTERFACE.active = INTERFACE.tools.wall
+        self.active = self.tools.wall
     end},
     {icon("images/marker.png"), function()
-        INTERFACE.active = INTERFACE.tools.marker
+        self.active = self.tools.marker
     end},
     {icon("images/entity.png"), function(button, event)
         local sx, sy, wx, wy = unpack(event.coords)
-        local entity = INTERFACE.project:newEntity(wx, wy)
-        INTERFACE.action = INTERFACE.tools.drag
-        INTERFACE.action:grab(entity, sx, sy, wx, wy)
+        local entity = self.project:newEntity(wx, wy)
+        self.action = self.tools.drag
+        self.action:grab(entity, sx, sy, wx, wy)
     end},
     {icon("images/note.png"), function(button, event)
         local sx, sy, wx, wy = unpack(event.coords)
-        local notebox = INTERFACE.project:newNotebox(wx, wy)
-        INTERFACE.action = INTERFACE.tools.drag
-        INTERFACE.action:grab(notebox, sx, sy, wx, wy)
+        local notebox = self.project:newNotebox(wx, wy)
+        self.action = self.tools.drag
+        self.action:grab(notebox, sx, sy, wx, wy)
     end},
     {icon("images/save.png"), function()
         savesound:play()
-        INTERFACE.project:save("projects/" .. INTERFACE.project.name)
+        self.project:save("projects/" .. self.project.name)
         love.system.openURL("file://"..love.filesystem.getSaveDirectory())
     end},
     {icon("images/export.png"), function()
         savesound:play()
-        INTERFACE.project:save("projects/" ..INTERFACE.project.name)
+        self.project:save("projects/" ..self.project.name)
         
-        INTERFACE = Interface_({})
-        MODE = Game(INTERFACE.project)
+        MODE = Game(self.project)
 
         --toolbar.interface.project:export()
         --love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
@@ -163,20 +163,38 @@ function Editor:SetProject(project)
     self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={-1, -1}, size={32, 32}}
     
     self:add(self.toolbar, -math.huge)
+
+    self.action = nil
+    self.active = nil
+
+    self.tools = {
+        pan = tools.Pan(self.view.camera),
+        drag = tools.Drag(project),
+        draw = tools.Draw(project, PALETTE.colours[3]),
+        tile = tools.Tile(project, 1),
+        wall = tools.Wall(project),
+        marker = tools.Marker(project),
+    }
+
+    self.global = {
+        self.tools.pan,
+        self.tools.drag,
+    }
 end
 
 function Editor:update(dt)
-    if INTERFACE then
+    if PROJECT then
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
-        INTERFACE:update(dt, sx, sy, wx, wy)
 
-        if INTERFACE.active then
-            self.toolname.text = INTERFACE.active.name
+        for name, tool in pairs(self.tools) do
+            tool:update(dt, sx, sy, wx, wy)
         end
-    end
 
-    if PROJECT then
+        if self.active then
+            self.toolname.text = self.active.name
+        end
+
         PROJECT:update(dt)
         colour.walls(dt, 0)
 
@@ -186,8 +204,8 @@ function Editor:update(dt)
         
         for i, quad in ipairs(tileset.quads) do
             local function action()
-                INTERFACE.active = INTERFACE.tools.tile
-                INTERFACE.tools.tile.tile = i
+                self.active = self.tools.tile
+                self.tools.tile.tile = i
             end
             
             table.insert(tiles, {{image = tileset.canvas,
@@ -204,6 +222,53 @@ function Editor:update(dt)
     end
 end
 
+function Editor:cursor(sx, sy, wx, wy)
+    local function cursor(tool)
+        local cursor = tool:cursor(sx, sy, wx, wy)
+
+        if cursor then
+            love.window.setCursor(cursor)
+            return true
+        end
+
+        return false
+    end
+
+    if self.action and cursor(self.action) then return end
+    if self.active and cursor(self.active) then return end
+
+    for name, tool in pairs(self.global) do
+        if cursor(tool) then return end
+    end
+end
+
+function Editor:input(callback, ...)
+    local function input(tool, ...)
+        local block, change = tool[callback](tool, ...)
+
+        if tool == self.action and change == "end" then
+            self.action = nil
+        elseif not self.action and change == "begin" then
+            self.action = tool
+        end
+        
+        if block then
+            return true
+        else
+            return false
+        end
+    end
+
+    if self.action and input(self.action, ...) then return true end
+    if self.active and input(self.active, ...) then return true end
+
+    for i, tool in ipairs(self.global) do
+        if input(tool, ...) then return true end
+    end
+
+    return false
+end
+
 local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
@@ -215,7 +280,7 @@ function Editor:draw()
 
         local sx, sy = love.mouse.getPosition()
         local wx, wy = CAMERA:mousepos()
-        INTERFACE:cursor(sx, sy, wx, wy)
+        self:cursor(sx, sy, wx, wy)
 
         self.view.camera:detach()
     end
@@ -233,7 +298,7 @@ function Editor:mousepressed(sx, sy, button)
     end
 
     if PROJECT then
-        if INTERFACE:input("mousepressed", button, sx, sy, wx, wy) then
+        if self:input("mousepressed", button, sx, sy, wx, wy) then
             return
         end
     end
@@ -243,7 +308,7 @@ function Editor:mousereleased(x, y, button)
     if PROJECT then
         local wx, wy = self.view.camera:worldCoords(x, y)
 
-        INTERFACE:input("mousereleased", button, x, y, wx, wy)
+        self:input("mousereleased", button, x, y, wx, wy)
     end
 end
 
@@ -261,7 +326,7 @@ function Editor:keypressed(key, isrepeat)
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
 
-        INTERFACE:input("keypressed", key, isrepeat, sx, sy, wx, wy)
+        self:input("keypressed", key, isrepeat, sx, sy, wx, wy)
     end
 end
 
@@ -270,7 +335,7 @@ function Editor:keyreleased(key)
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
 
-        INTERFACE:input("keyreleased", key, sx, sy, wx, wy)
+        self:input("keyreleased", key, sx, sy, wx, wy)
     end
 end
 
@@ -279,7 +344,7 @@ function Editor:textinput(character)
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
 
-        INTERFACE:input("textinput", character, sx, sy, wx, wy)
+        self:input("textinput", character, sx, sy, wx, wy)
     end
 end
 

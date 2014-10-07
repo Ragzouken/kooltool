@@ -6,11 +6,8 @@ do
     CAMERA = nil
     PROJECT = nil
     NOCANVAS = not love.graphics.isSupported("canvas")
-    INTERFACE = nil
-    INTERFACE_ = nil
     MODE = nil
     EDITOR = nil
-    TEST = nil
     TILESIZE = nil
 end
 
@@ -26,7 +23,6 @@ local Camera = require "hump.camera"
 local Editor = require "editor"
 local Game = require "engine.game"
 local Project = require "components.project"
-local interface = require "interface"
 
 function love.load(arg)
     --if arg[#arg] == "-debug" then
@@ -106,17 +102,18 @@ function love.mousereleased(...)
 end
 
 function love.keypressed(...)
-    (function (key, irepeat)
+    if (function (key, irepeat)
         if key == "escape" and EDITOR and MODE ~= EDITOR then
             MODE:undo()
             MODE = EDITOR
+            return true
         elseif key == "f12" then
             SETPROJECT(Project("tutorial"))
             EDITOR = Editor(PROJECT)
             MODE = EDITOR
-            INTERFACE_ = interface.Interface(PROJECT)
+            return true
         end
-    end)(...)
+    end)(...) then return end
 
     MODE:keypressed(...)
 end

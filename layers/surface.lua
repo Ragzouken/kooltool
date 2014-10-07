@@ -70,6 +70,11 @@ function SurfaceLayer:serialise(saves)
         walls[y][x] = wall
     end
 
+    local file = love.filesystem.newFile(saves .. "/entitylayer.json", "w")
+    local entities = self:serialise_entity(saves)
+    file:write(json.encode(entities))
+    file:close()
+
     return {
         tileset = self.tileset:serialise(saves),
         tiles = tiles,
@@ -133,6 +138,10 @@ function SurfaceLayer:deserialise(data, saves)
     for index, solid in pairs(data.wall_index or {}) do
         self.wall_index[tonumber(index)] = solid
     end
+
+    local file = love.filesystem.read(saves .. "/entitylayer.json")
+    local data = json.decode(file)
+    self:deserialise_entity(data, saves)
 end
 
 function SurfaceLayer:init(project)
