@@ -3,18 +3,19 @@ local Tool = require "tools.tool"
 
 local Drag = Class { __includes = Tool, name = "drag", }
 
-function Drag:init(project)
+function Drag:init(editor)
     Tool.init(self)
     
-    self.project = project
+    self.editor = editor
 end
 
-function Drag:grab(object, sx, sy, wx, wy)
+function Drag:grab(object, sx, sy)
     self:enddrag()
     self:startdrag("drag")
 
     self.drag.object = object
-    self.drag.pivot = {object.x - wx, object.y - wy}
+
+    self.drag.pivot = self.editor:transform(object, sx, sy)
 end
 
 function Drag:drop()
@@ -30,19 +31,19 @@ end
 function Drag:mousepressed(button, sx, sy, wx, wy)
     if self.drag and button == "r" then
         if self.drag.object.sprite then
-            self.project.layers.surface:removeEntity(self.drag.object)
+            --self.project.layers.surface:removeEntity(self.drag.object)
         else
-            self.project.layers.annotation:removeNotebox(self.drag.object)
+            --self.project.layers.annotation:removeNotebox(self.drag.object)
         end
 
         self:drop()
 
         return true, "end"
     elseif button == "l" then
-        local object = self.project:objectAt(wx, wy)
-        
-        if object then
-            self:grab(object, sx, sy, wx, wy)
+        local target, x, y = self.editor:target("drag", sx, sy)
+
+        if target then
+            self:grab(target, sx, sy)
             
             return true, "begin"
         end
@@ -55,10 +56,11 @@ end
 
 function Drag:mousedragged(action, screen, world)
     if action == "drag" then
-        local px, py = unpack(self.drag.pivot)
-        local wx, wy = unpack(world)
+        -- need to get position of mouse in coord space of draggee's parent
+        local wx, wy = unpack(self.editor:transform(self.drag.object.parent, unpack(screen)))
 
-        self.drag.object:moveTo(wx+px, wy+py)
+        self.drag.object:move_to { x = wx, y = wy,
+                                   pivot = self.drag.pivot }
     end
 end
 
@@ -79,13 +81,13 @@ function Drag:keypressed(key, sx, sy, wx, wy)
             return true
         end
 
-        return self.target:keypressed(key)
+        --return self.target:keypressed(key)
     end
 end
 
 function Drag:textinput(character)
     if self.target then
-        return self.target:textinput(character)
+        --return self.target:textinput(character)
     end
 end
 

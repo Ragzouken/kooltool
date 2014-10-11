@@ -10,38 +10,39 @@ local Tile = Class {
     sound = love.audio.newSource("sounds/marker pen.wav"),
 }
 
-function Tile:init(project, tile)
+function Tile:init(editor, project, tile)
     Tool.init(self)
     
+    self.editor = editor
     self.project = project
     self.tile = 1
 end
 
 function Tile:cursor(sx, sy, wx, wy)
-    if self.drag or not self.project:objectAt(wx, wy) then
-        local layer = self.project.layers.surface
-        local gx, gy = layer.tilemap:gridCoords(wx, wy)
-        local tw, th = unpack(layer.tileset.dimensions)
-        local quad = layer.tileset.quads[self.tile]
+    local target = self.editor:target("tile", sx, sy)
+
+    if target then
+        local gx, gy = target.tilemap:gridCoords(wx, wy)
+        local tw, th = unpack(target.tileset.dimensions)
+        local quad = target.tileset.quads[self.tile]
 
         love.graphics.setColor(255, 255, 255, 128)
-        love.graphics.draw(layer.tileset.canvas, quad, gx * tw, gy * th)
+        love.graphics.draw(target.tileset.canvas, quad, gx * tw, gy * th)
         love.graphics.setColor(colour.cursor(0))
         love.graphics.rectangle("line", gx*tw, gy*th, tw, th)
     end
 end
 
 function Tile:mousepressed(button, sx, sy, wx, wy)
-    if button == "l" then
+    local target = self.editor:target("tile", sx, sy)
+
+    if button == "l" and target then
         if love.keyboard.isDown("lalt") then
-            local layer = self.project.layers.surface
-            local gx, gy = layer.tilemap:gridCoords(wx, wy)
-            self.tile = layer:getTile(gx, gy) or self.tile
+            local gx, gy = target.tilemap:gridCoords(wx, wy)
+            self.tile = target:getTile(gx, gy) or self.tile
 
             return true
         else
-            if self.project:objectAt(wx, wy) then return false end
-
             self:startdrag("draw")
 
             return true, "begin"

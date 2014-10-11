@@ -5,8 +5,13 @@ local Panel = require "interface.elements.panel"
 local Frame = require "interface.elements.frame"
 local Text = require "interface.elements.text"
 
+local shapes = require "interface.elements.shapes"
+
 local elements = require "interface.elements"
 local Toolbar = require "interface.panels.toolbar"
+
+local Entity = require "components.entity"
+local Notebox = require "components.notebox"
 
 local tools = require "tools"
 
@@ -21,35 +26,22 @@ local savesound = love.audio.newSource("sounds/save.wav")
 
 PALETTE = nil
 
-local Editor = Class { __includes = Panel, }
+local Editor = Class {
+    __includes = Panel,
+    name = "kooltool editor",
+}
 
 function Editor:init(project)
-    Panel.init(self)
+    Panel.init(self, { shape = shapes.Plane{} })
     
     PALETTE = generators.Palette.generate(3)
-
-    local projects = {}
-    local proj_path = "projects"
-
-    local items = love.filesystem.getDirectoryItems(proj_path, function(filename)
-        local path = proj_path .. "/" .. filename
-
-        if love.filesystem.isDirectory(path) then
-            local project = Project(path)
-            project:loadIcon(path)
-
-            table.insert(projects, project)
-        end
-    end)
-
-    local tutorial = Project("tutorial")
-    tutorial:loadIcon("tutorial")
-    table.insert(projects, 1, tutorial)
     
     --PROJECTS = projects
     
     self.nocanvas = Text{
-        shape = elements.shapes.Rectangle(32+4, 0, 512, 32 + 4, {-1, -1}),
+        shape = elements.shapes.Rectangle {x = 32+4, y = 0,
+                                           w = 512,  h = 32+4,
+                                           anchor = {0, 0}},
         colours = {
             stroke = {255,   0,   0, 255},
             fill =   {192,   0,   0, 255},
@@ -62,7 +54,9 @@ function Editor:init(project)
     }
 
     self.toolname = Text{
-        shape = elements.shapes.Rectangle(32+4, 0, 512, 32 + 4, {-1, -1}),
+        shape = elements.shapes.Rectangle {x = 32+4, y = 0, 
+                                           w = 512,  h = 32 + 4,
+                                           anchor = {1, 1}},
         colours = {
             stroke = {  0,   0,   0, 255},
             fill =   {  0,   0,   0, 255},
@@ -76,7 +70,6 @@ function Editor:init(project)
     self.nocanvas.active = NOCANVAS
 
     self.select = ProjectSelect(self)
-    self.select:SetProjects(projects)
     
     self.view = Frame()
 
@@ -118,7 +111,7 @@ function Editor:SetProject(project)
             quad = love.graphics.newQuad(0, 0, w, h, w, h),
         }
     end
-    
+
     local buttons = {
     {icon("images/pencil.png"), function()
         self.active = self.tools.draw
@@ -134,15 +127,25 @@ function Editor:SetProject(project)
     end},
     {icon("images/entity.png"), function(button, event)
         local sx, sy, wx, wy = unpack(event.coords)
-        local entity = self.project:newEntity(wx, wy)
+        local target, x, y = self:target("entity", sx, sy)
+
+        local entity = Entity(target)
+        entity:blank(x, y)
+        target:addEntity(entity)
+
         self.action = self.tools.drag
-        self.action:grab(entity, sx, sy, wx, wy)
+        self.action:grab(entity, sx, sy)
     end},
     {icon("images/note.png"), function(button, event)
         local sx, sy, wx, wy = unpack(event.coords)
-        local notebox = self.project:newNotebox(wx, wy)
+        local target, x, y = self:target("note", sx, sy)
+
+        local notebox = Notebox(target)
+        notebox:blank(x, y, "[note]")
+        target:addNotebox(notebox)
+
         self.action = self.tools.drag
-        self.action:grab(notebox, sx, sy, wx, wy)
+        self.action:grab(notebox, sx, sy)
     end},
     {icon("images/save.png"), function()
         savesound:play()
@@ -169,11 +172,11 @@ function Editor:SetProject(project)
 
     self.tools = {
         pan = tools.Pan(self.view.camera),
-        drag = tools.Drag(project),
-        draw = tools.Draw(project, PALETTE.colours[3]),
-        tile = tools.Tile(project, 1),
+        drag = tools.Drag(self),
+        draw = tools.Draw(self, PALETTE.colours[3]),
+        tile = tools.Tile(self, project, 1),
         wall = tools.Wall(project),
-        marker = tools.Marker(project),
+        marker = tools.Marker(self),
     }
 
     self.global = {
@@ -183,7 +186,33 @@ function Editor:SetProject(project)
 end
 
 function Editor:update(dt)
+    do
+        local projects = {}
+        local proj_path = "projects"
+
+        local items = love.filesystem.getDirectoryItems(proj_path, function(filename)
+            local path = proj_path .. "/" .. filename
+
+            if love.filesystem.isDirectory(path) then
+                local project = Project(path)
+                project:loadIcon(path)
+
+                table.insert(projects, project)
+            end
+        end)
+
+        local tutorial = Project("tutorial")
+        tutorial:loadIcon("tutorial")
+        table.insert(projects, 1, tutorial)
+
+        self.select:SetProjects(projects)
+    end
+
+    self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
+
     if PROJECT then
+        self.toolbar:move_to { x = 1, y = 1, anchor = {0, 0} }
+        
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
 
@@ -192,7 +221,7 @@ function Editor:update(dt)
         end
 
         if self.active then
-            self.toolname.text = self.active.name
+            --self.toolname.text = self.active.name
         end
 
         PROJECT:update(dt)
@@ -216,7 +245,7 @@ function Editor:update(dt)
         self.tilebar:init {
             x=love.window.getWidth() - 1, y=1,
             buttons=tiles,
-            anchor={1, -1},
+            anchor={1, 0},
             size=PROJECT.layers.surface.tileset.dimensions
         }
     end
@@ -259,6 +288,8 @@ function Editor:input(callback, ...)
         end
     end
 
+    if love.keyboard.isDown("tab") and input(self.tools.drag, ...) then return true end
+
     if self.action and input(self.action, ...) then return true end
     if self.active and input(self.active, ...) then return true end
 
@@ -288,11 +319,11 @@ end
 
 function Editor:mousepressed(sx, sy, button)
     local wx, wy = self.view.camera:worldCoords(sx, sy)
-    
-    local event = { action = "press", coords = {sx, sy, wx, wy}, }
-    local target = self:target("press", sx, sy)
 
-    if target then
+    local event = { action = "press", coords = {sx, sy, wx, wy}, }
+    local target = self:target("press", sx, sy, true)
+
+    if target and button == "l" then
         target:event(event)
         return
     end
@@ -316,6 +347,10 @@ function Editor:keypressed(key, isrepeat)
     if PROJECT then
         if key == "f11" and not isrepeat then
             love.window.setFullscreen(not love.window.getFullscreen(), "desktop")
+        end
+
+        if key == "f2" and not isrepeat then
+            self.view:print()
         end
 
         if key == "escape" and PROJECT then

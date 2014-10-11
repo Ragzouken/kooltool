@@ -12,7 +12,7 @@ local common = require "utilities.common"
 local export = require "utilities.export"
 local colour = require "utilities.colour"
 
-require "utilities.json" -- ugh
+local json = require "utilities.dkjson"
 
 local ResourceManager = Class {}
 
@@ -143,11 +143,11 @@ end
 function Project:save(folder_path)
     love.filesystem.createDirectory(folder_path)
     local file = love.filesystem.newFile(folder_path .. "/tilelayer.json", "w")
-    file:write(json.encode(self.layers.surface:serialise(folder_path)))
+    file:write(json.encode(self.layers.surface:serialise(folder_path), { indent = true, }))
     file:close()
 
     local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
-    file:write(json.encode(self.layers.annotation:serialise(folder_path)))
+    file:write(json.encode(self.layers.annotation:serialise(folder_path), { indent = true, }))
     file:close()
 
     self.layers.surface:exportRegions(folder_path)
@@ -200,14 +200,6 @@ function Project:newEntity(x, y)
     self.layers.surface:addEntity(entity)
 
     return entity
-end
-
-function Project:newNotebox(x, y)
-    local notebox = Notebox(self.layers.annotation, x, y, "[note]")
-    self.layers.annotation:addNotebox(notebox)
-
-
-    return notebox
 end
 
 function Project:undo()

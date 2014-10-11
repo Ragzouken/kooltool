@@ -9,14 +9,17 @@ local common = require "utilities.common"
 
 local AnnotationLayer = Class {
     __includes = Layer,
+    name = "kooltool annotation layer",
+
     BLOCK_SIZE = 256,
 }
 
 function AnnotationLayer:deserialise(data, saves)
     local noteboxes = data.notes
 
-    for i, notebox in pairs(noteboxes) do
-        local notebox = Notebox(self, unpack(notebox))
+    for i, data in pairs(noteboxes) do
+        local notebox = Notebox(self)
+        notebox:deserialise(data, saves)
         self:addNotebox(notebox)
     end
 
@@ -68,28 +71,11 @@ end
 function AnnotationLayer:init()
     Layer.init(self)
 
+    self.actions["mark"] = true
+    self.actions["note"] = true
+
     self.noteboxes = {}
     self.blocks = SparseGrid(self.BLOCK_SIZE)
-
-    self.collider = Collider(256)
-
-    self.collider:setCallbacks(function(dt, shape_one, shape_two, dx, dy)
-        local notebox_one, notebox_two = shape_one.notebox, shape_two.notebox
-
-        --PROJECT.history:push(function()
-            notebox_one:move( dx/2,  dy/2)
-            notebox_two:move(-dx/2, -dy/2)
-        --end, function()
-        --    notebox_one:move(-dx/2, -dy/2)
-        --    notebox_two:move( dx/2,  dy/2)
-        --end)
-    end)
-end
-
-function AnnotationLayer:update(dt)
-    for i=1,5 do
-        --self.collider:update(dt * 0.2)
-    end
 end
 
 function AnnotationLayer:draw()
@@ -106,31 +92,17 @@ function AnnotationLayer:draw()
 
     love.graphics.setColor(255, 255, 255, 255)
 
-    for notebox in pairs(self.noteboxes) do
-        notebox:draw(EDITOR.tools.drag.target == notebox)
-    end
-end
-
-function AnnotationLayer:objectAt(x, y)
-    local shape = self.collider:shapesAt(x, y)[1]
-    local notebox = shape and shape.notebox
-
-    return notebox
+    self:draw_children()
 end
 
 function AnnotationLayer:addNotebox(notebox)
     self.noteboxes[notebox] = true
-    self.collider:addShape(notebox.shape)
+    self:add(notebox)
 end
 
 function AnnotationLayer:removeNotebox(notebox)
     self.noteboxes[notebox] = nil
-    self.collider:remove(notebox.shape)
-end
-
-function AnnotationLayer:swapShapes(old, new)
-    self.collider:remove(old)
-    self.collider:addShape(new)
+    self:remove(notebox)
 end
 
 function AnnotationLayer:applyBrush(bx, by, brush)

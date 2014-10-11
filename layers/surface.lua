@@ -9,6 +9,8 @@ local Entity = require "components.entity"
 local SparseGrid = require "utilities.sparsegrid"
 local common = require "utilities.common"
 
+local json = require "utilities.dkjson"
+
 local SurfaceLayer = Class {
     __includes = Layer,
     clone_sound = love.audio.newSource("sounds/clone.wav"),
@@ -72,7 +74,7 @@ function SurfaceLayer:serialise(saves)
 
     local file = love.filesystem.newFile(saves .. "/entitylayer.json", "w")
     local entities = self:serialise_entity(saves)
-    file:write(json.encode(entities))
+    file:write(json.encode(entities, { indent = true, }))
     file:close()
 
     return {
@@ -147,6 +149,10 @@ end
 function SurfaceLayer:init(project)
     Layer.init(self, project)
 
+    self.actions["draw"] = true
+    self.actions["tile"] = true
+    self.actions["entity"] = true
+
     self.collider = Collider(64)
 
     self.tileset = nil
@@ -173,9 +179,7 @@ function SurfaceLayer:draw()
 
     love.graphics.draw(self.tilebatch, 0, 0)
 
-    for entity in pairs(self.entities) do
-        entity:draw()
-    end
+    self:draw_children()
 end
 
 function SurfaceLayer:SetTileset(tileset)
@@ -183,13 +187,6 @@ function SurfaceLayer:SetTileset(tileset)
     
     self.tilemap:SetCellSize(unpack(self.tileset.dimensions))
     self.wallmap:SetCellSize(unpack(self.tileset.dimensions))
-end
-
-function SurfaceLayer:objectAt(x, y)
-    local shape = self.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
-
-    return entity
 end
 
 function SurfaceLayer:getTile(gx, gy)
@@ -276,12 +273,14 @@ end
 
 function SurfaceLayer:addEntity(entity)
     self.entities[entity] = true
-    self.collider:addShape(entity.shape)
+
+    self:add(entity)
 end
 
 function SurfaceLayer:removeEntity(entity)
     self.entities[entity] = nil
-    self.collider:remove(entity.shape)
+
+    self:remove(entity)
 end
 
 function SurfaceLayer:swapShapes(old, new)
@@ -340,14 +339,6 @@ function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
 end
 
 function SurfaceLayer:sample(x, y)
-    local shape = self.collider:shapesAt(x, y)[1]
-    local entity = shape and shape.entity
-
-    if entity then
-        local colour = entity and entity:sample(x, y) or {0, 0, 0, 0}
-        if colour[4] ~= 0 then return colour end
-    end
-
     local gx, gy, ox, oy = self.tilemap:gridCoords(x, y)
     local index = self:getTile(gx, gy)
 

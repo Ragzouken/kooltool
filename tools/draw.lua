@@ -9,10 +9,10 @@ local Draw = Class {
     name = "draw",
 }
 
-function Draw:init(project, colour)
+function Draw:init(editor, colour)
     Tool.init(self)
 
-    self.project = project
+    self.editor = editor
     self.colour = colour
     self.size = 1
     self.state = {}
@@ -22,21 +22,17 @@ function Draw:cursor(sx, sy, wx, wy)
     if self.state.lock then
         local gx, gy = unpack(self.state.lock)
 
-        local tw, th = unpack(self.project.layers.surface.tileset.dimensions)
+        local tw, th = unpack(self.editor.project.layers.surface.tileset.dimensions)
 
         love.graphics.setColor(colour.cursor(0))
         love.graphics.rectangle("line", gx*tw-0.5, gy*th-0.5, tw+1, th+1)
     else
-        local object = self.project:objectAt(wx, wy)
+        local target = self.editor:target("draw", sx, sy)
 
-        if self.drag and self.drag.subject and self.drag.subject.sprite then
-            self.drag.subject:border()
-        elseif object then
-            if object.applyBrush then 
-                object:border()
-            else
-                return
-            end
+        if self.drag and self.drag.subject and self.drag.subject.entity then
+            self.drag.subject.entity:border()
+        elseif target then
+            if target.entity then target.entity:border() end
         end
     end
 
@@ -48,27 +44,18 @@ function Draw:cursor(sx, sy, wx, wy)
     love.graphics.rectangle("fill", x, y, self.size, self.size)
 end
 
-function Draw:mousepressed(button, sx, sy, wx, wy)
+function Draw:mousepressed(button, sx, sy)
     if button == "l" then
-        local surface = self.project.layers.surface
-        local object = self.project:objectAt(wx, wy)
-
-        if object and not object.applyBrush then
-            return false
-        end
+        local target, x, y = self.editor:target("draw", sx, sy)
 
         if love.keyboard.isDown("lalt") then
-            self.colour = surface:sample(wx, wy)
+            self.colour = target:sample(x, y)
 
             return true
         else
             self:startdrag("draw")
 
-            local object = self.project:objectAt(wx, wy)
-            local object = object and object.applyBrush and object
-
-            self.drag.sprite = object
-            self.drag.subject = object or surface
+            self.drag.subject = target
 
             return true, "begin"
         end
@@ -84,10 +71,13 @@ function Draw:mousedragged(action, screen, world)
         local colour = not self.drag.erase and self.colour or nil
         local lock
 
-        local wx, wy, dx, dy = unpack(world)
+        local wx, wy, dx, dy = unpack(screen)
 
         local x1, y1 = math.floor(wx-dx), math.floor(wy-dy)
         local x2, y2 = math.floor(wx), math.floor(wy)
+
+        x1, y1 = unpack(self.editor:transform(self.drag.subject, x1, y1))
+        x2, y2 = unpack(self.editor:transform(self.drag.subject, x2, y2))
 
         local brush, ox, oy = Brush.line(x1, y1, x2, y2, self.size, colour)
         self.drag.subject:applyBrush(ox, oy, brush, 
@@ -118,15 +108,15 @@ function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
 
         return true
     elseif key == "lshift" then
-        local object = self.project:objectAt(wx, wy)
+        local target = self.editor:target("draw", sx, sy)
 
-        if object then
-            self.state.resize = object
+        if target and target.entity then
+            self.state.resize = target
 
             return true
         end
 
-        self.state.lock = {self.project.layers.surface.tilemap:gridCoords(wx, wy)}
+        self.state.lock = {self.editor.project.layers.surface.tilemap:gridCoords(wx, wy)}
     
         return true
     elseif digits[key] then

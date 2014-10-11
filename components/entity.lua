@@ -1,5 +1,6 @@
 local Class = require "hump.class"
 local Camera = require "hump.camera"
+local Panel = require "interface.elements.panel"
 local Sprite = require "components.sprite"
 local ScriptLayer = require "layers.scripting"
 
@@ -8,38 +9,50 @@ local BumpNode = require "components.scripting.bumpnode"
 local DialogueNode = require "components.scripting.dialoguenode"
 
 local common = require "utilities.common"
-local shapes = require "collider.shapes"
+local shapes = require "interface.elements.shapes"
 local colour = require "utilities.colour"
 
-local Entity = Class {}
+local Entity = Class {
+    __includes = Panel,
+    name = "Generic Entity",
+}
 
 function Entity:deserialise(data, saves)
-    self.x, self.y = data.x, data.y
+    self.shape.x, self.shape.y = data.x, data.y
     self.sprite = self.layer.sprites_index[data.sprite]
-    self:refresh()
+
+    self.sprite.entity = self
+    self:add(self.sprite)
+
+    self.sprite:refresh()
 end
 
 function Entity:serialise(saves)
     return {
-        x = self.x, y = self.y,
+        x = self.shape.x, y = self.shape.y,
         sprite = self.layer.sprites[self.sprite],
     }
 end
 
 function Entity:init(layer)
     self.layer = layer
+
+    Panel.init(self, { 
+        actions = {"drag"}, 
+        shape = shapes.Rectangle { x = 0, y = 0, 
+                                   w = 0, h = 0 },
+    })
 end
 
 function Entity:blank(x, y)
-    self.x, self.y = x, y
+    self.shape.x, self.shape.y = x, y
     self.sprite = self.layer:newSprite()
-    self:refresh()
-end
+    
+    self.sprite.entity = self
+    self:add(self.sprite)
 
-function Entity:draw()
-    love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.setBlendMode("premultiplied")
-    self.sprite:draw(self.x, self.y)
+    self.sprite:refresh()
+    self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
 end
 
 function Entity:border()
@@ -48,52 +61,9 @@ function Entity:border()
 
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(colour.cursor(0))
-    love.graphics.rectangle("line", self.x - px - 0.5, self.y - py - 0.5, w+1, h+1)
-end
-
-function Entity:move(dx, dy)
-    self.shape:move(dx, dy)
-    self.x, self.y = self.x + dx, self.y + dy
-end
-
-function Entity:moveTo(x, y)
-    x, y = math.floor(x), math.floor(y)
-    local px, py = unpack(self.sprite.pivot)
-    local w, h = unpack(self.sprite.size)
-
-    local cx, cy = w/2, h/2
-    local dx, dy = cx - px, cy - py
-
-    self.shape:moveTo(x + dx, y + dy)
-    self.x, self.y = x, y
-end
-
-function Entity:applyBrush(bx, by, brush, lock, cloning)
-    if cloning then
-        self.sprite = Sprite(self.sprite)
-        self.layer:addSprite(self.sprite)
-    end
-
-    self.sprite:applyBrush(bx - self.x, by - self.y, brush, lock)
-
-    self:refresh()
-end
-
-function Entity:sample(x, y)
-    x, y = x - self.x, y - self.y
-
-    return self.sprite:sample(x, y)
-end
-
-function Entity:refresh()
-    local w, h = unpack(self.sprite.size)
-
-    local shape = shapes.newPolygonShape(0, 0, w, 0, w, h, 0, h)
-    shape.entity = self
-    if self.shape then self.layer:swapShapes(self.shape, shape) end
-    self.shape = shape
-
-    self:moveTo(self.x, self.y)
+    love.graphics.rectangle("line", self.shape.x - px - 0.5,
+                                    self.shape.y - py - 0.5, 
+                                    w+1, h+1)
 end
 
 return Entity

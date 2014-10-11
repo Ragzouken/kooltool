@@ -1,6 +1,9 @@
 local bresenham = {}
 
 function bresenham.line(bx, by, ex, ey)
+    bx, by = math.floor(bx), math.floor(by)
+    ex, ey = math.floor(ex), math.floor(ey)
+
     return coroutine.wrap(function()
         local dx, dy = math.abs(ex - bx), math.abs(ey - by)
         local cx, cy = bx < ex and 1 or -1, by < ey and 1 or -1

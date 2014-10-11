@@ -1,7 +1,10 @@
 local Class = require "hump.class"
 local Panel = require "interface.elements.panel"
 
-local Layer = Class { __includes = Panel }
+local Layer = Class {
+    __includes = Panel,
+    name = "Generic Project Layer",
+}
 
 function Layer:init(project)
     Panel.init(self)
@@ -10,6 +13,14 @@ function Layer:init(project)
 end
 
 function Layer:update(dt)
+end
+
+function Layer:draw()
+    Panel.draw(self)
+
+    love.graphics.setBlendMode("alpha")
+    love.graphics.setColor(255, 255, 255, 32)
+    love.graphics.circle("fill", 0, 0, 16, 32)
 end
 
 function Layer:objectAt(x, y)

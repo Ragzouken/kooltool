@@ -25,8 +25,9 @@ function Game:init(project)
 
         table.insert(choice, actor)
 
-        local x, y = round(entity.x, 1/32)+16, round(entity.y, 1/32)+16
-        entity:moveTo(x, y)
+        local cx, cy = entity.shape:coords { anchor={0.5, 0.5} } 
+        local x, y = round(cx, 1/32)+16, round(cy, 1/32)+16
+        entity:move_to { x=x, y=y, anchor={0.5, 0.5} }
 
         if actor.tags["[player]"] then
             self.player = actor
@@ -48,7 +49,7 @@ function Game:update(dt)
     end
 
     if self.player then
-        self.camera.x, self.camera.y = self.player.entity.x, self.player.entity.y
+        self.camera.x, self.camera.y = self.player.entity.shape:coords { anchor = {0.5, 0.5} }
     end
 end
 

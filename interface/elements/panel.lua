@@ -3,14 +3,17 @@ local shapes = require "interface.elements.shapes"
 
 local Panel = Class {
     DEBUG = false,
+    name = "Generic Panel",
+
     actions = {},
 }
 
 function Panel:init(params)
     params = params or {}
     
+    self.name = params.name or self.name
     self.depth = params.depth or 0
-    self.shape = params.shape or shapes.Plane(0, 0)
+    self.shape = params.shape or shapes.Plane {x = 0, y = 0}
     self.actions = params.actions or {}
     self.colours = params.colours or {stroke = {255, 0, 255, 255}, 
                                       fill   = {255, 0, 255,  64}}
@@ -25,12 +28,25 @@ function Panel:init(params)
     self:resort()
 end
 
+function Panel:print(depth)
+    depth = depth or 0
+
+    print(string.rep("  ", depth) .. self.name)
+
+    for child in self.sorted:upwards() do
+        child:print(depth + 1)
+    end
+end
+
 function Panel:add(panel, depth)
+    if panel.parent then panel.parent:remove(panel) end
+    panel.parent = self
     self.children[panel] = depth or panel.depth or 0
     self:resort()
 end
 
 function Panel:remove(panel)
+    panel.parent = nil
     self.children[panel] = nil
     self:resort()
 end
@@ -84,9 +100,13 @@ function Panel:draw()
     love.graphics.setColor(self.colours.stroke)
     self.shape:draw("line")
 
+    self:draw_children()
+end
+
+function Panel:draw_children()
     love.graphics.push()
-    love.graphics.translate(self.shape:anchor())
-    
+    love.graphics.translate(self.shape.x, self.shape.y)
+
     for child in self.sorted:upwards() do
         if child.active then child:draw() end
     end
@@ -94,22 +114,46 @@ function Panel:draw()
     love.graphics.pop()
 end
 
-function Panel:target(action, x, y)
-    if self.actions[action] and self.shape:contains(x, y) then
-        return self
-    end
-    
-    local ax, ay = self.shape:anchor()
-    x = x - ax
-    y = y - ay
-    
+--[[ 
+given coordinates in parent space, return the first panel that supports the
+desired action, along with the coordinates of the hit in it's local coordinates
+
+TODO: maybe track the whole transform chain ffs
+--]]
+function Panel:target(action, x, y, debug)    
+    local ax, ay = self.shape.x, self.shape.y
+    local lx, ly = x - ax, y - ay
+
     for child in self.sorted:downwards() do
         if child.active then
-            local target = child:target(action, x, y)
-            
-            if target then return target end
+            local target, x, y = child:target(action, lx, ly, debug)
+
+            if target then return target, x, y end
         end
     end
+
+    if self.actions[action] and self.shape:contains(x, y) then
+        return self, lx, ly
+    end
+end
+
+function Panel:transform(target, x, y)
+    local ax, ay = self.shape.x, self.shape.y
+    local lx, ly = x - ax, y - ay
+
+    if target == self then
+        return {lx, ly}
+    end
+
+    for child in self.sorted:downwards() do
+        local coords = child:transform(target, lx, ly)
+        
+        if coords then return coords end
+    end
+end
+
+function Panel:move_to(params)
+    self.shape:move_to(params)
 end
 
 return Panel

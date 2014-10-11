@@ -2,12 +2,17 @@ local Class = require "hump.class"
 local Panel = require "interface.elements.panel"
 local shapes = require "interface.elements.shapes"
 
-local Button = Class { __includes = Panel, }
+local Button = Class {
+    __includes = Panel, 
+    name = "Generic Button",
+}
 
 function Button:init(params)
     if not params.shape then
         local _, _, w, h = params.icon.quad:getViewport()
-        params.shape = shapes.Rectangle(params.x, params.y, w, h, params.anchor or {-1, -1})
+        params.shape = shapes.Rectangle { x = params.x, y = params.y,
+                                          w = w,        h = h,
+                                          anchor = params.anchor}
     end
     
     params.actions = {"press"}
@@ -25,7 +30,7 @@ function Button:draw()
     if self.icon then
         love.graphics.draw(self.icon.image,
                            self.icon.quad,
-                           self.shape:anchor())
+                           self.shape.x, self.shape.y)
     end
 end
 

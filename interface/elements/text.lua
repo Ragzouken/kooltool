@@ -32,7 +32,7 @@ function Text:draw()
     love.graphics.setFont(self.font)
 
     love.graphics.push()
-    love.graphics.translate(self.shape:anchor())
+    love.graphics.translate(self.shape.x, self.shape.y)
     
     love.graphics.printf(self.text, self.padding, self.padding + oy, self.shape.w)
     

@@ -18,14 +18,15 @@ function Player:init(game, entity)
     self.timer = Timer()
     self.entity = entity
 
-    self.tx, self.ty = PROJECT.layers.surface.tilemap:gridCoords(entity.x, entity.y)
+    local cx, cy = entity.shape:coords { anchor = {0.5, 0.5} }
 
-    self.ox, self.oy = self.entity.x, self.entity.y
+    self.tx, self.ty = PROJECT.layers.surface.tilemap:gridCoords(cx, cy)
+    self.ox, self.oy = cx, cy
 
     local annotations = PROJECT.layers.annotation
-    local w, h = unpack(self.entity.sprite.size)
+    local w, h = self.entity.sprite.shape.w, self.entity.sprite.shape.h
     local px, py = unpack(self.entity.sprite.pivot)
-    local x, y = self.entity.x-px, self.entity.y-py
+    local x, y = cx-px, cy-py
 
     self.notes = {}
 
@@ -36,6 +37,7 @@ function Player:init(game, entity)
     self.tags = {}
     self.speech = {}
 
+    --[[
     for shape in pairs(annotations.collider:shapesInRange(x, y, x+w, y+h)) do
         if shape:collidesWith(self.shape) then
             local text = shape.notebox.text
@@ -47,6 +49,7 @@ function Player:init(game, entity)
             end
         end
     end
+    ]]
 end
 
 function Player:update(dt)
@@ -60,8 +63,9 @@ function Player:update(dt)
                 end
             end
         elseif self.game.player and not self.tags["[stop]"] then
-            local player = self.game.player.entity
-            local dx, dy = self.entity.x - player.x, self.entity.y - player.y
+            local px, py = self.game.player.entity.shape:coords { anchor = {0.5, 0.5} }
+            local cx, cy = self.entity.shape:coords { anchor = {0.5, 0.5} }
+            local dx, dy = cx - px, cy - py
             local d = math.sqrt(dx * dx + dy * dy)
 
             if d > 64 then
@@ -86,8 +90,10 @@ function Player:rando()
 end
 
 function Player:move(vector, input)
+    local cx, cy = self.entity.shape:coords { anchor = {0.5, 0.5} }
+    local gx, gy = PROJECT.layers.surface.tilemap:gridCoords(cx, cy)
+
     local vx, vy = unpack(vector)
-    local gx, gy = PROJECT.layers.surface.tilemap:gridCoords(self.entity.x, self.entity.y)
     local dx, dy = gx+vx, gy+vy
 
     local wall = PROJECT.layers.surface:getWall(dx, dy)
@@ -105,7 +111,7 @@ function Player:move(vector, input)
     if not wall and not self.movement then
         local period = self.speed
         local t = 0
-        local x, y = self.entity.x, self.entity.y
+        local x, y = self.entity.shape:coords { anchor = {0.5, 0.5} }
 
         self.tx, self.ty = dx, dy
 
@@ -113,9 +119,9 @@ function Player:move(vector, input)
             t = t + dt
             local u = t / period
 
-            self.entity:moveTo(x + vx * 32 * u, y + vy * 32 * u)
+            self.entity:move_to { x = x + vx * 32 * u, y = y + vy * 32 * u, anchor={0.5, 0.5}}
         end, function()
-            self.entity:moveTo(x + vx * 32, y + vy * 32)
+            self.entity:move_to { x = x + vx * 32, y = y + vy * 32, anchor={0.5, 0.5}}
             self.movement = nil
         end)
     end

@@ -1,8 +1,12 @@
 local Class = require "hump.class"
-local shapes = require "collider.shapes"
+local Panel = require "interface.elements.panel"
+local shapes = require "interface.elements.shapes"
 local colour = require "utilities.colour"
 
 local Notebox = Class {
+    __includes = Panel,
+    name = "Generic Notebox",
+
     font = love.graphics.newFont("fonts/PressStart2P.ttf", 8),
     typing_sound = love.audio.newSource("sounds/typing.wav"),
     
@@ -24,20 +28,33 @@ function string:split(pat)
 end
 
 function Notebox:deserialise(data)
-    self.x, self.y, self.text = unpack(data)
+    local x, y, text = unpack(data)
+    self.text = text
+    self:refresh()
+    self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
 end
 
 function Notebox:serialise()
-    return {self.x, self.y, self.text}
+    local x, y = self.shape:coords { anchor = {0.5, 0.5} }
+
+    return {x, y, self.text}
 end
 
-function Notebox:init(layer, x, y, text)
+function Notebox:init(layer)
+    Panel.init(self, { actions = {"drag"},
+                       shape = shapes.Rectangle { x = 0, y = 0, w = 0, h = 0 } })
+
     self.layer = layer
-    self.x, self.y = x, y
     
-    self.text = text or ""
+    self.text = "[INVALID NOTE]"
 
     self:refresh()
+end
+
+function Notebox:blank(x, y, text)
+    self.text = text
+    self:refresh()
+    self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
 end
 
 function Notebox:draw(editing)
@@ -49,44 +66,39 @@ function Notebox:draw(editing)
     local height = (font_height+self.spacing) * #lines
     local oy = self.font:getAscent() - self.font:getBaseline() + self.spacing/2
 
-    local x, y = self.x - width / 4, self.y - height / 4
+    local x,  y  = self.shape.x * 2, self.shape.y * 2
+    local tx, ty = x + self.padding, y + self.padding
 
     love.graphics.push()
     love.graphics.scale(0.5)
 
     love.graphics.setColor(0, 0, 0, 255)
-    love.graphics.rectangle("fill", x*2-self.padding, y*2-self.padding, 
-                                    width+2*self.padding, height+2*self.padding)
+    love.graphics.rectangle("fill", x+0.5, y+0.5, 
+                                    width+2*self.padding-1, height+2*self.padding-1)
 
     love.graphics.setColor(255, 255, 255, 255)
     for i, line in ipairs(lines) do
-        love.graphics.printf(line, x*2, y*2 + oy + (i - 1) * (font_height+self.spacing), self.memo.width)
+        love.graphics.printf(line,
+                             tx, ty + oy + (i - 1) * (font_height+self.spacing),
+                             self.memo.width)
     end
 
     if editing then
         love.graphics.setColor(colour.cursor(0))
-        love.graphics.printf(lines[#lines]:gsub(".", "_") .. "*", x*2, y*2 + oy + (#lines - 1) * (font_height+self.spacing), self.memo.width)
+        love.graphics.printf(lines[#lines]:gsub(".", "_") .. "*",
+                             tx, ty + oy + (#lines - 1) * (font_height+self.spacing),
+                             self.memo.width)
     end
     love.graphics.pop()
 
     if editing then
         love.graphics.setColor(colour.cursor(0))
         love.graphics.setLineWidth(0.5)
-        self.shape:draw()
+        self.shape:draw("line")
         love.graphics.setLineWidth(1)
     end
-end
 
-function Notebox:move(dx, dy)
-    self.shape:move(dx, dy)
-    self.x, self.y = self.x + dx, self.y + dy
-end
-
-function Notebox:moveTo(x, y)
-    x, y = math.floor(x * 2) / 2, math.floor(y * 2) / 2
-
-    self.shape:moveTo(x, y)
-    self.x, self.y = x, y
+    self:draw_children()
 end
 
 function Notebox:refresh()
@@ -103,14 +115,14 @@ function Notebox:refresh()
     local height = (self.font:getHeight() + self.spacing) * #lines
     local oy = self.font:getAscent() - self.font:getBaseline()
 
-    local x1, y1 = 0, 0
-    local x2, y2 = (width)/2+self.padding, (height)/2+self.padding
+    local x, y = self.shape.x, self.shape.y
+    local w, h = width+self.padding*2, height+self.padding*2
 
-    local shape = shapes.newPolygonShape(x1, y1, x2, y1, x2, y2, x1, y2)
-    shape:moveTo(self.x, self.y)
-    shape.notebox = self
-    if self.shape then self.layer:swapShapes(self.shape, shape) end
-    self.shape = shape
+    self.shape:init { x = x,     y = y,
+                      w = w / 2, h = h / 2 }
+
+    self.shape.notebox = self
+    self.name = "notebox \"" .. self.text .. "\""
 end
 
 function Notebox:type(string)

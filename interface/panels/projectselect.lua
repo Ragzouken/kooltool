@@ -1,11 +1,16 @@
 local Class = require "hump.class"
 local elements = require "interface.elements"
 
-local ProjectPanel = Class { __includes = elements.Panel, }
+local ProjectPanel = Class {
+    __includes = elements.Panel,
+    name = "kooltool project panel",
+}
 
 function ProjectPanel:init(project, i, project_clicked)
     elements.Panel.init(self, {
-        shape = elements.shapes.Rectangle(0, (i - 1) * 64, 448, 64, {-1, -1}),
+        shape = elements.shapes.Rectangle {x = 0,   y = (i - 1) * 64,
+                                           w = 448, h = 64, 
+                                           anchor = {0, 0}},
     })
     
     local icon = elements.Button{
@@ -14,7 +19,9 @@ function ProjectPanel:init(project, i, project_clicked)
     }
     
     local title = elements.Text{
-        shape = elements.shapes.Rectangle(64, 0, 384, 32 - 4, {-1, -1}),
+        shape = elements.shapes.Rectangle { x = 64,  y = 0,
+                                            w = 384, h = 32 - 4,
+                                            anchor = {0, 0}},
         colours = {
             stroke = PALETTE.colours[1],
             fill = PALETTE.colours[1],
@@ -26,7 +33,9 @@ function ProjectPanel:init(project, i, project_clicked)
     }
     
     local description = elements.Text{
-        shape = elements.shapes.Rectangle(64, 32 - 4, 384, 32 + 4, {-1, -1}),
+        shape = elements.shapes.Rectangle { x = 64,  y = 32 - 4,
+                                            w = 384, h = 32 + 4,
+                                            anchor = {0, 0}},
         colours = {
             stroke = PALETTE.colours[2],
             fill = PALETTE.colours[2],
@@ -38,7 +47,9 @@ function ProjectPanel:init(project, i, project_clicked)
     }
     
     local button = elements.Button{
-        shape = elements.shapes.Rectangle(64, 0, 384, 64, {-1, -1}),
+        shape = elements.shapes.Rectangle { x = 64,  y = 0,
+                                            w = 384, h = 64,
+                                            anchor = {0, 0}},
         action = project_clicked,
     }
     
@@ -50,6 +61,7 @@ end
 
 local ProjectSelect = Class {
     __includes = elements.Panel,
+    name = "kooltool project select",
     new_image = love.graphics.newImage("images/new_project.png"),
 }
 
@@ -61,7 +73,9 @@ end
 
 function ProjectSelect:SetProjects(projects)
     self.projects = projects
-    self.shape = elements.shapes.Rectangle(32, 32, 448, #self.projects * 64, {-1, -1})
+    self.shape = elements.shapes.Rectangle {x = 32,  y = 32,
+                                            w = 448, h = #self.projects * 64,
+                                            anchor = {0, 0}}
     
     self:clear()
     
