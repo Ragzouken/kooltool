@@ -102,7 +102,7 @@ end
 
 function Game:undo()
     for actor in pairs(self.actors) do
-        actor.entity:moveTo(actor.ox, actor.oy)
+        actor.entity:move_to { x = actor.ox,  y = actor.oy, anchor={0.5, 0.5} }
     end
 end
 

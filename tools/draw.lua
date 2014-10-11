@@ -19,7 +19,9 @@ function Draw:init(editor, colour)
 end
 
 function Draw:cursor(sx, sy, wx, wy)
-    if self.state.lock then
+    if self.drag and self.drag.subject and self.drag.subject then
+        self.drag.subject:border()
+    elseif self.state.lock then
         local gx, gy = unpack(self.state.lock)
 
         local tw, th = unpack(self.editor.project.layers.surface.tileset.dimensions)
@@ -29,10 +31,8 @@ function Draw:cursor(sx, sy, wx, wy)
     else
         local target = self.editor:target("draw", sx, sy)
 
-        if self.drag and self.drag.subject and self.drag.subject.entity then
-            self.drag.subject.entity:border()
-        elseif target then
-            if target.entity then target.entity:border() end
+        if target and target.border then
+            target:border()
         end
     end
 

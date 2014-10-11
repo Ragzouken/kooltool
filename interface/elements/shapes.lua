@@ -21,6 +21,10 @@ end
 
 local Rectangle = Class {}
 
+function Rectangle.Null()
+    return Rectangle { x = 0, y = 0, w = 0, h = 0 }
+end
+
 function Rectangle:init(params)
     self.w, self.h = params.w, params.h
 
@@ -46,25 +50,33 @@ function Rectangle:move_to(params)
     local px, py = unpack(params.pivot or {0, 0})
 
     if params.anchor then
-        local ax, ay = unpack(params.anchor)
-
-        px, py = self.w * ax, self.h * ay
+        px, py = self:pivot(unpack(params.anchor))
     end
 
     -- TODO: this shouldn't floor, probably, but needs to so draw has int coords
     self.x, self.y = math.floor(params.x - px), math.floor(params.y - py)
 end
 
+function Rectangle:grow(params)
+    self.w = self.w + (params.left or 0) + (params.right or 0)
+    self.h = self.h + (params.up   or 0) + (params.down  or 0)
+
+    self.x = self.x - (params.left or 0)
+    self.y = self.y - (params.up   or 0)
+end
+
 function Rectangle:coords(params)
     local px, py = unpack(params.pivot or {0, 0})
 
     if params.anchor then
-        local ax, ay = unpack(params.anchor)
-
-        px, py = self.w * ax, self.h * ay
+        px, py = self:pivot(unpack(params.anchor))
     end
 
     return self.x + px, self.y + py
+end
+
+function Rectangle:pivot(ax, ay)
+    return self.w * ax, self.h * ay
 end
 
 return {

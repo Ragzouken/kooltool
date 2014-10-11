@@ -18,13 +18,10 @@ local Entity = Class {
 }
 
 function Entity:deserialise(data, saves)
-    self.shape.x, self.shape.y = data.x, data.y
     self.sprite = self.layer.sprites_index[data.sprite]
 
-    self.sprite.entity = self
-    self:add(self.sprite)
-
-    self.sprite:refresh()
+    self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
+    self:move_to { x = data.x, y = data.y, pivot = self.sprite.pivot }
 end
 
 function Entity:serialise(saves)
@@ -38,32 +35,55 @@ function Entity:init(layer)
     self.layer = layer
 
     Panel.init(self, { 
-        actions = {"drag"}, 
         shape = shapes.Rectangle { x = 0, y = 0, 
                                    w = 0, h = 0 },
+        actions = {"drag", "draw"},
     })
 end
 
 function Entity:blank(x, y)
-    self.shape.x, self.shape.y = x, y
     self.sprite = self.layer:newSprite()
-    
-    self.sprite.entity = self
-    self:add(self.sprite)
+    self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
+    self:move_to { x = x, y = y, pivot = self.sprite.pivot }
+end
 
-    self.sprite:refresh()
-    self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
+function Entity:draw()
+    love.graphics.push()
+    love.graphics.translate(self.shape.x, self.shape.y)
+
+    self.sprite:draw(0, 0)
+
+    love.graphics.pop()
+
+    self:draw_children()
 end
 
 function Entity:border()
     local px, py = unpack(self.sprite.pivot)
     local w, h = self.sprite.canvas:getDimensions()
 
+    local x, y = self.shape.x, self.shape.y
+    local w, h = self.shape.w, self.shape.h
+
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(colour.cursor(0))
-    love.graphics.rectangle("line", self.shape.x - px - 0.5,
-                                    self.shape.y - py - 0.5, 
+    love.graphics.rectangle("line", x - 0.5,
+                                    y - 0.5, 
                                     w+1, h+1)
+end
+
+-- TODO: this is bork
+function Entity:applyBrush(...)
+    local x, y = self.shape:coords{ pivot = self.sprite.pivot }
+
+    self.sprite:applyBrush(...)
+
+    self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
+    self:move_to { x = x, y = y, pivot = self.sprite.pivot }
+end
+
+function Entity:sample(...)
+    return self.sprite:sample(...)
 end
 
 return Entity

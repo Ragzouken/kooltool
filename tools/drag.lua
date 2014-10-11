@@ -43,7 +43,6 @@ function Drag:mousepressed(button, sx, sy, wx, wy)
         local target, x, y = self.editor:target("drag", sx, sy)
 
         if target then
-            print("YEAH")
             self:grab(target, sx, sy)
             
             return true, "begin"
