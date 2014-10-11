@@ -33,7 +33,7 @@ function Rectangle:draw(mode)
     local x, y = self.x, self.y
     local w, h = self.w, self.h
     
-    love.graphics.rectangle(mode, x+0.5, y+0.5, w-1, h-1)
+    love.graphics.rectangle(mode, x, y, w, h)
 end
 
 function Rectangle:contains(x, y)
@@ -51,7 +51,8 @@ function Rectangle:move_to(params)
         px, py = self.w * ax, self.h * ay
     end
 
-    self.x, self.y = params.x - px, params.y - py
+    -- TODO: this shouldn't floor, probably, but needs to so draw has int coords
+    self.x, self.y = math.floor(params.x - px), math.floor(params.y - py)
 end
 
 function Rectangle:coords(params)

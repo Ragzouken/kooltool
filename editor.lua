@@ -31,6 +31,29 @@ local Editor = Class {
     name = "kooltool editor",
 }
 
+local function project_list()
+    local projects = {}
+    local proj_path = "projects"
+
+    local items = love.filesystem.getDirectoryItems(proj_path, function(filename)
+        local path = proj_path .. "/" .. filename
+
+        if love.filesystem.isDirectory(path) then
+            local project = Project(path)
+            project:loadIcon(path)
+
+            table.insert(projects, project)
+        end
+    end)
+
+    local tutorial = Project("tutorial")
+    tutorial:loadIcon("tutorial")
+    table.insert(projects, 1, tutorial)
+
+    return projects
+end
+
+
 function Editor:init(project)
     Panel.init(self, { shape = shapes.Plane{} })
     
@@ -89,6 +112,8 @@ function Editor:init(project)
     self:add(self.tilebar,  -math.huge)
 
     self.view.camera = CAMERA
+
+    self.select:SetProjects(project_list())
 end
 
 function Editor:SetProject(project)
@@ -186,28 +211,6 @@ function Editor:SetProject(project)
 end
 
 function Editor:update(dt)
-    do
-        local projects = {}
-        local proj_path = "projects"
-
-        local items = love.filesystem.getDirectoryItems(proj_path, function(filename)
-            local path = proj_path .. "/" .. filename
-
-            if love.filesystem.isDirectory(path) then
-                local project = Project(path)
-                project:loadIcon(path)
-
-                table.insert(projects, project)
-            end
-        end)
-
-        local tutorial = Project("tutorial")
-        tutorial:loadIcon("tutorial")
-        table.insert(projects, 1, tutorial)
-
-        self.select:SetProjects(projects)
-    end
-
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
     if PROJECT then
@@ -355,6 +358,7 @@ function Editor:keypressed(key, isrepeat)
 
         if key == "escape" and PROJECT then
             self.select.active = not self.select.active
+            self.select:SetProjects(project_list())
             return
         end
 
