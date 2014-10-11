@@ -1,6 +1,8 @@
 local Class = require "hump.class"
 local common = require "utilities.common"
 
+local Event = require "utilities.event"
+
 local Sprite = Class {}
 
 function Sprite:serialise(saves)
@@ -25,6 +27,8 @@ end
 function Sprite:init(layer, id)
     self.layer = layer
     self.id = id
+
+    self.resized = Event()
 end
 
 function Sprite:blank(w, h)
@@ -71,6 +75,11 @@ function Sprite:applyBrush(bx, by, brush, lock)
         end
 
         bx, by = bx - dx, by - dy
+
+        self.resized:fire { dx    = dx,       dy   = dy, 
+                            nw    = nw,       nh   = nh,
+                            left  = -dx,      up   = -dy,
+                            right = nw-sw+dx, down = nh-sh+dy }
     end
 
     brush:apply(self.canvas, nil, bx, by)

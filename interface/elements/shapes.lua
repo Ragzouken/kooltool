@@ -1,5 +1,14 @@
 local Class = require "hump.class"
 
+local function rect_rect(a, b)
+    if a.x > b.x + b.w or a.y > b.y + b.h then return false end
+    if b.x > a.x + a.w or b.y > a.y + a.h then return false end
+
+    return true
+end
+
+local Shape = Class {}
+
 local Plane = Class {}
 
 function Plane:init(params)
@@ -82,4 +91,6 @@ end
 return {
     Plane = Plane,
     Rectangle = Rectangle,
+
+    rect_rect = rect_rect,
 }

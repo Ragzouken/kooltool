@@ -22,6 +22,8 @@ function Entity:deserialise(data, saves)
 
     self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
     self:move_to { x = data.x, y = data.y, pivot = self.sprite.pivot }
+
+    self.sprite.resized:add(function(...) self:resized(...) end)
 end
 
 function Entity:serialise(saves)
@@ -74,16 +76,15 @@ end
 
 -- TODO: this is bork
 function Entity:applyBrush(...)
-    local x, y = self.shape:coords{ pivot = self.sprite.pivot }
-
-    self.sprite:applyBrush(...)
-
-    self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
-    self:move_to { x = x, y = y, pivot = self.sprite.pivot }
+    return self.sprite:applyBrush(...)
 end
 
 function Entity:sample(...)
     return self.sprite:sample(...)
+end
+
+function Entity:resized(params)
+    self.shape:grow(params)
 end
 
 return Entity

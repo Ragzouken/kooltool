@@ -1,7 +1,7 @@
 local Class = require "hump.class"
 local Timer = require "hump.timer"
 
-local shapes = require "collider.shapes"
+local shapes = require "interface.elements.shapes"
 local Player = Class {}
 
 local speech = love.audio.newSource("sounds/tempspeech.wav")
@@ -24,32 +24,30 @@ function Player:init(game, entity)
     self.ox, self.oy = cx, cy
 
     local annotations = PROJECT.layers.annotation
-    local w, h = self.entity.sprite.shape.w, self.entity.sprite.shape.h
+    local w, h = self.entity.shape.w, self.entity.shape.h
     local px, py = unpack(self.entity.sprite.pivot)
     local x, y = cx-px, cy-py
 
     self.notes = {}
 
     local x1, y1, x2, y2 = x, y, x+w, y+h
-    self.shape = shapes.newPolygonShape(x1, y1, x1, y2, x2, y2, x2, y1)
-    self.shape:moveTo(x+w/2, y+h/2)
 
     self.tags = {}
     self.speech = {}
 
-    --[[
-    for shape in pairs(annotations.collider:shapesInRange(x, y, x+w, y+h)) do
-        if shape:collidesWith(self.shape) then
-            local text = shape.notebox.text
-            
-            if text:sub(1, 1) == "[" then
-                self.tags[text:lower()] = true
-            else
-                table.insert(self.speech, text)
+    for entity in pairs(PROJECT.layers.surface.entities) do
+        for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
+            if shapes.rect_rect(entity.shape, notebox.shape) then
+                local text = notebox.text
+                
+                if text:sub(1, 1) == "[" then
+                    self.tags[text:lower()] = true
+                else
+                    table.insert(self.speech, text)
+                end
             end
         end
     end
-    ]]
 end
 
 function Player:update(dt)
