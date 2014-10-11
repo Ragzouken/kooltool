@@ -34,7 +34,15 @@ function Game:init(project)
         end
     end
 
-    if not self.player then self.player = choice[love.math.random(#choice)] end
+    if #choice == 0 then
+        self:undo()
+        MODE = EDITOR
+        return
+    end
+
+    if not self.player then 
+        self.player = choice[love.math.random(#choice)]
+    end
 
     if self.player then self.player.speed = 0.25 end
 end
