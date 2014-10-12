@@ -250,9 +250,9 @@ function Editor:update(dt)
                                   quad = quad},
                                  action})
         end
-        
+
         self.tilebar:init {
-            x=love.window.getWidth() - 1, y=1,
+            x = love.window.getWidth() - 1, y=1,
             buttons=tiles,
             anchor={1, 0},
             size=PROJECT.layers.surface.tileset.dimensions
