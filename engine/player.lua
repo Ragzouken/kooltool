@@ -18,6 +18,9 @@ function Player:init(game, entity)
     self.timer = Timer()
     self.entity = entity
 
+    self.va = 0
+    self.a = 0
+
     local cx, cy = entity.shape:coords { anchor = {0.5, 0.5} }
 
     self.tx, self.ty = PROJECT.layers.surface.tilemap:gridCoords(cx, cy)
@@ -35,23 +38,28 @@ function Player:init(game, entity)
     self.tags = {}
     self.speech = {}
 
-    for entity in pairs(PROJECT.layers.surface.entities) do
-        for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
-            if shapes.rect_rect(entity.shape, notebox.shape) then
-                local text = notebox.text
-                
-                if text:sub(1, 1) == "[" then
-                    self.tags[text:lower()] = true
-                else
-                    table.insert(self.speech, text)
-                end
+    for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
+        if shapes.rect_rect(entity.shape, notebox.shape) then
+            local text = notebox.text
+            
+            if text:sub(1, 1) == "[" then
+                self.tags[text:lower()] = true
+            else
+                table.insert(self.speech, text)
             end
         end
     end
+
+    if self.tags["[spin]"] then self.va = math.pi end
+
+    self.active = true
 end
 
 function Player:update(dt)
     self.timer:update(dt)
+
+    self.a = self.a + dt * self.va
+    self.entity.a = self.a
 
     if not self.movement then
         if self == self.game.player then
@@ -106,6 +114,8 @@ function Player:move(vector, input)
         return
     end
 
+    local tw, th = unpack(PROJECT.layers.surface.tileset.dimensions)
+
     if not wall and not self.movement then
         local period = self.speed
         local t = 0
@@ -117,15 +127,18 @@ function Player:move(vector, input)
             t = t + dt
             local u = t / period
 
-            self.entity:move_to { x = x + vx * 32 * u, y = y + vy * 32 * u, anchor={0.5, 0.5}}
+            self.entity:move_to { x = x + vx * tw * u, y = y + vy * th * u, anchor={0.5, 0.5}}
         end, function()
-            self.entity:move_to { x = x + vx * 32, y = y + vy * 32, anchor={0.5, 0.5}}
+            self.entity:move_to { x = x + vx * tw, y = y + vy * th, anchor={0.5, 0.5}}
             self.movement = nil
         end)
     end
 end
 
 function Player:destroy()
+    self.active = false
+    self.entity.active = false
+    self.game.occupied:set(nil, self.tx, self.ty)
 end
 
 return Player

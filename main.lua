@@ -63,7 +63,8 @@ function SETPROJECT(project, camera)
 
         PROJECT:load(path)
     else
-        PROJECT = Project.default(Project.name_generator:generate():gsub(" ", "_"), TILESIZE)
+        PROJECT = Project(Project.name_generator:generate():gsub(" ", "_"))
+        PROJECT:blank(TILESIZE)
     end
 
     love.window.setTitle("kooltool sketch (" .. PROJECT.name .. ")")

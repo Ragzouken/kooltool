@@ -10,41 +10,43 @@ local Wall = Class {
     sound = love.audio.newSource("sounds/marker pen.wav"),
 }
 
-function Wall:init(project, tile)
+function Wall:init(editor, project)
     Tool.init(self)
     
+    self.editor = editor
     self.project = project
     self.tile = 1
 end
 
 function Wall:cursor(sx, sy, wx, wy)
-    local size = 32
-    local layer = self.project.layers.surface
+    local target = self.editor:target("tile", sx, sy)
 
-    love.graphics.setBlendMode("alpha")
+    if not target then return end
 
-    for tile, gx, gy in layer.tilemap:items() do
-        local wall = layer.wallmap:get(gx, gy)
+    local tw, th = unpack(target.tileset.dimensions)
 
-        if wall == nil and layer.wall_index[tile[1]] then
+    for tile, gx, gy in target.tilemap:items() do
+        local wall = target.wallmap:get(gx, gy)
+
+        if wall == nil and target.wall_index[tile[1]] then
             love.graphics.setColor(colour.walls(0, 0))
-            love.graphics.rectangle("fill", gx * size, gy * size, size, size)
+            love.graphics.rectangle("fill", gx * tw, gy * th, tw, th)
         end
     end
 
-    for wall, gx, gy in layer.wallmap:items() do
+    for wall, gx, gy in target.wallmap:items() do
         if wall then
             love.graphics.setColor(colour.walls(0, 0))
         else
             love.graphics.setColor(colour.walls(0, 85))
         end
 
-        love.graphics.rectangle("fill", gx * size, gy * size, size, size)
+        love.graphics.rectangle("fill", gx * tw, gy * th, tw, th)
     end
 
     if self.drag or not self.project:objectAt(wx, wy) then
-        local gx, gy = layer.tilemap:gridCoords(wx, wy)
-        local quad = layer.tileset.quads[self.tile]
+        local gx, gy = target.tilemap:gridCoords(wx, wy)
+        local quad = target.tileset.quads[self.tile]
 
         if self.drag and self.drag.erase then
             love.graphics.setColor(0, 255, 0, 128)
@@ -52,9 +54,9 @@ function Wall:cursor(sx, sy, wx, wy)
             love.graphics.setColor(255, 0, 0, 128)
         end
 
-        love.graphics.rectangle("fill", gx*size, gy*size, size, size)
+        love.graphics.rectangle("fill", gx*tw, gy*th, tw, th)
         love.graphics.setColor(colour.cursor(0))
-        love.graphics.rectangle("line", gx*size, gy*size, size, size)
+        love.graphics.rectangle("line", gx*tw, gy*th, tw, th)
     end
 end
 

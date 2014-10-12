@@ -19,7 +19,7 @@ function Draw:init(editor, colour)
 end
 
 function Draw:cursor(sx, sy, wx, wy)
-    if self.drag and self.drag.subject and self.drag.subject then
+    if self.drag and self.drag.subject and self.drag.subject.border then
         self.drag.subject:border()
     elseif self.state.lock then
         local gx, gy = unpack(self.state.lock)

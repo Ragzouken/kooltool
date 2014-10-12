@@ -81,27 +81,19 @@ do
     Project.name_generator = generators.String(names)
 end
 
-function Project.default(name, tilesize)
-    local project = Project(name)
-
-    project.palette = PALETTE
-    project.layers.surface = generators.surface.default(project, tilesize)
-    project.layers.annotation = AnnotationLayer(project)
-
-    return project
-end
-
 function Project:serialise(saves)
     local data = {}
 
     data.name = self.name
     data.description = self.description
 
+    --[[
     data.resources = {}
 
     for name, manager in pairs(self.resources) do
         data.resources[name] = manager:serialise(saves .. "/" .. name) 
     end
+    ]]
 
     return data
 end
@@ -110,9 +102,23 @@ function Project:deserialise(data, saves)
     self.name = data.name
     self.description = data.description
 
+    --[[
     for name, manager in pairs(self.resources) do
         manager:deserialise(data.resources[name], saves .. "/" .. name)
     end
+    ]]
+end
+
+local broken = love.graphics.newImage("images/broken.png")
+
+function Project:blank(tilesize)
+    self.icon = broken
+
+    self.palette = PALETTE
+    self.layers.surface = generators.surface.default(self, tilesize)
+    self.layers.annotation = AnnotationLayer(self)
+
+    self.description = "yr new project"
 end
 
 function Project:init(name)
@@ -124,11 +130,37 @@ function Project:init(name)
 
     self.layers = {}
     
-    self.description = "this is a description but just for testing purposes soon you'll be able to edit this and the project icon but not yet"
+    self.description = "[NO DESCRIPTION]"
+end
+
+function Project:loadIcon(folder_path)
+    local file = folder_path .. "/icon.png"
+
+    if not pcall(function() self.icon = common.loadCanvas(file) end) then
+        self.icon = broken
+    end
+end
+
+function Project:preview(folder_path)
+    local file = love.filesystem.read(folder_path .. "/details.json")
+    
+    if file then
+        local data = json.decode(file)
+        self:deserialise(data, folder_path)
+    end
+
+    self:loadIcon(folder_path)
 end
 
 function Project:load(folder_path)
     if self.name == "tutorial" then self.name = "tutorial_copy" end
+
+    local file = love.filesystem.read(folder_path .. "/details.json")
+    
+    if file then
+        local data = json.decode(file)
+        self:deserialise(data, folder_path)
+    end
 
     local file = love.filesystem.read(folder_path .. "/tilelayer.json")
     local data = json.decode(file)
@@ -150,17 +182,11 @@ function Project:save(folder_path)
     file:write(json.encode(self.layers.annotation:serialise(folder_path), { indent = true, }))
     file:close()
 
+    local file = love.filesystem.newFile(folder_path .. "/details.json", "w")
+    file:write(json.encode(self:serialise(folder_path), { indent = true, }))
+    file:close()
+
     self.layers.surface:exportRegions(folder_path)
-end
-
-local broken = love.graphics.newImage("images/broken.png")
-
-function Project:loadIcon(folder_path)
-    local file = folder_path .. "/icon.png"
-
-    if not pcall(function() self.icon = common.loadCanvas(file) end) then
-        self.icon = broken
-    end
 end
 
 function Project:update(dt)

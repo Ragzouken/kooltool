@@ -6,6 +6,9 @@ local Panel = Class {
     name = "Generic Panel",
 
     actions = {},
+
+    colours = {stroke = {255, 0, 255, 255}, 
+               fill   = {255, 0, 255,  64}},
 }
 
 function Panel:init(params)
@@ -14,9 +17,8 @@ function Panel:init(params)
     self.name = params.name or self.name
     self.depth = params.depth or 0
     self.shape = params.shape or shapes.Plane {x = 0, y = 0}
-    self.actions = params.actions or {}
-    self.colours = params.colours or {stroke = {255, 0, 255, 255}, 
-                                      fill   = {255, 0, 255,  64}}
+    self.actions = params.actions or self.actions
+    self.colours = params.colours or self.colours
     
     for i, action in ipairs(self.actions) do
         self.actions[action] = true

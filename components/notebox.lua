@@ -6,12 +6,15 @@ local colour = require "utilities.colour"
 local Notebox = Class {
     __includes = Panel,
     name = "Generic Notebox",
+    actions = {"drag", "type"},
 
     font = love.graphics.newFont("fonts/PressStart2P.ttf", 8),
     typing_sound = love.audio.newSource("sounds/typing.wav"),
     
     padding = 4,
     spacing = 4,
+
+    text = "[INVALID NOTE]",
 }
 
 Notebox.font:setFilter("linear", "nearest")
@@ -40,14 +43,10 @@ function Notebox:serialise()
     return {x, y, self.text}
 end
 
-function Notebox:init(layer)
-    Panel.init(self, { actions = {"drag"},
-                       shape = shapes.Rectangle { x = 0, y = 0, w = 0, h = 0 } })
-
-    self.layer = layer
+function Notebox:init()
+    Panel.init(self, { shape = shapes.Rectangle { x = 0, y = 0,
+                                                  w = 0, h = 0 } })
     
-    self.text = "[INVALID NOTE]"
-
     self:refresh()
 end
 
@@ -57,7 +56,7 @@ function Notebox:blank(x, y, text)
     self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
 end
 
-function Notebox:draw(editing)
+function Notebox:draw()
     love.graphics.setFont(self.font)
 
     local lines, width = self.memo.lines, self.memo.width
@@ -83,7 +82,7 @@ function Notebox:draw(editing)
                              self.memo.width)
     end
 
-    if editing then
+    if EDITOR.focus == self then
         love.graphics.setColor(colour.cursor(0))
         love.graphics.printf(lines[#lines]:gsub(".", "_") .. "*",
                              tx, ty + oy + (#lines - 1) * (font_height+self.spacing),
@@ -91,7 +90,7 @@ function Notebox:draw(editing)
     end
     love.graphics.pop()
 
-    if editing then
+    if EDITOR.focus == self then
         love.graphics.setColor(colour.cursor(0))
         love.graphics.setLineWidth(0.5)
         self.shape:draw("line")
@@ -115,11 +114,13 @@ function Notebox:refresh()
     local height = (self.font:getHeight() + self.spacing) * #lines
     local oy = self.font:getAscent() - self.font:getBaseline()
 
-    local x, y = self.shape.x, self.shape.y
+    local x, y = self.shape:coords{ anchor={0.5, 0.5} }
     local w, h = width+self.padding*2, height+self.padding*2
 
-    self.shape:init { x = x,     y = y,
-                      w = w / 2, h = h / 2 }
+    local dw, dh = w/2 - self.shape.w, h/2 - self.shape.h
+
+    self.shape:grow { right = dw, down = dh }
+    self.shape:move_to { x = x, y = y, anchor = {0.5, 0.5} }
 
     self.shape.notebox = self
     self.name = "notebox \"" .. self.text .. "\""
@@ -147,12 +148,6 @@ function Notebox:keypressed(key)
     end
 
     return key ~= "escape" and not love.keyboard.isDown("lctrl")
-end
-
-function Notebox:textinput(character)
-    self:type(character)
-
-    return true
 end
 
 return Notebox

@@ -27,8 +27,10 @@ function Entity:deserialise(data, saves)
 end
 
 function Entity:serialise(saves)
+    local x, y = self.shape:coords{ anchor = {0.5, 0.5} }
+
     return {
-        x = self.shape.x, y = self.shape.y,
+        x = x, y = y,
         sprite = self.layer.sprites[self.sprite],
     }
 end
@@ -47,13 +49,15 @@ function Entity:blank(x, y)
     self.sprite = self.layer:newSprite()
     self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
     self:move_to { x = x, y = y, pivot = self.sprite.pivot }
+
+    self.sprite.resized:add(function(...) self:resized(...) end)
 end
 
 function Entity:draw()
     love.graphics.push()
     love.graphics.translate(self.shape.x, self.shape.y)
 
-    self.sprite:draw(0, 0)
+    self.sprite:draw(0, 0, self.a)
 
     love.graphics.pop()
 

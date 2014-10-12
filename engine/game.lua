@@ -9,8 +9,10 @@ function Game:init(project)
     self.project = project
     self.camera = Camera(128, 128, 2)
 
+    local tw, th = unpack(self.project.layers.surface.tileset.dimensions)
+
     self.actors = {}
-    self.occupied = SparseGrid(32)
+    self.occupied = SparseGrid(tw, th)
 
     local function round(value, resolution)
         return math.floor(value * resolution) / resolution
@@ -26,7 +28,7 @@ function Game:init(project)
         table.insert(choice, actor)
 
         local cx, cy = entity.shape:coords { anchor={0.5, 0.5} } 
-        local x, y = round(cx, 1/32)+16, round(cy, 1/32)+16
+        local x, y = round(cx, 1/tw)+tw/2, round(cy, 1/th)+th/2
         entity:move_to { x=x, y=y, anchor={0.5, 0.5} }
 
         if actor.tags["[player]"] then
@@ -50,9 +52,11 @@ end
 function Game:update(dt)
     if not self.TEXT then
         for actor in pairs(self.actors) do
-            self.occupied:set(nil, actor.tx, actor.ty)
-            actor:update(dt)
-            self.occupied:set(actor, actor.tx, actor.ty)
+            if actor.active then
+                self.occupied:set(nil, actor.tx, actor.ty)
+                actor:update(dt)
+                self.occupied:set(actor, actor.tx, actor.ty)
+            end
         end
     end
 
@@ -91,7 +95,7 @@ function Game:draw()
     self.camera:attach()
     self.project:draw(false, true)
     for actor in pairs(self.actors) do
-        actor:draw()
+        --if actor.active then actor:draw() end
     end
     self.camera:detach()
 
@@ -103,6 +107,8 @@ end
 function Game:undo()
     for actor in pairs(self.actors) do
         actor.entity:move_to { x = actor.ox,  y = actor.oy, anchor={0.5, 0.5} }
+        actor.entity.a = 0
+        actor.entity.active = true
     end
 end
 

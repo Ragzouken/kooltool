@@ -35,11 +35,13 @@ function Sprite:blank(w, h)
     local dw, dh = unpack(self.layer.tileset.dimensions)
     w, h = w or dw, h or dh
 
+    --w, h = 32, 24
+
     self.canvas = love.graphics.newCanvas(w, h)
     self.pivot = {w/2, w/2}
     
     self.canvas:renderTo(function()
-        love.graphics.circle("fill", w/2, h/2, 16, 32)
+        love.graphics.circle("fill", w/2, h/2, math.max(w/2, h/2), 32)
     end)
 end
 

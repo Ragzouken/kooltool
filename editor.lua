@@ -17,6 +17,7 @@ local tools = require "tools"
 
 local Project = require "components.project"
 local ProjectSelect = require "interface.panels.projectselect"
+local ProjectPanel = require "interface.panels.project"
 
 local generators = require "generators"
 local colour = require "utilities.colour"
@@ -40,7 +41,7 @@ local function project_list()
 
         if love.filesystem.isDirectory(path) then
             local project = Project(path)
-            project:loadIcon(path)
+            project:preview(path)
 
             table.insert(projects, project)
         end
@@ -125,6 +126,10 @@ function Editor:SetProject(project)
     self.view:add(project.layers.surface, -1)
     self.view:add(project.layers.annotation, -2)
 
+    local projectedit = ProjectPanel(project, { x = 128, y = -256, anchor = {0.5, 0} })
+    projectedit.actions["drag"] = true
+    project.layers.surface:add(projectedit)
+
     self.tilebar.active = true
 
     local function icon(path)
@@ -194,13 +199,14 @@ function Editor:SetProject(project)
 
     self.action = nil
     self.active = nil
+    self.focus = nil
 
     self.tools = {
         pan = tools.Pan(self.view.camera),
         drag = tools.Drag(self),
         draw = tools.Draw(self, PALETTE.colours[3]),
         tile = tools.Tile(self, project, 1),
-        wall = tools.Wall(project),
+        wall = tools.Wall(self, project),
         marker = tools.Marker(self),
     }
 
@@ -321,6 +327,8 @@ function Editor:draw()
 end
 
 function Editor:mousepressed(sx, sy, button)
+    self.focus = nil
+
     local wx, wy = self.view.camera:worldCoords(sx, sy)
 
     local event = { action = "press", coords = {sx, sy, wx, wy}, }
@@ -329,6 +337,11 @@ function Editor:mousepressed(sx, sy, button)
     if target and button == "l" then
         target:event(event)
         return
+    end
+
+    local target = self:target("type", sx, sy, true)
+    if target and button == "l" then
+        self.focus = target
     end
 
     if PROJECT then
@@ -356,6 +369,8 @@ function Editor:keypressed(key, isrepeat)
             self.view:print()
         end
 
+        if key == "escape" and self.focus then self.focus = nil return end
+
         if key == "escape" and PROJECT then
             self.select.active = not self.select.active
             self.select:SetProjects(project_list())
@@ -364,6 +379,8 @@ function Editor:keypressed(key, isrepeat)
 
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
+
+        if self.focus then self.focus:keypressed(key, isrepeat) return true end
 
         self:input("keypressed", key, isrepeat, sx, sy, wx, wy)
     end
@@ -382,6 +399,8 @@ function Editor:textinput(character)
     if PROJECT then
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
+
+        if self.focus then self.focus:type(character) end
 
         self:input("textinput", character, sx, sy, wx, wy)
     end
