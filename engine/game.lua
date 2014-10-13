@@ -5,9 +5,10 @@ local Player = require "engine.player"
 
 local Game = Class {}
 
-function Game:init(project)
+function Game:init(project, playtest)
     self.project = project
     self.camera = Camera(128, 128, 2)
+    self.playtest = playtest
 
     local tw, th = unpack(self.project.layers.surface.tileset.dimensions)
 

@@ -61,6 +61,9 @@ function Drag:mousedragged(action, screen, world)
 
         self.drag.object:move_to { x = wx, y = wy,
                                    pivot = self.drag.pivot }
+                                   
+
+        love.mouse.setCursor(love.mouse.getSystemCursor("sizeall"))
     end
 end
 

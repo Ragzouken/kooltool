@@ -40,9 +40,9 @@ function love.load(arg)
     CAMERA = Camera(128, 128, 2)
 
     if love.filesystem.isDirectory("embedded") then
-        INTERFACE = Interface({})
-        SETPROJECT(Project("embedded"))
+        SETPROJECT(Project("embedded"), CAMERA)
 
+        EDITOR = Editor(PROJECT)
         MODE = Game(PROJECT)
     else
         MODE = Editor(PROJECT)
@@ -83,7 +83,7 @@ local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 function love.draw()
     MODE:draw()
 
-    if EDITOR and MODE ~= EDITOR then
+    if EDITOR and MODE ~= EDITOR and MODE.playtest then
         local o = 4-1+2
         love.graphics.setBlendMode("alpha")
         love.graphics.setColor(0, 0, 0, 255)
@@ -104,7 +104,7 @@ end
 
 function love.keypressed(...)
     if (function (key, irepeat)
-        if key == "escape" and EDITOR and MODE ~= EDITOR then
+        if key == "escape" and EDITOR and MODE ~= EDITOR and MODE.playtest then
             MODE:undo()
             MODE = EDITOR
             return true

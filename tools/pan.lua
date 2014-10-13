@@ -108,6 +108,8 @@ function Pan:mousedragged(action, screen, world)
         self.drag.dy = self.drag.dy + swy / self.camera.scale
 
         self.camera:lookAt(cx - self.drag.dx, cy - self.drag.dy)
+
+        love.mouse.setCursor(love.mouse.getSystemCursor("sizeall"))
     end
 end
 

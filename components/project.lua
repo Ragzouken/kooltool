@@ -200,7 +200,7 @@ end
 function Project:draw(annotations, play)
     self.layers.surface:draw()
 
-    if EDITOR.active ~= EDITOR.tools.draw and not play then
+    if not play and EDITOR.active ~= EDITOR.tools.draw and not play then
         for entity in pairs(self.layers.surface.entities) do
             entity:border()
         end

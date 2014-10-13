@@ -19,9 +19,14 @@ function Draw:init(editor, colour)
 end
 
 function Draw:cursor(sx, sy, wx, wy)
+    local cursor = love.mouse.getSystemCursor("arrow")
+
+
     if self.drag and self.drag.subject and self.drag.subject.border then
+        cursor = love.mouse.getSystemCursor("crosshair")
         self.drag.subject:border()
     elseif self.state.lock then
+        cursor = love.mouse.getSystemCursor("crosshair")
         local gx, gy = unpack(self.state.lock)
 
         local tw, th = unpack(self.editor.project.layers.surface.tileset.dimensions)
@@ -32,9 +37,12 @@ function Draw:cursor(sx, sy, wx, wy)
         local target = self.editor:target("draw", sx, sy)
 
         if target and target.border then
+            cursor = love.mouse.getSystemCursor("crosshair")
             target:border()
         end
     end
+
+    love.mouse.setCursor(cursor)
 
     local bo = math.floor(self.size / 2)
     local x, y = math.floor(wx) - bo, math.floor(wy) - bo

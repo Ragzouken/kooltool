@@ -182,7 +182,7 @@ function Editor:SetProject(project)
         self.project:save("projects/" .. self.project.name)
         love.system.openURL("file://"..love.filesystem.getSaveDirectory())
     end},
-    {icon("images/export.png"), function()
+    {icon("images/play.png"), function()
         savesound:play()
         self.project:save("projects/" ..self.project.name)
         
@@ -190,6 +190,13 @@ function Editor:SetProject(project)
 
         --toolbar.interface.project:export()
         --love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
+    end},
+    {icon("images/export.png"), function()
+        savesound:play()
+        self.project:save("projects/" ..self.project.name)
+
+        self.project:export()
+        love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
     end},
     }
     
@@ -217,6 +224,8 @@ function Editor:SetProject(project)
 end
 
 function Editor:update(dt)
+    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
+
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
     if PROJECT then
