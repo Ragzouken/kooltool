@@ -56,9 +56,9 @@ function Draw:cursor(sx, sy, wx, wy)
     if entity then
         local x, y = unpack(self.editor:transform(entity.parent, sx, sy))
 
-        draw = self.drag.subject.shape:contains(x, y)
+        draw = entity.shape:contains(x, y)
        
-        self.drag.subject:border()
+        entity:border()
     end
 
     if draw then
