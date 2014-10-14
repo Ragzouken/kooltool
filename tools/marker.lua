@@ -19,12 +19,18 @@ end
 function Marker:cursor(sx, sy, wx, wy)
     local target, x, y = self.editor:target("mark", sx, sy)
 
-    local bo = math.floor(self.size / 2)
-    local x, y = math.floor(wx) - bo, math.floor(wy) - bo
+    if target then
+        local bo = math.floor(self.size / 2)
+        local x, y = math.floor(wx) - bo, math.floor(wy) - bo
 
-    love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(colour.cursor(0))
-    love.graphics.rectangle("fill", x, y, self.size, self.size)
+        love.graphics.setBlendMode("alpha")
+        love.graphics.setColor(colour.cursor(0))
+        love.graphics.rectangle("fill", x, y, self.size, self.size)
+
+        return love.mouse.getSystemCursor("crosshair")
+    end
+
+    return love.mouse.getSystemCursor("no")
 end
 
 function Marker:mousepressed(button, sx, sy, wx, wy)

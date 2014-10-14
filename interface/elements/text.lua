@@ -16,16 +16,28 @@ local Text = Class {
     },
 
     typing_sound = love.audio.newSource("sounds/typing.wav"),
+
+    colours = {
+        stroke = {  0,   0,   0, 255}, 
+        fill   = {  0,   0,   0, 255},
+        text   = {255, 255, 255, 255},
+    },
+
+    padding = 4,
 }
+
+for name, font in pairs(Text.fonts) do
+    font:setFilter("linear", "nearest")
+end
 
 function Text:init(params)
     Panel.init(self, params)
-    
-    self.colours.text = self.colours.text or self.colours.stroke
+
+    self.colours.text = (params.colours and params.colours.text) or self.colours.text
     self.text = params.text
     self.font = params.font or self.fonts.small
     
-    self.padding = 8
+    self.padding = params.padding or self.padding
 
     self.changed = Event()
 end

@@ -1,23 +1,20 @@
 local Class = require "hump.class"
-local Panel = require "interface.elements.panel"
+local Text = require "interface.elements.text"
 local shapes = require "interface.elements.shapes"
 local colour = require "utilities.colour"
 
 local Notebox = Class {
-    __includes = Panel,
+    __includes = Text,
     name = "Generic Notebox",
     actions = {"drag", "type"},
 
-    font = love.graphics.newFont("fonts/PressStart2P.ttf", 8),
-    typing_sound = love.audio.newSource("sounds/typing.wav"),
-    
+    font = Text.fonts.small,
+
     padding = 4,
     spacing = 4,
 
     text = "[INVALID NOTE]",
 }
-
-Notebox.font:setFilter("linear", "nearest")
 
 function string:split(pat)
     local fields = {}
@@ -44,8 +41,8 @@ function Notebox:serialise()
 end
 
 function Notebox:init()
-    Panel.init(self, { shape = shapes.Rectangle { x = 0, y = 0,
-                                                  w = 0, h = 0 } })
+    Text.init(self, { shape = shapes.Rectangle { x = 0, y = 0,
+                                                 w = 0, h = 0 } })
     
     self:refresh()
 end
@@ -127,27 +124,9 @@ function Notebox:refresh()
 end
 
 function Notebox:type(string)
-    self.text = self.text .. string
-
-    self.typing_sound:stop()
-    self.typing_sound:play()
+    Text.type(self, string)
 
     self:refresh()
-end
-
-function Notebox:keypressed(key)
-    if key == "backspace" then
-        self.text = string.sub(self.text, 1, #self.text-1)
-        self:type("")
-        
-        return true
-    elseif key == "return" then
-        self:type("\n")
-
-        return true
-    end
-
-    return key ~= "escape" and not love.keyboard.isDown("lctrl")
 end
 
 return Notebox

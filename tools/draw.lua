@@ -19,37 +19,52 @@ function Draw:init(editor, colour)
 end
 
 function Draw:cursor(sx, sy, wx, wy)
-    local cursor = love.mouse.getSystemCursor("arrow")
-
+    local draw
 
     if self.drag and self.drag.subject and self.drag.subject.border then
-        cursor = love.mouse.getSystemCursor("crosshair")
+        local x, y = unpack(self.editor:transform(self.drag.subject.parent, sx, sy))
+
+        draw = self.drag.subject.shape:contains(x, y)
+       
         self.drag.subject:border()
     elseif self.state.lock then
-        cursor = love.mouse.getSystemCursor("crosshair")
         local gx, gy = unpack(self.state.lock)
-
         local tw, th = unpack(self.editor.project.layers.surface.tileset.dimensions)
+
+        draw = true
+
+        local target, x, y = self.editor:target("draw", sx, sy)
+        if target.tilemap then
+            local tx, ty = target.tilemap:gridCoords(x, y)
+            if tx ~= gx or ty ~= gy then
+                draw = false
+            end
+        end
 
         love.graphics.setColor(colour.cursor(0))
         love.graphics.rectangle("line", gx*tw-0.5, gy*th-0.5, tw+1, th+1)
     else
         local target = self.editor:target("draw", sx, sy)
 
+        draw = target
+
         if target and target.border then
-            cursor = love.mouse.getSystemCursor("crosshair")
             target:border()
         end
     end
 
-    love.mouse.setCursor(cursor)
+    if draw then
+        local bo = math.floor(self.size / 2)
+        local x, y = math.floor(wx) - bo, math.floor(wy) - bo
 
-    local bo = math.floor(self.size / 2)
-    local x, y = math.floor(wx) - bo, math.floor(wy) - bo
+        love.graphics.setBlendMode("alpha")
+        love.graphics.setColor(self.colour)
+        love.graphics.rectangle("fill", x, y, self.size, self.size)
 
-    love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(self.colour)
-    love.graphics.rectangle("fill", x, y, self.size, self.size)
+        return love.mouse.getSystemCursor("crosshair")
+    end
+
+    return love.mouse.getSystemCursor("no")
 end
 
 function Draw:mousepressed(button, sx, sy)

@@ -28,6 +28,13 @@ function Drag:drop()
     self:enddrag()
 end
 
+
+function Drag:cursor(sx, sy)
+    if self.drag or self.editor:target("drag", sx, sy) then
+        return love.mouse.getSystemCursor("sizeall")
+    end
+end
+
 function Drag:mousepressed(button, sx, sy, wx, wy)
     if self.drag and button == "r" then
         if self.drag.object.sprite then
@@ -61,9 +68,6 @@ function Drag:mousedragged(action, screen, world)
 
         self.drag.object:move_to { x = wx, y = wy,
                                    pivot = self.drag.pivot }
-                                   
-
-        love.mouse.setCursor(love.mouse.getSystemCursor("sizeall"))
     end
 end
 

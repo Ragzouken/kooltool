@@ -219,13 +219,10 @@ function Editor:SetProject(project)
 
     self.global = {
         self.tools.pan,
-        self.tools.drag,
     }
 end
 
 function Editor:update(dt)
-    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
-
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
     if PROJECT then
@@ -274,12 +271,19 @@ function Editor:cursor(sx, sy, wx, wy)
         local cursor = tool:cursor(sx, sy, wx, wy)
 
         if cursor then
-            love.window.setCursor(cursor)
+            love.mouse.setCursor(cursor)
             return true
         end
 
         return false
     end
+
+    if self:target("press", sx, sy) then
+        love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
+        return
+    end
+
+    if love.keyboard.isDown("tab") and cursor(self.tools.drag) then return end
 
     if self.action and cursor(self.action) then return end
     if self.active and cursor(self.active) then return end
@@ -287,6 +291,8 @@ function Editor:cursor(sx, sy, wx, wy)
     for name, tool in pairs(self.global) do
         if cursor(tool) then return end
     end
+
+    love.mouse.setCursor(love.mouse.getSystemCursor("arrow"))
 end
 
 function Editor:input(callback, ...)
