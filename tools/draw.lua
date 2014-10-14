@@ -19,30 +19,30 @@ function Draw:init(editor, colour)
 end
 
 function Draw:cursor(sx, sy, wx, wy)
-    local draw
+    local draw, entity
 
     if self.drag and self.drag.subject and self.drag.subject.border then
-        local x, y = unpack(self.editor:transform(self.drag.subject.parent, sx, sy))
-
-        draw = self.drag.subject.shape:contains(x, y)
-       
-        self.drag.subject:border()
+        entity = self.drag.subject
     elseif self.state.lock then
-        local gx, gy = unpack(self.state.lock)
-        local tw, th = unpack(self.editor.project.layers.surface.tileset.dimensions)
+        if self.state.lock.border then
+            entity = self.state.lock
+        else
+            local gx, gy = unpack(self.state.lock)
+            local tw, th = unpack(self.editor.project.layers.surface.tileset.dimensions)
 
-        draw = true
+            draw = true
 
-        local target, x, y = self.editor:target("draw", sx, sy)
-        if target.tilemap then
-            local tx, ty = target.tilemap:gridCoords(x, y)
-            if tx ~= gx or ty ~= gy then
-                draw = false
+            local target, x, y = self.editor:target("draw", sx, sy)
+            if target.tilemap then
+                local tx, ty = target.tilemap:gridCoords(x, y)
+                if tx ~= gx or ty ~= gy then
+                    draw = false
+                end
             end
-        end
 
-        love.graphics.setColor(colour.cursor(0))
-        love.graphics.rectangle("line", gx*tw-0.5, gy*th-0.5, tw+1, th+1)
+            love.graphics.setColor(colour.cursor(0))
+            love.graphics.rectangle("line", gx*tw-0.5, gy*th-0.5, tw+1, th+1)
+        end
     else
         local target = self.editor:target("draw", sx, sy)
 
@@ -51,6 +51,14 @@ function Draw:cursor(sx, sy, wx, wy)
         if target and target.border then
             target:border()
         end
+    end
+
+    if entity then
+        local x, y = unpack(self.editor:transform(entity.parent, sx, sy))
+
+        draw = self.drag.subject.shape:contains(x, y)
+       
+        self.drag.subject:border()
     end
 
     if draw then
@@ -103,8 +111,7 @@ function Draw:mousedragged(action, screen, world)
         x2, y2 = unpack(self.editor:transform(self.drag.subject, x2, y2))
 
         local brush, ox, oy = Brush.line(x1, y1, x2, y2, self.size, colour)
-        self.drag.subject:applyBrush(ox, oy, brush, 
-            self.state.lock or self.state.resize, self.state.cloning)
+        self.drag.subject:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)
     end
 end
 
@@ -133,15 +140,17 @@ function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
     elseif key == "lshift" then
         local target = self.editor:target("draw", sx, sy)
 
-        if target and target.entity then
-            self.state.resize = target
+        if target then
+            if target.sprite then
+                self.state.lock = target
+            else
+                self.state.lock = {target.tilemap:gridCoords(wx, wy)}
+            end
 
             return true
         end
 
-        self.state.lock = {self.editor.project.layers.surface.tilemap:gridCoords(wx, wy)}
-    
-        return true
+        return false
     elseif digits[key] then
         self.size = digits[key]
 
