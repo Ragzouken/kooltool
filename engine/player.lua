@@ -105,12 +105,16 @@ function Player:move(vector, input)
     local wall = PROJECT.layers.surface:getWall(dx, dy)
     local occupier = self.game.occupied:get(dx, dy)
 
-    if occupier and self == self.game.player then
-        if #occupier.speech > 0 then
-            self.game.TEXT = occupier.speech[love.math.random(#occupier.speech)]
+    if occupier then
+        if self == self.game.player then
+            if #occupier.speech > 0 then
+                self.game.TEXT = occupier.speech[love.math.random(#occupier.speech)]
+            end
+            speech:play()
+            if occupier.tags["[pop]"] then occupier:destroy() end
+            if occupier.tags["[swap]"] then self.game.player = occupier end
         end
-        speech:play()
-        if occupier.tags["[pop]"] then occupier:destroy() end
+
         return
     end
 

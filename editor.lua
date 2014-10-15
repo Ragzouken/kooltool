@@ -186,7 +186,7 @@ function Editor:SetProject(project)
         savesound:play()
         self.project:save("projects/" ..self.project.name)
         
-        MODE = Game(self.project)
+        MODE = Game(self.project, true)
 
         --toolbar.interface.project:export()
         --love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
