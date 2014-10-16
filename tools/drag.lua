@@ -36,26 +36,25 @@ function Drag:cursor(sx, sy)
 end
 
 function Drag:mousepressed(button, sx, sy, wx, wy)
-    if self.drag and button == "r" then
-        if self.drag.object.sprite then
-            --self.project.layers.surface:removeEntity(self.drag.object)
+    if button == "l" then
+        if love.keyboard.isDown("x") then
+            local target, x, y = self.editor:target("remove", sx, sy)
+
+            if target then
+                target:remove()
+                self.editor.focus = nil
+            end
         else
-            --self.project.layers.annotation:removeNotebox(self.drag.object)
+            local target, x, y = self.editor:target("drag", sx, sy)
+
+            if target then
+                self:grab(target, sx, sy)
+                
+                return true, "begin"
+            end
         end
 
         self:drop()
-
-        return true, "end"
-    elseif button == "l" then
-        local target, x, y = self.editor:target("drag", sx, sy)
-
-        if target then
-            self:grab(target, sx, sy)
-            
-            return true, "begin"
-        end
-
-        self.target = nil
     end
 
     return false

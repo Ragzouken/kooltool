@@ -14,18 +14,22 @@ function Frame:init(params)
 end
 
 function Frame:target(action, x, y, debug)
-    local tx, ty = self.camera:worldCoords(x, y)
+    local lx, ly = self.camera:worldCoords(x, y)
 
     for child in self.sorted:downwards() do
         if child.active then
-            local target, x, y = child:target(action, tx, ty, debug)
+            local target, x, y = child:target(action, lx, ly, debug)
 
-            if target then return target, x, y end
+            if target ~= nil then return target, x, y end
         end
     end
 
-    if self.actions[action] and self.shape:contains(x, y) then
-        return self, x, y
+    if self.shape:contains(x, y) then
+        if self.actions[action] then
+            return self, lx, ly
+        elseif self.actions["block"] then
+            --return false, lx, ly
+        end
     end
 end
 

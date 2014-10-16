@@ -38,21 +38,39 @@ function Player:init(game, entity)
     self.tags = {}
     self.speech = {}
 
-    for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
-        if shapes.rect_rect(entity.shape, notebox.shape) then
-            local text = notebox.text
-            
-            if text:sub(1, 1) == "[" then
-                self.tags[text:lower()] = true
+    local function parse_note(text)
+        local code = string.match(text, "%[(.+)%]")
+
+        if code then
+            local key, value
+
+            if code:find("=") then
+                key, value = string.match(code, "(.*)=(.*)")
             else
-                table.insert(self.speech, text)
+                key, value = code, true
             end
+
+            self.tags[key:lower()] = value
+        else
+            table.insert(self.speech, text)
         end
     end
 
-    if self.tags["[spin]"] then self.va = math.pi end
+    for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
+        if shapes.rect_rect(entity.shape, notebox.shape) then
+            parse_note(notebox.text)
+        end
+    end
+
+    if self.tags.spin then self.va = math.pi end
 
     self.active = true
+
+    if self.tags.path then
+        self.pathprogress = 1
+        self.tags.path = self.tags.path:gsub("[^%^<>v]", "")
+        print(self.tags.path)
+    end
 end
 
 function Player:update(dt)
@@ -68,7 +86,7 @@ function Player:update(dt)
                     self:move(vector, true)
                 end
             end
-        elseif self.game.player and not self.tags["[stop]"] then
+        elseif self.game.player and not self.tags.stop then
             local px, py = self.game.player.entity.shape:coords { anchor = {0.5, 0.5} }
             local cx, cy = self.entity.shape:coords { anchor = {0.5, 0.5} }
             local dx, dy = cx - px, cy - py
@@ -89,10 +107,26 @@ local directions = {
     {-1, 0},
     {0, 1},
     {1, 0},
+
+    ["^"] = { 0, -1},
+    ["<"] = {-1,  0},
+    ["v"] = { 0,  1},
+    [">"] = { 1,  0},
 }
 
 function Player:rando()
-    self:move(directions[love.math.random(4)])
+    local direction = love.math.random(4)
+
+    if self.tags.path and #self.tags.path >= 1 then
+        direction = self.tags.path:sub(self.pathprogress, self.pathprogress)
+
+        self.pathprogress = self.pathprogress + 1
+        if self.pathprogress > #self.tags.path then
+            self.pathprogress = 1
+        end
+    end
+
+    self:move(directions[direction])
 end
 
 function Player:move(vector, input)
@@ -111,8 +145,8 @@ function Player:move(vector, input)
                 self.game.TEXT = occupier.speech[love.math.random(#occupier.speech)]
             end
             speech:play()
-            if occupier.tags["[pop]"] then occupier:destroy() end
-            if occupier.tags["[swap]"] then self.game.player = occupier end
+            if occupier.tags.pop then occupier:destroy() end
+            if occupier.tags.swap then self.game.player = occupier end
         end
 
         return

@@ -32,7 +32,7 @@ function Game:init(project, playtest)
         local x, y = round(cx, 1/tw)+tw/2, round(cy, 1/th)+th/2
         entity:move_to { x=x, y=y, anchor={0.5, 0.5} }
 
-        if actor.tags["[player]"] then
+        if actor.tags.player then
             self.player = actor
         end
     end

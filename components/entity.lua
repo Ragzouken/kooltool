@@ -41,7 +41,7 @@ function Entity:init(layer)
     Panel.init(self, { 
         shape = shapes.Rectangle { x = 0, y = 0, 
                                    w = 0, h = 0 },
-        actions = {"drag", "draw"},
+        actions = {"drag", "draw", "remove"},
     })
 end
 
@@ -78,7 +78,10 @@ function Entity:border()
                                     w+1, h+1)
 end
 
--- TODO: this is bork
+function Entity:remove()
+    self.layer:removeEntity(self)
+end
+
 function Entity:applyBrush(...)
     return self.sprite:applyBrush(...)
 end

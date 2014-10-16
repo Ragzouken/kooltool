@@ -7,8 +7,10 @@ local Panel = Class {
 
     actions = {},
 
-    colours = {stroke = {255, 0, 255, 255}, 
+    colours = {stroke = {255, 0, 255, 255},
                fill   = {255, 0, 255,  64}},
+
+    clip = false,
 }
 
 function Panel:init(params)
@@ -20,6 +22,8 @@ function Panel:init(params)
     self.actions = params.actions or self.actions
     self.colours = params.colours or self.colours
     
+    self.clip = params.clip or self.clip
+
     for i, action in ipairs(self.actions) do
         self.actions[action] = true
     end
@@ -109,10 +113,18 @@ function Panel:draw_children()
     love.graphics.push()
     love.graphics.translate(self.shape.x, self.shape.y)
 
+    --[[
+    if self.clip and self.shape then
+        love.graphics.setStencil(function self.shape:draw("fill") end)
+    end
+    ]]
+
     for child in self.sorted:upwards() do
         if child.active then child:draw() end
     end
-        
+       
+    love.graphics.setStencil()
+
     love.graphics.pop()
 end
 
@@ -130,12 +142,16 @@ function Panel:target(action, x, y, debug)
         if child.active then
             local target, x, y = child:target(action, lx, ly, debug)
 
-            if target then return target, x, y end
+            if target ~= nil then return target, x, y end
         end
     end
 
-    if self.actions[action] and self.shape:contains(x, y) then
-        return self, lx, ly
+    if self.shape:contains(x, y) then
+        if self.actions[action] then
+            return self, lx, ly
+        elseif self.actions["block"] then
+            --return false, lx, ly
+        end
     end
 end
 

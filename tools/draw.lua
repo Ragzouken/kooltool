@@ -90,16 +90,12 @@ function Draw:mousepressed(button, sx, sy)
 
             return true, "begin"
         end
-    elseif self.drag and button == "r" then 
-        self.drag.erase = true
-
-        return true
     end
 end
 
 function Draw:mousedragged(action, screen, world)
     if action == "draw" then
-        local colour = not self.drag.erase and self.colour or nil
+        local colour = not love.keyboard.isDown("x") and self.colour or nil
         local lock
 
         local wx, wy, dx, dy = unpack(screen)

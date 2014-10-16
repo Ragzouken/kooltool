@@ -6,7 +6,7 @@ local colour = require "utilities.colour"
 local Notebox = Class {
     __includes = Text,
     name = "Generic Notebox",
-    actions = {"drag", "type"},
+    actions = {"drag", "type", "remove", "block"},
 
     font = Text.fonts.small,
 
@@ -40,10 +40,12 @@ function Notebox:serialise()
     return {x, y, self.text}
 end
 
-function Notebox:init()
+function Notebox:init(layer)
     Text.init(self, { shape = shapes.Rectangle { x = 0, y = 0,
                                                  w = 0, h = 0 } })
     
+    self.layer = layer
+
     self:refresh()
 end
 
@@ -127,6 +129,10 @@ function Notebox:type(string)
     Text.type(self, string)
 
     self:refresh()
+end
+
+function Notebox:remove()
+    self.layer:removeNotebox(self)
 end
 
 return Notebox
