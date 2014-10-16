@@ -68,7 +68,7 @@ function Player:init(game, entity)
 
     if self.tags.path then
         self.pathprogress = 1
-        self.tags.path = self.tags.path:gsub("[^%^<>v]", "")
+        self.tags.path = self.tags.path:gsub("[^%^<>v%?%.]", "")
         print(self.tags.path)
     end
 end
@@ -103,15 +103,16 @@ function Player:draw()
 end
 
 local directions = {
-    {0, -1},
-    {-1, 0},
-    {0, 1},
-    {1, 0},
+    { 0, -1},
+    {-1,  0},
+    { 0,  1},
+    { 1,  0},
 
     ["^"] = { 0, -1},
     ["<"] = {-1,  0},
     ["v"] = { 0,  1},
     [">"] = { 1,  0},
+    ["."] = { 0,  0},
 }
 
 function Player:rando()
@@ -119,6 +120,8 @@ function Player:rando()
 
     if self.tags.path and #self.tags.path >= 1 then
         direction = self.tags.path:sub(self.pathprogress, self.pathprogress)
+
+        if direction == "?" then direction = love.math.random(4) end
 
         self.pathprogress = self.pathprogress + 1
         if self.pathprogress > #self.tags.path then
