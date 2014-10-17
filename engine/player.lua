@@ -2,15 +2,17 @@ local Class = require "hump.class"
 local Timer = require "hump.timer"
 
 local shapes = require "interface.elements.shapes"
-local Player = Class {}
+local Player = Class {
+    speed = 0.5,
+}
 
 local speech = love.audio.newSource("sounds/tempspeech.wav")
 
 local controls = {
-    up = {0, -1},
-    left = {-1, 0},
-    down = {0, 1},
-    right = {1, 0},
+    up    = { 0, -1},
+    left  = {-1,  0},
+    down  = { 0,  1},
+    right = { 1,  0},
 }
 
 function Player:init(game, entity)
@@ -35,7 +37,10 @@ function Player:init(game, entity)
 
     local x1, y1, x2, y2 = x, y, x+w, y+h
 
-    self.tags = {}
+    self.tags = {
+        path = "?",
+    }
+
     self.speech = {}
 
     local function parse_note(text)
@@ -62,14 +67,23 @@ function Player:init(game, entity)
         end
     end
 
-    if self.tags.spin then self.va = math.pi end
+    if self.tags.spin then 
+        local valid, number = pcall(function() return tonumber(self.tags.spin) end)
+
+        if valid then self.va = math.pi * 2 * number end
+    end
 
     self.active = true
 
     if self.tags.path then
         self.pathprogress = 1
         self.tags.path = self.tags.path:gsub("[^%^<>v%?%.]", "")
-        print(self.tags.path)
+    end
+
+    if self.tags.speed then
+        local valid, number = pcall(function() return tonumber(self.tags.speed) end)
+
+        if valid then self.speed = 1 / number end
     end
 end
 
@@ -86,7 +100,7 @@ function Player:update(dt)
                     self:move(vector, true)
                 end
             end
-        elseif self.game.player and not self.tags.stop then
+        elseif self.game.player then
             local px, py = self.game.player.entity.shape:coords { anchor = {0.5, 0.5} }
             local cx, cy = self.entity.shape:coords { anchor = {0.5, 0.5} }
             local dx, dy = cx - px, cy - py
@@ -116,10 +130,8 @@ local directions = {
 }
 
 function Player:rando()
-    local direction = love.math.random(4)
-
     if self.tags.path and #self.tags.path >= 1 then
-        direction = self.tags.path:sub(self.pathprogress, self.pathprogress)
+        local direction = self.tags.path:sub(self.pathprogress, self.pathprogress)
 
         if direction == "?" then direction = love.math.random(4) end
 
@@ -127,9 +139,9 @@ function Player:rando()
         if self.pathprogress > #self.tags.path then
             self.pathprogress = 1
         end
-    end
 
-    self:move(directions[direction])
+        self:move(directions[direction])
+    end
 end
 
 function Player:move(vector, input)

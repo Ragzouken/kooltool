@@ -24,7 +24,6 @@ function Game:init(project, playtest)
     for entity in pairs(self.project.layers.surface.entities) do
         local actor = Player(self, entity)
         self.actors[actor] = true
-        actor.speed = 0.75
 
         table.insert(choice, actor)
 
@@ -46,8 +45,6 @@ function Game:init(project, playtest)
     if not self.player then 
         self.player = choice[love.math.random(#choice)]
     end
-
-    if self.player then self.player.speed = 0.25 end
 end
 
 function Game:update(dt)
