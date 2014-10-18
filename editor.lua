@@ -176,6 +176,8 @@ function Editor:SetProject(project)
 
         self.action = self.tools.drag
         self.action:grab(notebox, sx, sy)
+
+        self.focus = notebox
     end},
     {icon("images/save.png"), function()
         savesound:play()

@@ -24,6 +24,8 @@ local Text = Class {
     },
 
     padding = 4,
+
+    multiline = false,
 }
 
 for name, font in pairs(Text.fonts) do
@@ -38,6 +40,7 @@ function Text:init(params)
     self.font = params.font or self.fonts.small
     
     self.padding = params.padding or self.padding
+    self.multiline = params.multiline or self.multiline
 
     self.changed = Event()
 end
@@ -82,7 +85,11 @@ function Text:keypressed(key)
         
         return true
     elseif key == "return" then
-        self:type("\n")
+        if self.multiline and love.keyboard.isDown("lshift") then
+            self:type("\n")
+        else
+            EDITOR.focus = nil
+        end
 
         return true
     end

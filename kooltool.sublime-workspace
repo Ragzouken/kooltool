@@ -614,6 +614,14 @@
 				"buffer_size": 3063,
 				"line_ending": "Unix"
 			}
+		},
+		{
+			"file": "engine/player.lua",
+			"settings":
+			{
+				"buffer_size": 4756,
+				"line_ending": "Windows"
+			}
 		}
 	],
 	"build_system": "Packages/User/love2d.sublime-build",
@@ -656,20 +664,45 @@
 	],
 	"file_history":
 	[
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/player.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/fonts/LICENSE.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/lovebird-license",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/Ogg.framework/Versions/Current",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/OpenAL-Soft.framework/OpenAL-Soft",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/FreeType.framework/Versions/A/Headers/freetype/internal/fttrace.h",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/toolbar.lua",
-		"/C/Users/ragzouken/Downloads/Helium/main.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/projectselect.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/project.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/newproject.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/shapes.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/radio.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/init.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/canvas.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/button.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/FreeType.framework/Versions/A/Headers/freetype/internal/internal.h",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/article-disection-in-tongues.txt",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/collider/init.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/husl.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/FreeType.framework/Headers",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/Lua.framework/Versions/A/Headers/lauxlib.h",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/hump/vector-light.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_loadso.h",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_joystick.h",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/.gitattributes",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/.gitignore",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/conf.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/kooltool.sublime-project",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/main.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/collider/class.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/collider/gjk.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/collider/polygon.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/player.lua",
+		"/C/Users/ragzouken/Downloads/Helium/main.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/draw.lua",
 		"/C/Users/ragzouken/AppData/Local/Google/Chrome/User Data/Default/Preferences",
 		"/C/Users/ragzouken/AppData/Local/Temp/7zOCB96.tmp/meta.txt",
 		"/C/Users/ragzouken/AppData/Local/Temp/7zO3BA7.tmp/readme.txt",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/projectselect.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/project.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/project.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/shapes.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/panel.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/newproject.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/tile.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/notebox.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/game.lua",
@@ -683,7 +716,6 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/surface.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/annotation.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/frame.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/button.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/text.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tutorial/notelayer.json",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/marker.lua",
@@ -696,7 +728,6 @@
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Myster/entitylayer.json",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/json.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/interface.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/canvas.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Resources/Info.plist",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/sparsegrid.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_revision.h",
@@ -708,7 +739,6 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/relevant-tools.txt",
 		"/C/Users/ragzouken/AppData/Local/Temp/scp26805/srv/ragzouken/var/www/press/kooltool/data.xml",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/credits.txt",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/article-disection-in-tongues.txt",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/article-disection-kidpix.txt",
 		"/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/User/love2d-build.sublime-build",
 		"/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/User/love2d.sublime-build",
@@ -761,29 +791,7 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notebox.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/sprite.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/common.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/colour.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/hump/class.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/player.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/type.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/conf.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/strict.lua",
-		"/C/Users/ragzouken/Downloads/PIERCER/How to Pierce.txt",
-		"/C/Users/ragzouken/AppData/Local/Temp/7zO5CFA.tmp/interface.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tileset.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface.lua",
-		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/tutorial_copy/tilelayer.json",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/modez.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/walls.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/tool.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/pan.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/drag.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/init.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/draw.lua",
-		"/C/Users/ragzouken/Downloads/weird weird woods/README.txt",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/actions/mouse.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/history.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/brush.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/mouse.lua"
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/colour.lua"
 	],
 	"find":
 	{
@@ -1004,7 +1012,7 @@
 	"groups":
 	[
 		{
-			"selected": 7,
+			"selected": 12,
 			"sheets":
 			[
 				{
@@ -1034,7 +1042,7 @@
 						"translation.y": 5662.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -1061,10 +1069,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1618.0,
+						"translation.y": 1375.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1094,7 +1102,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -1121,10 +1129,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 969.0,
+						"translation.y": 862.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 10,
+					"stack_index": 11,
 					"type": "text"
 				},
 				{
@@ -1154,7 +1162,7 @@
 						"translation.y": 228.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 11,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
@@ -1184,7 +1192,7 @@
 						"translation.y": 2346.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
@@ -1211,10 +1219,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 57.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
@@ -1241,10 +1249,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 114.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -1274,7 +1282,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -1304,7 +1312,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1331,10 +1339,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3591.0,
+						"translation.y": 3541.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
@@ -1361,10 +1369,40 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 342.0,
+						"translation.y": 171.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "engine/player.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4756,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

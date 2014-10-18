@@ -14,6 +14,7 @@ local Notebox = Class {
     spacing = 4,
 
     text = "[INVALID NOTE]",
+    multiline = true,
 }
 
 function string:split(pat)

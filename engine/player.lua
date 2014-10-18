@@ -101,14 +101,7 @@ function Player:update(dt)
                 end
             end
         elseif self.game.player then
-            local px, py = self.game.player.entity.shape:coords { anchor = {0.5, 0.5} }
-            local cx, cy = self.entity.shape:coords { anchor = {0.5, 0.5} }
-            local dx, dy = cx - px, cy - py
-            local d = math.sqrt(dx * dx + dy * dy)
-
-            if d > 64 then
-                self:rando()
-            end
+            self:rando()
         end
     end
 end
