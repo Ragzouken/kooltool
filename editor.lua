@@ -377,27 +377,27 @@ function Editor:mousereleased(x, y, button)
 end
 
 function Editor:keypressed(key, isrepeat)
+    if key == "f11" and not isrepeat then
+        love.window.setFullscreen(not love.window.getFullscreen(), "desktop")
+    end
+
+    if key == "f2" and not isrepeat then
+        self.view:print()
+    end
+
+    if key == "escape" and self.focus then self.focus = nil return end
+
+    if key == "escape" and PROJECT then
+        self.select.active = not self.select.active
+        self.select:SetProjects(project_list())
+        return
+    end
+
+    if self.focus then self.focus:keypressed(key, isrepeat) return true end
+
     if PROJECT then
-        if key == "f11" and not isrepeat then
-            love.window.setFullscreen(not love.window.getFullscreen(), "desktop")
-        end
-
-        if key == "f2" and not isrepeat then
-            self.view:print()
-        end
-
-        if key == "escape" and self.focus then self.focus = nil return end
-
-        if key == "escape" and PROJECT then
-            self.select.active = not self.select.active
-            self.select:SetProjects(project_list())
-            return
-        end
-
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
-
-        if self.focus then self.focus:keypressed(key, isrepeat) return true end
 
         self:input("keypressed", key, isrepeat, sx, sy, wx, wy)
     end
@@ -413,11 +413,11 @@ function Editor:keyreleased(key)
 end
 
 function Editor:textinput(character)
+    if self.focus then self.focus:type(character) end
+
     if PROJECT then
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
-
-        if self.focus then self.focus:type(character) end
 
         self:input("textinput", character, sx, sy, wx, wy)
     end

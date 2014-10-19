@@ -2,6 +2,7 @@ local Class = require "hump.class"
 local elements = require "interface.elements"
 
 local ProjectPanel = require "interface.panels.project"
+local NewProjectPanel = require "Interface.panels.newproject"
 
 local ProjectSelect = Class {
     __includes = elements.Panel,
@@ -54,8 +55,8 @@ function ProjectSelect:SetProjects(projects)
         self.active = false
     end
 
-    local panel = ProjectPanel(project, { x = 0, y = #projects * 64 })
-    panel:add(button(new))
+    local panel = NewProjectPanel(project, { x = 0, y = #projects * 64 }, new)
+    --panel:add(button(new))
     self:add(panel)
 end
 

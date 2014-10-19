@@ -5,6 +5,7 @@ local Panel = require "interface.elements.panel"
 local Frame = Class {
     __includes = Panel,
     name = "Generic Frame",
+    --actions = {"drag"},
 }
 
 function Frame:init(params)
@@ -58,6 +59,12 @@ function Frame:draw()
        
     self.camera:detach() 
     love.graphics.pop()
+end
+
+function Frame:move_to(params)
+    local px, py = unpack(params.pivot)
+
+    self.camera:lookAt((px - params.x) / self.camera.scale, (py - params.y) / self.camera.scale)
 end
 
 return Frame
