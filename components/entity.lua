@@ -4,10 +4,6 @@ local Panel = require "interface.elements.panel"
 local Sprite = require "components.sprite"
 local ScriptLayer = require "layers.scripting"
 
-local ScriptNode = require "components.scripting.scriptnode"
-local BumpNode = require "components.scripting.bumpnode"
-local DialogueNode = require "components.scripting.dialoguenode"
-
 local common = require "utilities.common"
 local shapes = require "interface.elements.shapes"
 local colour = require "utilities.colour"

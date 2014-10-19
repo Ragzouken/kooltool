@@ -52,7 +52,7 @@ function NewProjectPanel:init(project, params, new)
     }
 
     local size = elements.Panel {
-        shape = elements.shapes.Rectangle { x = 288, y =   6,
+        shape = elements.shapes.Rectangle { x = 192, y =   6,
                                             w =   0, h =   0,
                                             anchor = {0, 0} },
     }
@@ -85,6 +85,23 @@ function NewProjectPanel:init(project, params, new)
         text = "32",
     }
 
+    local button = elements.Text {
+        shape = elements.shapes.Rectangle { x = 96,  y =  0, 
+                                            w = 92,  h = 24,
+                                            anchor = {0, 0}},
+        colours = {
+            stroke = PALETTE.colours[1],
+            fill = PALETTE.colours[1],
+            text = {255, 255, 255, 255},
+        },
+
+        font = elements.Text.fonts.medium,
+        text = " GO!",
+        actions = {"press"},
+    }
+
+    button.event = new
+
     width.changed:add(function(value)
         TILESIZE[1] = tonumber(value) or 32
     end)
@@ -101,6 +118,7 @@ function NewProjectPanel:init(project, params, new)
 
     size:add(width)
     size:add(height)
+    size:add(button)
 end
 
 return NewProjectPanel
