@@ -133,7 +133,7 @@ function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
         self.state.cloning = {}
 
         return true
-    elseif key == "lshift" then
+    elseif key == "lshift" or key == "rshift" then
         local target = self.editor:target("draw", sx, sy)
 
         if target then
@@ -163,7 +163,7 @@ function Draw:keyreleased(key, sx, sy, wx, wy)
         self.state.cloning = nil
 
         return true
-    elseif key == "lshift" then
+    elseif key == "lshift" or key == "rshift" then
         self.state.lock = nil
         self.state.resize = nil
 

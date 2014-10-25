@@ -14,60 +14,7 @@ local colour = require "utilities.colour"
 
 local json = require "utilities.dkjson"
 
-local ResourceManager = Class {}
-
-function ResourceManager:serialise(saves)
-    local resources = {}
-
-    for index, resource in pairs(self.index_to_resource) do
-        resources[index] = resource:serialise(saves)
-    end
-
-    return resources
-end
-
-function ResourceManager:deserialise(data, saves)
-    for index, data in pairs(data) do
-        local instance = self.class()
-        instance:deserialise(data, saves)
-
-        self:add(instance, index)
-    end
-end
-
-function ResourceManager:init(class)
-    self.class = class
-    
-    self.index_to_resource = {}
-    self.resource_to_index = {}
-
-    self.next_index = 1
-end
-
-function ResourceManager:new(...)
-    local resource = class(...)
-
-    self.index_to_resource[self.next_index] = resource
-    self.resource_to_index[resource] = self.next_index
-
-    self.next_index = self.next_index + 1
-
-    return resource
-end
-
-function ResourceManager:add(resource, index)
-    self.index_to_resource[index] = resource
-    self.resource_to_index[resource] = index
-
-    self.next_index = math.max(index + 1, self.next_index)
-end
-
-function ResourceManager:remove(resource)
-    local index = self.resource_to_index[resource]
-
-    self.index_to_resource[index] = nil
-    self.resource_to_index[resource] = nil
-end
+local ResourceManager = require "components.resourcemanager"
 
 local Project = Class {}
 
@@ -146,7 +93,7 @@ function Project:preview(folder_path)
     
     if file then
         local data = json.decode(file)
-        self:deserialise(data, folder_path)
+        if data then self:deserialise(data, folder_path) end
     end
 
     self:loadIcon(folder_path)
@@ -173,6 +120,8 @@ function Project:load(folder_path)
 end
 
 function Project:save(folder_path)
+    local resources = ResourceManager()
+
     love.filesystem.createDirectory(folder_path)
     local file = love.filesystem.newFile(folder_path .. "/tilelayer.json", "w")
     file:write(json.encode(self.layers.surface:serialise(folder_path), { indent = true, }))
@@ -183,8 +132,11 @@ function Project:save(folder_path)
     file:close()
 
     local file = love.filesystem.newFile(folder_path .. "/details.json", "w")
-    file:write(json.encode(self:serialise(folder_path), { indent = true, }))
+    file:write(json.encode(self:serialise(folder_path, resources), { indent = true, }))
     file:close()
+
+    resources:register(self)
+    resources:test()
 
     self.layers.surface:exportRegions(folder_path)
 end

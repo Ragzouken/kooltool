@@ -12,11 +12,6 @@ local ScriptingLayer = Class {
 }
 
 function ScriptingLayer:serialise(saves)
-    local nodes = {}
-
-    return {
-        nodes = nodes,
-    }
 end
 
 function ScriptingLayer:deserialise(data, saves)

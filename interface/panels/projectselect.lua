@@ -2,7 +2,7 @@ local Class = require "hump.class"
 local elements = require "interface.elements"
 
 local ProjectPanel = require "interface.panels.project"
-local NewProjectPanel = require "Interface.panels.newproject"
+local NewProjectPanel = require "interface.panels.newproject"
 
 local ProjectSelect = Class {
     __includes = elements.Panel,
