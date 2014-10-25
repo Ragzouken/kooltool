@@ -9,20 +9,22 @@ local common = require "utilities.common"
 
 local AnnotationLayer = Class {
     __includes = Layer,
+    type = "AnnotationLayer",
     name = "kooltool annotation layer",
+
+    actions = { "mark", "note", },
 
     BLOCK_SIZE = 256,
 }
 
-function AnnotationLayer:deserialise(data, saves)
-    local noteboxes = data.notes
-
-    for i, data in pairs(noteboxes) do
+function AnnotationLayer:deserialise(resources, data)
+    for i, data in pairs(data.notes) do
         local notebox = Notebox(self)
-        notebox:deserialise(data, saves)
+        notebox:deserialise(resources, data)
         self:addNotebox(notebox)
     end
 
+    --[[
     local blocks = data.blocks
     local annotations = saves .. "/annotations"
 
@@ -39,19 +41,21 @@ function AnnotationLayer:deserialise(data, saves)
         end
     end
     love.graphics.setBlendMode("alpha")
+    ]]
 end
 
-function AnnotationLayer:serialise(saves)
+function AnnotationLayer:serialise(resources)
     local noteboxes = {}
 
     for notebox in pairs(self.noteboxes) do
         table.insert(noteboxes, notebox:serialise())
     end
 
+    local blocks = {[0]={[0]=""}}
+
+    --[[
     local annotations = saves .. "/annotations"
     love.filesystem.createDirectory(annotations)
-
-    local blocks = {[0]={[0]=""}}
 
     for block, x, y in self.blocks:items() do
         local file = x .. "," .. y .. ".png"
@@ -61,6 +65,7 @@ function AnnotationLayer:serialise(saves)
 
         block:getImageData():encode(annotations .. "/" .. file)
     end
+    ]]
 
     return {
         notes = noteboxes,
@@ -71,11 +76,11 @@ end
 function AnnotationLayer:init()
     Layer.init(self)
 
-    self.actions["mark"] = true
-    self.actions["note"] = true
-
     self.noteboxes = {}
     self.blocks = SparseGrid(self.BLOCK_SIZE)
+end
+
+function AnnotationLayer:finalise()
 end
 
 function AnnotationLayer:draw()

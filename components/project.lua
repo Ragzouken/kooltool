@@ -6,6 +6,7 @@ local AnnotationLayer = require "layers.annotation"
 local Sprite = require "components.sprite"
 local Entity = require "components.entity"
 local Notebox = require "components.notebox"
+local Tileset = require "components.tileset"
 
 local generators = require "generators"
 local common = require "utilities.common"
@@ -16,7 +17,9 @@ local json = require "utilities.dkjson"
 
 local ResourceManager = require "components.resourcemanager"
 
-local Project = Class {}
+local Project = Class {
+    type = "Project",
+}
 
 do
     local names = {}
@@ -28,32 +31,28 @@ do
     Project.name_generator = generators.String(names)
 end
 
-function Project:serialise(saves)
+function Project:serialise(resources)
     local data = {}
 
     data.name = self.name
     data.description = self.description
 
-    --[[
-    data.resources = {}
-
-    for name, manager in pairs(self.resources) do
-        data.resources[name] = manager:serialise(saves .. "/" .. name) 
-    end
-    ]]
+    data.layers = {
+        surface    = resources:reference(self.layers.surface),
+        annotation = resources:reference(self.layers.annotation),
+    }
 
     return data
 end
 
-function Project:deserialise(data, saves)
+function Project:deserialise(resources, data)
     self.name = data.name
     self.description = data.description
 
-    --[[
-    for name, manager in pairs(self.resources) do
-        manager:deserialise(data.resources[name], saves .. "/" .. name)
-    end
-    ]]
+    self.layers = {
+        surface    = resources:resource(data.layers.surface),
+        annotation = resources:resource(data.layers.annotation),
+    }
 end
 
 local broken = love.graphics.newImage("images/broken.png")
@@ -68,40 +67,20 @@ function Project:blank(tilesize)
     self.description = "yr new project"
 end
 
-function Project:init(name)
-    self.name = name:match("[^/]+$")
-
-    self.resources = {
-        sprites = ResourceManager(Sprite),
-    }
+function Project:init()
+    self.name = "unnamed"
+    self.description = "[NO DESCRIPTION]"
 
     self.layers = {}
-    
-    self.description = "[NO DESCRIPTION]"
 end
 
-function Project:loadIcon(folder_path)
-    local file = folder_path .. "/icon.png"
-
-    if not pcall(function() self.icon = common.loadCanvas(file) end) then
-        self.icon = broken
-    end
-end
-
-function Project:preview(folder_path)
-    local file = love.filesystem.read(folder_path .. "/details.json")
-    
-    if file then
-        local data = json.decode(file)
-        if data then self:deserialise(data, folder_path) end
-    end
-
-    self:loadIcon(folder_path)
+function Project:finalise()
 end
 
 function Project:load(folder_path)
     if self.name == "tutorial" then self.name = "tutorial_copy" end
 
+    --[[
     local file = love.filesystem.read(folder_path .. "/details.json")
     
     if file then
@@ -117,12 +96,25 @@ function Project:load(folder_path)
     local data = love.filesystem.read(folder_path .. "/notelayer.json")
     self.layers.annotation = AnnotationLayer(self)
     self.layers.annotation:deserialise(json.decode(data), folder_path)
+    ]]
+
+    local resources = ResourceManager(Project,
+                                      SurfaceLayer,
+                                      AnnotationLayer,
+                                      Sprite,
+                                      Entity,
+                                      Tileset)
+
+    resources:load(folder_path)
+
+    return resources.labels.project
 end
 
 function Project:save(folder_path)
     local resources = ResourceManager()
 
     love.filesystem.createDirectory(folder_path)
+    --[[
     local file = love.filesystem.newFile(folder_path .. "/tilelayer.json", "w")
     file:write(json.encode(self.layers.surface:serialise(folder_path), { indent = true, }))
     file:close()
@@ -134,11 +126,32 @@ function Project:save(folder_path)
     local file = love.filesystem.newFile(folder_path .. "/details.json", "w")
     file:write(json.encode(self:serialise(folder_path, resources), { indent = true, }))
     file:close()
+    ]]
 
-    resources:register(self)
-    resources:test()
+    resources:register(self, { label = "project" } )
+    resources:save(folder_path)
+end
 
-    self.layers.surface:exportRegions(folder_path)
+function Project:loadIcon(folder_path)
+    local file = folder_path .. "/icon.png"
+
+    if not pcall(function() self.icon = common.loadCanvas(file) end) then
+        self.icon = broken
+    end
+end
+
+function Project:preview(folder_path)
+    local file = love.filesystem.read(folder_path .. "/details.json")
+    
+    if file then
+        local data = json.decode(file)
+        if data then 
+            self.name = data.name
+            self.description = data.description
+        end
+    end
+
+    self:loadIcon(folder_path)
 end
 
 function Project:update(dt)
@@ -159,13 +172,6 @@ function Project:draw(annotations, play)
     end
 
     if annotations then self.layers.annotation:draw() end
-end
-
-function Project:objectAt(x, y)
-    local entity = self.layers.surface:objectAt(x, y)
-    local notebox = self.layers.annotation:objectAt(x, y)
-
-    return notebox or entity
 end
 
 function Project:sample(x, y)

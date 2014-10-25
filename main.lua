@@ -3,9 +3,9 @@ do
 
     class_commons = nil
     common = nil
-    CAMERA = nil
-    PROJECT = nil
     NOCANVAS = not love.graphics.isSupported("canvas")
+    
+    PROJECT = nil
     MODE = nil
     EDITOR = nil
     TILESIZE = nil
@@ -37,22 +37,24 @@ function love.load(arg)
     io.stdout:setvbuf('no')
     
     love.keyboard.setKeyRepeat(true)
-    CAMERA = Camera(128, 128, 2)
+    local camera = Camera(128, 128, 2)
 
     if love.filesystem.isDirectory("embedded") then
-        SETPROJECT(Project("embedded"), CAMERA)
+        local project = Project()
+        project.name = "embedded"
 
-        EDITOR = Editor(PROJECT)
+        SETPROJECT(project, camera)
+
+        EDITOR = Editor(PROJECT, camera)
         MODE = Game(PROJECT)
     else
-        MODE = Editor(PROJECT)
+        MODE = Editor(PROJECT, camera)
         EDITOR = MODE
     end
 end
 
 function SETPROJECT(project, camera)
     if project then
-        PROJECT = project
         local path
 
         if project.name == "tutorial" or project.name == "embedded" then
@@ -61,9 +63,10 @@ function SETPROJECT(project, camera)
             path = "projects/" .. project.name
         end
 
-        PROJECT:load(path)
+        PROJECT = project:load(path) or project
     else
-        PROJECT = Project(Project.name_generator:generate():gsub(" ", "_"))
+        PROJECT = Project()
+        PROJECT.name = Project.name_generator:generate():gsub(" ", "_")
         PROJECT:blank(TILESIZE)
     end
 
@@ -109,8 +112,10 @@ function love.keypressed(...)
             MODE = EDITOR
             return true
         elseif key == "f12" then
-            SETPROJECT(Project("tutorial"))
-            EDITOR = Editor(PROJECT)
+            local project = Project()
+            project.name = "tutorial"
+            SETPROJECT(project)
+            EDITOR = Editor(PROJECT, EDITOR.view.camera)
             MODE = EDITOR
             return true
         end

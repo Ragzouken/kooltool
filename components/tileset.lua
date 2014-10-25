@@ -5,25 +5,22 @@ local common = require "utilities.common"
 local colour = require "utilities.colour"
 
 local Tileset = Class {
+    type = "Tileset",
+
     TILES = 16,
 }
 
-function Tileset:deserialise(data, saves)
-    if data.dimensions then
-        self.dimensions = data.dimensions
-    else
-        self.dimensions = {data.tilesize, data.tilesize}
-    end
+function Tileset:deserialise(resources, data)
+    self.dimensions = data.dimensions
+    self.tiles = data.tiles
 
-    local image = love.graphics.newImage(saves .. "/" .. data.file)
-    self.canvas = common.canvasFromImage(image)
-
-    self:add_tile(data.tiles)
+    --local image = love.graphics.newImage(saves .. "/" .. data.file)
+    --self.canvas = common.canvasFromImage(image)
 end
 
-function Tileset:serialise(saves)
+function Tileset:serialise(resources)
     local file = "tileset.png"
-    self.canvas:getImageData():encode(saves .. "/" .. file)
+    --self.canvas:getImageData():encode(saves .. "/" .. file)
 
     return {
         file = file,
@@ -41,6 +38,10 @@ function Tileset:init(tilesize)
     self.tiles = 0
 
     self.snapshots = {}
+end
+
+function Tileset:finalise()
+    self:refresh()
 end
 
 function Tileset:snapshot(limit)

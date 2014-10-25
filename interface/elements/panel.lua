@@ -45,6 +45,8 @@ function Panel:print(depth)
 end
 
 function Panel:add(panel, depth)
+    assert(panel)
+
     if panel.parent then panel.parent:remove(panel) end
     panel.parent = self
     self.children[panel] = depth or panel.depth or 0

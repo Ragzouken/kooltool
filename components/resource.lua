@@ -1,7 +1,7 @@
 local Class = require "hump.class"
 
 local Resource = Class {
-    class = "Resource",
+    type = "Resource",
 }
 
 function Resource:init()
@@ -11,6 +11,9 @@ function Resource:serialise()
 end
 
 function Resource:deserialise()
+end
+
+function Resource:finalise()
 end
 
 return Resource
