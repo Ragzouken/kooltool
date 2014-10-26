@@ -192,23 +192,6 @@ function SurfaceLayer:setWall(solid, gx, gy, clone)
     return false
 end
 
-function SurfaceLayer:newSprite()
-    local id = self.sprites_index.id + 1
-    self.sprites_index.id = id
-
-    local sprite = Sprite(self, id)
-    sprite:blank(unpack(self.tileset.dimensions))
-
-    self:addSprite(sprite, id)
-
-    return sprite
-end
-
-function SurfaceLayer:addSprite(sprite, id)
-    self.sprites[sprite] = id
-    self.sprites_index[id] = sprite
-end
-
 function SurfaceLayer:addEntity(entity)
     self.entities[entity] = true
 

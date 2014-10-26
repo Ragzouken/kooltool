@@ -45,7 +45,10 @@ function Entity:finalise(resources, data)
 end
 
 function Entity:blank(x, y)
-    self.sprite = self.layer:newSprite()
+    local sprite = Sprite()
+    sprite:blank(unpack(self.layer.tileset.dimensions))
+
+    self.sprite = sprite
     self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
     self:move_to { x = x, y = y, pivot = self.sprite.pivot }
 
