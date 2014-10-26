@@ -135,7 +135,7 @@ function SurfaceLayer:init(project)
 end
 
 function SurfaceLayer:finalise()
-    --self:SetTileset(self.tileset)
+    self:SetTileset(self.tileset)
 end
 
 function SurfaceLayer:draw()

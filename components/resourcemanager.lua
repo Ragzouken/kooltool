@@ -93,7 +93,12 @@ function ResourceManager:register(resource, params)
     return id
 end
 
+function ResourceManager:file(resource, name)
+    return string.format("%s/%s_%s", self.root, self.resource_to_id[resource], name)
+end
+
 function ResourceManager:save(root_directory)
+    self.root = root_directory
     love.filesystem.createDirectory(root_directory)
 
     for resource in self.resources:consume() do

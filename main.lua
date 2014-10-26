@@ -70,7 +70,7 @@ function SETPROJECT(project, camera)
         PROJECT:blank(TILESIZE)
     end
 
-    love.window.setTitle("kooltool sketch (" .. PROJECT.name .. ")")
+    love.window.setTitle(string.format("kooltool sketch (%s)", PROJECT.name))
     
     camera:lookAt(128, 128)
 
