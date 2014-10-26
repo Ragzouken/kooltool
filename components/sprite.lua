@@ -3,40 +3,34 @@ local common = require "utilities.common"
 
 local Event = require "utilities.event"
 
-local Sprite = Class {}
+local Sprite = Class {
+    name = "Generic Sprite",
+    type = "Sprite",
+}
 
-function Sprite:serialise(saves)
-    local file = saves .. "/" .. self.id .. ".png"
-
+function Sprite:serialise(resources)
+    local file = resources:file(self, "sprite.png")
     self.canvas:getImageData():encode(file)
 
     return {
+        file = file,
         pivot = self.pivot,
     }
 end
 
-function Sprite:deserialise(data, saves)
-    local file = saves .. "/" .. self.id .. ".png"
-
-    local px, py = unpack(data.pivot)
-
-    self.canvas = common.loadCanvas(file)
-    self.pivot = {px, py}
+function Sprite:deserialise(resources, data)
+    self.canvas = common.loadCanvas(data.file)
+    self.pivot = data.pivot
 end
 
-function Sprite:init(layer, id)
-    self.layer = layer
-    self.id = id
-
+function Sprite:init()
     self.resized = Event()
 end
 
+function Sprite:finalise()
+end
+
 function Sprite:blank(w, h)
-    local dw, dh = unpack(self.layer.tileset.dimensions)
-    w, h = w or dw, h or dh
-
-    --w, h = 32, 24
-
     self.canvas = love.graphics.newCanvas(w, h)
     self.pivot = {w/2, w/2}
     

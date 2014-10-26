@@ -159,8 +159,8 @@ function ResourceManager:load(root_directory)
         resource:deserialise(self, data)
     end
 
-    for id, resource in pairs(self.id_to_resource) do
-        resource:finalise()
+    for resource, data in pairs(data) do
+        resource:finalise(self, data)
     end
 end
 

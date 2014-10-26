@@ -20,47 +20,6 @@ local SurfaceLayer = Class {
     clone_sound = love.audio.newSource("sounds/clone.wav"),
 }
 
-function SurfaceLayer:deserialise_entity(data, saves)
-    local sprite_path = saves .. "/sprites"
-
-    self.sprites_index.id = data.sprites_id
-
-    for id, sprite_data in pairs(data.sprites) do
-        local sprite = Sprite(self, id)
-        sprite:deserialise(sprite_data, sprite_path)
-        self:addSprite(sprite, id)
-    end
-
-    for i, entity_data in ipairs(data.entities) do
-        local entity = Entity(self)
-        entity:deserialise(entity_data)
-        self:addEntity(entity)
-    end
-end
-
-function SurfaceLayer:serialise_entity(saves)
-    local sprite_path = saves .. "/sprites"
-    love.filesystem.createDirectory(sprite_path)
-
-    local sprites = {}
-
-    for sprite, id in pairs(self.sprites) do
-        sprites[id] = sprite:serialise(sprite_path)
-    end
-
-    local entities = {}
-
-    for entity in pairs(self.entities) do
-        table.insert(entities, entity:serialise(saves))
-    end
-
-    return {
-        sprites_id = self.sprites_index.id,
-        sprites = sprites,
-        entities = entities,
-    }
-end
-
 function SurfaceLayer:serialise(resources)
     local tiles = {[0]={[0]=0}}
 
@@ -76,18 +35,18 @@ function SurfaceLayer:serialise(resources)
         walls[y][x] = wall
     end
 
-    --[[
-    local file = love.filesystem.newFile(saves .. "/entitylayer.json", "w")
-    local entities = self:serialise_entity(saves)
-    file:write(json.encode(entities, { indent = true, }))
-    file:close()
-    ]]
+    local entities = {}
+
+    for entity in pairs(self.entities) do
+        table.insert(entities, resources:reference(entity))
+    end
 
     return {
         tileset = resources:reference(self.tileset),
         tiles = tiles,
         walls = walls,
         wall_index = {[0]=false, unpack(self.wall_index)},
+        entities = entities,
     }
 end
 
@@ -118,9 +77,12 @@ function SurfaceLayer:deserialise(resources, data)
         self.wall_index[tonumber(index)] = solid
     end
 
-    --local file = love.filesystem.read(saves .. "/entitylayer.json")
-    --local data = json.decode(file)
-    --self:deserialise_entity(data, saves)
+    for i, reference in ipairs(data.entities) do
+        local entity = resources:resource(reference)
+
+        self.entities[entity] = true
+        self:add(entity)
+    end
 end
 
 function SurfaceLayer:init(project)
@@ -235,7 +197,7 @@ function SurfaceLayer:newSprite()
     self.sprites_index.id = id
 
     local sprite = Sprite(self, id)
-    sprite:blank()
+    sprite:blank(unpack(self.tileset.dimensions))
 
     self:addSprite(sprite, id)
 
