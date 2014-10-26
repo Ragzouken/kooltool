@@ -96,7 +96,11 @@ function SurfaceLayer:deserialise(resources, data)
     
     for y, row in pairs(data.tiles) do
         for x, index in pairs(row) do
-            --if index > 0 then self:setTile(index, tonumber(x), tonumber(y)) end
+            if index > 0 then 
+                local gx, gy = tonumber(x), tonumber(y)
+
+                self.tilemap:set({index}, gx, gy)
+            end
         end
     end
 
@@ -136,6 +140,7 @@ end
 
 function SurfaceLayer:finalise()
     self:SetTileset(self.tileset)
+    self:refresh()
 end
 
 function SurfaceLayer:draw()

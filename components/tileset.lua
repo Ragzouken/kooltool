@@ -16,6 +16,8 @@ function Tileset:deserialise(resources, data)
 
     local image = love.graphics.newImage(data.file)
     self.canvas = common.canvasFromImage(image)
+
+    self:refresh()
 end
 
 function Tileset:serialise(resources)
@@ -41,7 +43,6 @@ function Tileset:init(tilesize)
 end
 
 function Tileset:finalise()
-    self:refresh()
 end
 
 function Tileset:snapshot(limit)
