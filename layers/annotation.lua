@@ -17,33 +17,6 @@ local AnnotationLayer = Class {
     BLOCK_SIZE = 256,
 }
 
-function AnnotationLayer:deserialise(resources, data)
-    for i, data in pairs(data.notes) do
-        local notebox = Notebox(self)
-        notebox:deserialise(resources, data)
-        self:addNotebox(notebox)
-    end
-
-    --[[
-    local blocks = data.blocks
-    local annotations = saves .. "/annotations"
-
-    love.graphics.setBlendMode("premultiplied")
-    love.graphics.setColor(255, 255, 255, 255)
-    for y, row in pairs(blocks) do
-        for x, path in pairs(row) do
-            if path ~= "" then
-                local image = love.graphics.newImage(annotations .. "/" .. path)
-                local block = common.canvasFromImage(image)
-
-                self.blocks:set(block, tonumber(x), tonumber(y))
-            end
-        end
-    end
-    love.graphics.setBlendMode("alpha")
-    ]]
-end
-
 function AnnotationLayer:serialise(resources)
     local noteboxes = {}
 
@@ -53,24 +26,38 @@ function AnnotationLayer:serialise(resources)
 
     local blocks = {[0]={[0]=""}}
 
-    --[[
-    local annotations = saves .. "/annotations"
-    love.filesystem.createDirectory(annotations)
-
     for block, x, y in self.blocks:items() do
-        local file = x .. "," .. y .. ".png"
+        local file = resources:file(self, x .. "," .. y .. ".png")
 
         blocks[y] = blocks[y] or {[0]=""}
         blocks[y][x] = file
 
-        block:getImageData():encode(annotations .. "/" .. file)
+        block:getImageData():encode(file)
     end
-    ]]
 
     return {
         notes = noteboxes,
         blocks = blocks,
     }
+end
+
+function AnnotationLayer:deserialise(resources, data)
+    for i, data in pairs(data.notes) do
+        local notebox = Notebox(self)
+        notebox:deserialise(resources, data)
+        self:addNotebox(notebox)
+    end
+
+    for y, row in pairs(data.blocks) do
+        for x, path in pairs(row) do
+            if path ~= "" then
+                local image = love.graphics.newImage(path)
+                local block = common.canvasFromImage(image)
+
+                self.blocks:set(block, tonumber(x), tonumber(y))
+            end
+        end
+    end
 end
 
 function AnnotationLayer:init()

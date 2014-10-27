@@ -44,7 +44,7 @@ function Wall:cursor(sx, sy, wx, wy)
         love.graphics.rectangle("fill", gx * tw, gy * th, tw, th)
     end
 
-    if self.drag or not self.project:objectAt(wx, wy) then
+    if self.drag or target then
         local gx, gy = target.tilemap:gridCoords(wx, wy)
         local quad = target.tileset.quads[self.tile]
 
@@ -61,9 +61,9 @@ function Wall:cursor(sx, sy, wx, wy)
 end
 
 function Wall:mousepressed(button, sx, sy, wx, wy)
-    if button == "l" then
-        if self.project:objectAt(wx, wy) then return false end
+    local target = self.editor:target("tile", sx, sy)
 
+    if button == "l" and target then
         self:startdrag("draw")
 
         return true, "begin"
