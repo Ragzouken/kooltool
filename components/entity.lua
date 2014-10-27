@@ -11,23 +11,19 @@ local colour = require "utilities.colour"
 local Entity = Class {
     __includes = Panel,
     name = "Generic Entity",
+    type = "Entity",
 }
 
-function Entity:deserialise(data, saves)
-    self.sprite = self.layer.sprites_index[data.sprite]
-
-    self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
-    self:move_to { x = data.x, y = data.y, pivot = self.sprite.pivot }
-
-    self.sprite.resized:add(function(...) self:resized(...) end)
+function Entity:deserialise(resources, data)
+    self.sprite = resources:resource(data.sprite)
 end
 
-function Entity:serialise(saves)
+function Entity:serialise(resources)
     local x, y = self.shape:coords{ anchor = {0.5, 0.5} }
 
     return {
         x = x, y = y,
-        sprite = self.layer.sprites[self.sprite],
+        sprite = resources:reference(self.sprite),
     }
 end
 
@@ -41,8 +37,18 @@ function Entity:init(layer)
     })
 end
 
+function Entity:finalise(resources, data)
+    self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
+    self:move_to { x = data.x, y = data.y, pivot = self.sprite.pivot }
+
+    self.sprite.resized:add(function(...) self:resized(...) end)
+end
+
 function Entity:blank(x, y)
-    self.sprite = self.layer:newSprite()
+    local sprite = Sprite()
+    sprite:blank(unpack(self.layer.tileset.dimensions))
+
+    self.sprite = sprite
     self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
     self:move_to { x = x, y = y, pivot = self.sprite.pivot }
 

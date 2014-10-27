@@ -9,57 +9,30 @@ local common = require "utilities.common"
 
 local AnnotationLayer = Class {
     __includes = Layer,
+    type = "AnnotationLayer",
     name = "kooltool annotation layer",
+
+    actions = { "mark", "note", },
 
     BLOCK_SIZE = 256,
 }
 
-function AnnotationLayer:deserialise(data, saves)
-    local noteboxes = data.notes
-
-    for i, data in pairs(noteboxes) do
-        local notebox = Notebox(self)
-        notebox:deserialise(data, saves)
-        self:addNotebox(notebox)
-    end
-
-    local blocks = data.blocks
-    local annotations = saves .. "/annotations"
-
-    love.graphics.setBlendMode("premultiplied")
-    love.graphics.setColor(255, 255, 255, 255)
-    for y, row in pairs(blocks) do
-        for x, path in pairs(row) do
-            if path ~= "" then
-                local image = love.graphics.newImage(annotations .. "/" .. path)
-                local block = common.canvasFromImage(image)
-
-                self.blocks:set(block, tonumber(x), tonumber(y))
-            end
-        end
-    end
-    love.graphics.setBlendMode("alpha")
-end
-
-function AnnotationLayer:serialise(saves)
+function AnnotationLayer:serialise(resources)
     local noteboxes = {}
 
     for notebox in pairs(self.noteboxes) do
         table.insert(noteboxes, notebox:serialise())
     end
 
-    local annotations = saves .. "/annotations"
-    love.filesystem.createDirectory(annotations)
-
     local blocks = {[0]={[0]=""}}
 
     for block, x, y in self.blocks:items() do
-        local file = x .. "," .. y .. ".png"
+        local full, file = resources:file(self, x .. "," .. y .. ".png")
 
         blocks[y] = blocks[y] or {[0]=""}
         blocks[y][x] = file
 
-        block:getImageData():encode(annotations .. "/" .. file)
+        block:getImageData():encode(full)
     end
 
     return {
@@ -68,14 +41,33 @@ function AnnotationLayer:serialise(saves)
     }
 end
 
+function AnnotationLayer:deserialise(resources, data)
+    for i, data in pairs(data.notes) do
+        local notebox = Notebox(self)
+        notebox:deserialise(resources, data)
+        self:addNotebox(notebox)
+    end
+
+    for y, row in pairs(data.blocks) do
+        for x, path in pairs(row) do
+            if path ~= "" then
+                local image = love.graphics.newImage(resources:path(path))
+                local block = common.canvasFromImage(image)
+
+                self.blocks:set(block, tonumber(x), tonumber(y))
+            end
+        end
+    end
+end
+
 function AnnotationLayer:init()
     Layer.init(self)
 
-    self.actions["mark"] = true
-    self.actions["note"] = true
-
     self.noteboxes = {}
     self.blocks = SparseGrid(self.BLOCK_SIZE)
+end
+
+function AnnotationLayer:finalise()
 end
 
 function AnnotationLayer:draw()

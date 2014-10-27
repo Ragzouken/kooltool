@@ -40,14 +40,16 @@ local function project_list()
         local path = proj_path .. "/" .. filename
 
         if love.filesystem.isDirectory(path) then
-            local project = Project(path)
+            local project = Project()
+            project.name = path:match("[^/]+$")
             project:preview(path)
 
             table.insert(projects, project)
         end
     end)
 
-    local tutorial = Project("tutorial")
+    local tutorial = Project()
+    tutorial.name = "tutorial"
     tutorial:loadIcon("tutorial")
     table.insert(projects, 1, tutorial)
 
@@ -55,7 +57,7 @@ local function project_list()
 end
 
 
-function Editor:init(project)
+function Editor:init(project, camera)
     Panel.init(self, { shape = shapes.Plane{} })
     
     PALETTE = generators.Palette.generate(3)
@@ -95,7 +97,7 @@ function Editor:init(project)
 
     self.select = ProjectSelect(self)
     
-    self.view = Frame()
+    self.view = Frame { camera = camera, }
 
     self.tilebar = Toolbar {
         x=1, y=1, 
@@ -111,8 +113,6 @@ function Editor:init(project)
     self:add(self.nocanvas, -math.huge)
     self:add(self.toolname, -math.huge)
     self:add(self.tilebar,  -math.huge)
-
-    self.view.camera = CAMERA
 
     self.select:SetProjects(project_list())
 end
@@ -336,7 +336,7 @@ function Editor:draw()
         self.view.camera:attach()
 
         local sx, sy = love.mouse.getPosition()
-        local wx, wy = CAMERA:mousepos()
+        local wx, wy = self.view.camera:mousepos()
         self:cursor(sx, sy, wx, wy)
 
         self.view.camera:detach()

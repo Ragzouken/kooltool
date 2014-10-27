@@ -1,5 +1,4 @@
 local Class = require "hump.class"
-local Collider = require "collider"
 local Layer = require "layers.layer"
 
 local Tileset = require "components.tileset"
@@ -13,51 +12,15 @@ local json = require "utilities.dkjson"
 
 local SurfaceLayer = Class {
     __includes = Layer,
+    type = "SurfaceLayer",
+    name = "kooltool surface layer",
+
+    actions = { "draw", "tile", "entity" },
+
     clone_sound = love.audio.newSource("sounds/clone.wav"),
 }
 
-function SurfaceLayer:deserialise_entity(data, saves)
-    local sprite_path = saves .. "/sprites"
-
-    self.sprites_index.id = data.sprites_id
-
-    for id, sprite_data in pairs(data.sprites) do
-        local sprite = Sprite(self, id)
-        sprite:deserialise(sprite_data, sprite_path)
-        self:addSprite(sprite, id)
-    end
-
-    for i, entity_data in ipairs(data.entities) do
-        local entity = Entity(self)
-        entity:deserialise(entity_data)
-        self:addEntity(entity)
-    end
-end
-
-function SurfaceLayer:serialise_entity(saves)
-    local sprite_path = saves .. "/sprites"
-    love.filesystem.createDirectory(sprite_path)
-
-    local sprites = {}
-
-    for sprite, id in pairs(self.sprites) do
-        sprites[id] = sprite:serialise(sprite_path)
-    end
-
-    local entities = {}
-
-    for entity in pairs(self.entities) do
-        table.insert(entities, entity:serialise(saves))
-    end
-
-    return {
-        sprites_id = self.sprites_index.id,
-        sprites = sprites,
-        entities = entities,
-    }
-end
-
-function SurfaceLayer:serialise(saves)
+function SurfaceLayer:serialise(resources)
     local tiles = {[0]={[0]=0}}
 
     for tile, x, y in self.tilemap:items() do
@@ -72,58 +35,31 @@ function SurfaceLayer:serialise(saves)
         walls[y][x] = wall
     end
 
-    local file = love.filesystem.newFile(saves .. "/entitylayer.json", "w")
-    local entities = self:serialise_entity(saves)
-    file:write(json.encode(entities, { indent = true, }))
-    file:close()
+    local entities = {}
+
+    for entity in pairs(self.entities) do
+        table.insert(entities, resources:reference(entity))
+    end
 
     return {
-        tileset = self.tileset:serialise(saves),
+        tileset = resources:reference(self.tileset),
         tiles = tiles,
         walls = walls,
         wall_index = {[0]=false, unpack(self.wall_index)},
+        entities = entities,
     }
 end
 
-function SurfaceLayer:exportRegions(folder_path)
-    local regions = self.tilemap:regions()
-
-    love.filesystem.createDirectory(folder_path .. "/regions")
-
-    for i, region in ipairs(regions) do
-        local text = ""
-        local lasty
-
-        for item, x, y in region:rectangle() do
-            if lasty and lasty ~= y then
-                text = text .. "\n"
-            elseif lasty then
-                text = text .. ","
-            end
-
-            lasty = y
-
-            text = text .. (item and item[1] or 0)
-        end
-
-        text = text .. "\n"
-
-        local file = love.filesystem.newFile(folder_path
-            .. "/regions/" .. i .. ".txt", "w")
-        file:write(text)
-        file:close()
-    end
-end
-
-function SurfaceLayer:deserialise(data, saves)
-    self.tileset = Tileset()
-    self.tileset:deserialise(data.tileset, saves)
-
-    self:SetTileset(self.tileset)
-
+function SurfaceLayer:deserialise(resources, data)
+    self.tileset = resources:resource(data.tileset)
+    
     for y, row in pairs(data.tiles) do
         for x, index in pairs(row) do
-            if index > 0 then self:setTile(index, tonumber(x), tonumber(y)) end
+            if index > 0 then 
+                local gx, gy = tonumber(x), tonumber(y)
+
+                self.tilemap:set({index}, gx, gy)
+            end
         end
     end
 
@@ -141,19 +77,16 @@ function SurfaceLayer:deserialise(data, saves)
         self.wall_index[tonumber(index)] = solid
     end
 
-    local file = love.filesystem.read(saves .. "/entitylayer.json")
-    local data = json.decode(file)
-    self:deserialise_entity(data, saves)
+    for i, reference in ipairs(data.entities) do
+        local entity = resources:resource(reference)
+
+        self.entities[entity] = true
+        self:add(entity)
+    end
 end
 
 function SurfaceLayer:init(project)
     Layer.init(self, project)
-
-    self.actions["draw"] = true
-    self.actions["tile"] = true
-    self.actions["entity"] = true
-
-    self.collider = Collider(64)
 
     self.tileset = nil
     self.tilemap = SparseGrid()
@@ -165,6 +98,11 @@ function SurfaceLayer:init(project)
     self.sprites = {}
     self.sprites_index = {id = 0}
     self.entities = {}
+end
+
+function SurfaceLayer:finalise()
+    self:SetTileset(self.tileset)
+    self:refresh()
 end
 
 function SurfaceLayer:draw()
@@ -254,23 +192,6 @@ function SurfaceLayer:setWall(solid, gx, gy, clone)
     return false
 end
 
-function SurfaceLayer:newSprite()
-    local id = self.sprites_index.id + 1
-    self.sprites_index.id = id
-
-    local sprite = Sprite(self, id)
-    sprite:blank()
-
-    self:addSprite(sprite, id)
-
-    return sprite
-end
-
-function SurfaceLayer:addSprite(sprite, id)
-    self.sprites[sprite] = id
-    self.sprites_index[id] = sprite
-end
-
 function SurfaceLayer:addEntity(entity)
     self.entities[entity] = true
 
@@ -281,11 +202,6 @@ function SurfaceLayer:removeEntity(entity)
     self.entities[entity] = nil
 
     self:remove(entity)
-end
-
-function SurfaceLayer:swapShapes(old, new)
-    self.collider:remove(old)
-    self.collider:addShape(new)
 end
 
 function SurfaceLayer:refresh()
