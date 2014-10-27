@@ -155,6 +155,9 @@ function Editor:SetProject(project)
     {icon("images/marker.png"), function()
         self.active = self.tools.marker
     end},
+    }
+    
+    local things = {
     {icon("images/entity.png"), function(button, event)
         local sx, sy, wx, wy = unpack(event.coords)
         local target, x, y = self:target("entity", sx, sy)
@@ -179,11 +182,9 @@ function Editor:SetProject(project)
 
         self.focus = notebox
     end},
-    {icon("images/save.png"), function()
-        savesound:play()
-        self.project:save("projects/" .. self.project.name)
-        love.system.openURL("file://"..love.filesystem.getSaveDirectory())
-    end},
+    }
+
+    local files = {
     {icon("images/play.png"), function()
         savesound:play()
         self.project:save("projects/" ..self.project.name)
@@ -193,6 +194,11 @@ function Editor:SetProject(project)
         --toolbar.interface.project:export()
         --love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
     end},
+    {icon("images/save.png"), function()
+        savesound:play()
+        self.project:save("projects/" .. self.project.name)
+        love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+    end},
     {icon("images/export.png"), function()
         savesound:play()
         self.project:save("projects/" ..self.project.name)
@@ -201,10 +207,14 @@ function Editor:SetProject(project)
         love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
     end},
     }
-    
-    self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={-1, -1}, size={32, 32}}
-    
+
+    self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={0, 0}, size={32, 32}}
+    self.thingbar = Toolbar{x=1, y=love.window.getHeight(), buttons=things, anchor={0, 1}, size={32, 32}}
+    self.filebar = Toolbar {x=0, y=0, buttons=files, anchor={0,0}, size={32,32}}
+
     self:add(self.toolbar, -math.huge)
+    self:add(self.thingbar, -math.huge)
+    self:add(self.filebar, -math.huge)
 
     self.action = nil
     self.active = nil
@@ -229,7 +239,9 @@ function Editor:update(dt)
 
     if PROJECT then
         self.toolbar:move_to { x = 1, y = 1, anchor = {0, 0} }
-        
+        self.thingbar:move_to { x = 1, y = 144, anchor = {0, 0}}
+        self.filebar:move_to { x = 1, y = 220, anchor = {0, 0}}
+
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
 
