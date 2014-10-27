@@ -1,0 +1,11 @@
+{
+  "files":{
+    "1-Project":"1-Project.json",
+    "2-SurfaceLayer":"2-SurfaceLayer.json",
+    "3-AnnotationLayer":"3-AnnotationLayer.json",
+    "4-Tileset":"4-Tileset.json"
+  },
+  "labels":{
+    "project":"1-Project"
+  }
+}
