@@ -14,15 +14,15 @@ function Tileset:deserialise(resources, data)
     self.dimensions = data.dimensions
     self.tiles = data.tiles
 
-    local image = love.graphics.newImage(data.file)
+    local image = love.graphics.newImage(resources:path(data.file))
     self.canvas = common.canvasFromImage(image)
 
     self:refresh()
 end
 
 function Tileset:serialise(resources)
-    local file = resources:file(self, "tileset.png")
-    self.canvas:getImageData():encode(file)
+    local full, file = resources:file(self, "tileset.png")
+    self.canvas:getImageData():encode(full)
 
     return {
         file = file,

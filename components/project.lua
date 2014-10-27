@@ -80,53 +80,21 @@ end
 function Project:load(folder_path)
     if self.name == "tutorial" then self.name = "tutorial_copy" end
 
-    --[[
-    local file = love.filesystem.read(folder_path .. "/details.json")
-    
-    if file then
-        local data = json.decode(file)
-        self:deserialise(data, folder_path)
-    end
-
-    local file = love.filesystem.read(folder_path .. "/tilelayer.json")
-    local data = json.decode(file)
-    self.layers.surface = SurfaceLayer(self)
-    self.layers.surface:deserialise(data, folder_path)
-
-    local data = love.filesystem.read(folder_path .. "/notelayer.json")
-    self.layers.annotation = AnnotationLayer(self)
-    self.layers.annotation:deserialise(json.decode(data), folder_path)
-    ]]
-
-    local resources = ResourceManager(Project,
+    local resources = ResourceManager(folder_path,
+                                      Project,
                                       SurfaceLayer,
                                       AnnotationLayer,
                                       Sprite,
                                       Entity,
                                       Tileset)
 
-    resources:load(folder_path)
+    resources:load()
 
     return resources.labels.project
 end
 
 function Project:save(folder_path)
-    local resources = ResourceManager()
-
-    love.filesystem.createDirectory(folder_path)
-    --[[
-    local file = love.filesystem.newFile(folder_path .. "/tilelayer.json", "w")
-    file:write(json.encode(self.layers.surface:serialise(folder_path), { indent = true, }))
-    file:close()
-
-    local file = love.filesystem.newFile(folder_path .. "/notelayer.json", "w")
-    file:write(json.encode(self.layers.annotation:serialise(folder_path), { indent = true, }))
-    file:close()
-
-    local file = love.filesystem.newFile(folder_path .. "/details.json", "w")
-    file:write(json.encode(self:serialise(folder_path, resources), { indent = true, }))
-    file:close()
-    ]]
+    local resources = ResourceManager(folder_path)
 
     resources:register(self, { label = "project" } )
     resources:save(folder_path)

@@ -9,8 +9,8 @@ local Sprite = Class {
 }
 
 function Sprite:serialise(resources)
-    local file = resources:file(self, "sprite.png")
-    self.canvas:getImageData():encode(file)
+    local full, file = resources:file(self, "sprite.png")
+    self.canvas:getImageData():encode(full)
 
     return {
         file = file,
@@ -19,7 +19,7 @@ function Sprite:serialise(resources)
 end
 
 function Sprite:deserialise(resources, data)
-    self.canvas = common.loadCanvas(data.file)
+    self.canvas = common.loadCanvas(resources:path(data.file))
     self.pivot = data.pivot
 end
 

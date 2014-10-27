@@ -45,7 +45,8 @@ end
 
 local ResourceManager = Class {}
 
-function ResourceManager:init(...)
+function ResourceManager:init(root, ...)
+    self.root = root
     self.types = {}
 
     for i, class in ipairs{...} do
@@ -94,12 +95,18 @@ function ResourceManager:register(resource, params)
 end
 
 function ResourceManager:file(resource, name)
-    return string.format("%s/%s_%s", self.root, self.resource_to_id[resource], name)
+    local file = string.format("%s_%s", self.resource_to_id[resource], name)
+    local full = self.root .. "/" .. file
+
+    return full, file
 end
 
-function ResourceManager:save(root_directory)
-    self.root = root_directory
-    love.filesystem.createDirectory(root_directory)
+function ResourceManager:path(file)
+    return self.root .. "/" .. file
+end
+
+function ResourceManager:save()
+    love.filesystem.createDirectory(self.root)
 
     for resource in self.resources:consume() do
         local data = {
@@ -109,7 +116,7 @@ function ResourceManager:save(root_directory)
 
         local name = string.format("%s.json", self.resource_to_id[resource])
 
-        local file = love.filesystem.newFile(root_directory .. "/" .. name, "w")
+        local file = love.filesystem.newFile(self.root .. "/" .. name, "w")
         file:write(json.encode(data, { indent = true, }))
         file:close()
 
@@ -125,19 +132,19 @@ function ResourceManager:save(root_directory)
         index.files[id] = string.format("%s.json", id)
     end
 
-    local file = love.filesystem.newFile(root_directory .. "/index.json", "w")
+    local file = love.filesystem.newFile(self.root .. "/index.json", "w")
     file:write(json.encode(index, { indent = true, }))
     file:close()
 end
 
-function ResourceManager:load(root_directory)
-    local content = love.filesystem.read(root_directory .. "/index.json")
+function ResourceManager:load()
+    local content = love.filesystem.read(self.root .. "/index.json")
     local index = json.decode(content)
 
     local data = {}
 
     for id, path in pairs(index.files) do
-        local content = love.filesystem.read(root_directory .. "/" .. path)
+        local content = love.filesystem.read(self.root .. "/" .. path)
         local wrapped = json.decode(content)
 
         local type = wrapped.type and self.types[wrapped.type]

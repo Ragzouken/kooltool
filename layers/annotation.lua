@@ -27,12 +27,12 @@ function AnnotationLayer:serialise(resources)
     local blocks = {[0]={[0]=""}}
 
     for block, x, y in self.blocks:items() do
-        local file = resources:file(self, x .. "," .. y .. ".png")
+        local full, file = resources:file(self, x .. "," .. y .. ".png")
 
         blocks[y] = blocks[y] or {[0]=""}
         blocks[y][x] = file
 
-        block:getImageData():encode(file)
+        block:getImageData():encode(full)
     end
 
     return {
@@ -51,7 +51,7 @@ function AnnotationLayer:deserialise(resources, data)
     for y, row in pairs(data.blocks) do
         for x, path in pairs(row) do
             if path ~= "" then
-                local image = love.graphics.newImage(path)
+                local image = love.graphics.newImage(resources:path(path))
                 local block = common.canvasFromImage(image)
 
                 self.blocks:set(block, tonumber(x), tonumber(y))
