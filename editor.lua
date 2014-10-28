@@ -66,7 +66,7 @@ function Editor:init(project, camera)
     
     self.nocanvas = Text{
         shape = elements.shapes.Rectangle {x = 32+4, y = 0,
-                                           w = 512,  h = 32+4,
+                                           w = 512-16,  h = 24,
                                            anchor = {0, 0}},
         colours = {
             stroke = {255,   0,   0, 255},

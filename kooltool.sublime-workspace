@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"reo",
+				"resource_to_id"
+			],
+			[
 				"reso",
 				"resources"
 			],
@@ -14,10 +18,6 @@
 			[
 				"rot",
 				"root_directory"
-			],
-			[
-				"reo",
-				"resources"
 			],
 			[
 				"ann",
@@ -523,8 +523,8 @@
 			"file": "editor.lua",
 			"settings":
 			{
-				"buffer_size": 11701,
-				"line_ending": "Unix"
+				"buffer_size": 12137,
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -544,14 +544,6 @@
 			}
 		},
 		{
-			"file": "layers/annotation.lua",
-			"settings":
-			{
-				"buffer_size": 3678,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "components/notebox.lua",
 			"settings":
 			{
@@ -563,17 +555,8 @@
 			"file": "components/project.lua",
 			"settings":
 			{
-				"buffer_size": 5114,
+				"buffer_size": 3930,
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "components/resourcemanager.lua",
-			"settings":
-			{
-				"buffer_size": 3982,
-				"line_ending": "Unix",
-				"name": "local Class = require \"hump.class\""
 			}
 		},
 		{
@@ -589,15 +572,42 @@
 			"settings":
 			{
 				"buffer_size": 6960,
-				"line_ending": "Unix"
+				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "components/sprite.lua",
+			"file": "tools/wall.lua",
 			"settings":
 			{
-				"buffer_size": 2382,
+				"buffer_size": 2828,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "layers/annotation.lua",
+			"settings":
+			{
+				"buffer_size": 3338,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "components/resourcemanager.lua",
+			"settings":
+			{
+				"buffer_size": 4059,
+				"line_ending": "Windows",
+				"name": "local Class = require \"hump.class\""
+			}
+		},
+		{
+			"contents": "Searching 353 files for \".file\" (case sensitive)\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\editor.lua:\n   37      local proj_path = \"projects\"\n   38  \n   39:     local items = love.filesystem.getDirectoryItems(proj_path, function(filename)\n   40          local path = proj_path .. \"/\" .. filename\n   41  \n   42:         if love.filesystem.isDirectory(path) then\n   43              local project = Project()\n   44              project.name = path:match(\"[^/]+$\")\n   ..\n  183          savesound:play()\n  184          self.project:save(\"projects/\" .. self.project.name)\n  185:         love.system.openURL(\"file://\"..love.filesystem.getSaveDirectory())\n  186      end},\n  187      {icon(\"images/play.png\"), function()\n  ...\n  192  \n  193          --toolbar.interface.project:export()\n  194:         --love.system.openURL(\"file://\"..love.filesystem.getSaveDirectory()..\"/releases/\" .. PROJECT.name)\n  195      end},\n  196      {icon(\"images/export.png\"), function()\n  ...\n  199  \n  200          self.project:export()\n  201:         love.system.openURL(\"file://\"..love.filesystem.getSaveDirectory()..\"/releases/\" .. PROJECT.name)\n  202      end},\n  203      }\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\main.lua:\n   40      local camera = Camera(128, 128, 2)\n   41  \n   42:     if love.filesystem.isDirectory(\"embedded\") then\n   43          local project = Project()\n   44          project.name = \"embedded\"\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\components\\project.lua:\n   25      local names = {}\n   26  \n   27:     for line in love.filesystem.lines(\"texts/names.txt\") do\n   28          names[#names+1] = line\n   29      end\n   ..\n  110  \n  111  function Project:preview(folder_path)\n  112:     local file = love.filesystem.read(folder_path .. \"/details.json\")\n  113      \n  114      if file then\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\components\\resourcemanager.lua:\n  107  \n  108  function ResourceManager:save()\n  109:     love.filesystem.createDirectory(self.root)\n  110  \n  111      for resource in self.resources:consume() do\n  ...\n  117          local name = string.format(\"%s.json\", self.resource_to_id[resource])\n  118  \n  119:         local file = love.filesystem.newFile(self.root .. \"/\" .. name, \"w\")\n  120          file:write(json.encode(data, { indent = true, }))\n  121          file:close()\n  ...\n  130  \n  131      for id, resource in pairs(self.id_to_resource) do\n  132:         index.files[id] = string.format(\"%s.json\", id)\n  133      end\n  134  \n  135:     local file = love.filesystem.newFile(self.root .. \"/index.json\", \"w\")\n  136      file:write(json.encode(index, { indent = true, }))\n  137      file:close()\n  ...\n  139  \n  140  function ResourceManager:load()\n  141:     local content = love.filesystem.read(self.root .. \"/index.json\")\n  142      local index = json.decode(content)\n  143  \n  144      local data = {}\n  145  \n  146:     for id, path in pairs(index.files) do\n  147:         local content = love.filesystem.read(self.root .. \"/\" .. path)\n  148          local wrapped = json.decode(content)\n  149  \n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\components\\sprite.lua:\n   20  \n   21  function Sprite:deserialise(resources, data)\n   22:     self.canvas = common.loadCanvas(data.file)\n   23      self.pivot = data.pivot\n   24  end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\components\\tileset.lua:\n   15      self.tiles = data.tiles\n   16  \n   17:     local image = love.graphics.newImage(data.file)\n   18      self.canvas = common.canvasFromImage(image)\n   19  \n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\love.framework\\Versions\\A\\love:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\utilities\\export.lua:\n    1  local function copyFile(source, destination)\n    2:     local contents = love.filesystem.read(source)\n    3:     love.filesystem.write(destination, contents)\n    4  end\n    5  \n    6  local function copyDirectory(source, destination, blacklist)\n    7:     love.filesystem.createDirectory(destination)\n    8  \n    9      local writing = {}\n   10  \n   11:     love.filesystem.getDirectoryItems(source or \"\", function(filename)\n   12          local path\n   13  \n   ..\n   19  \n   20          if blacklist and blacklist[path] then\n   21:         elseif love.filesystem.isDirectory(path) then\n   22              local dest = destination .. \"/\" .. filename\n   23:             love.filesystem.createDirectory(dest)\n   24              copyDirectory(path, dest)\n   25          elseif filename:sub(#filename-2, #filename) ~= \".db\" then\n   26              local dest = destination .. \"/\" .. filename\n   27:             local contents, size = love.filesystem.read(path)\n   28              \n   29:             local wrote = love.filesystem.write(dest, contents)\n   30              if not wrote then writing[dest] = contents end\n   31          end\n   ..\n   40          for file, contents in pairs(writing) do\n   41              print(\"missed \", file, #contents)\n   42:             local wrote, error = love.filesystem.write(file, contents)\n   43              if not wrote then missed[file] = contents print(error) end\n   44              missing = true\n   ..\n   50  \n   51  local function removeDirectory(directory)\n   52:     love.filesystem.getDirectoryItems(directory, function(filename)\n   53          local path = directory .. \"/\" .. filename\n   54  \n   55:         if love.filesystem.isDirectory(path) then\n   56              removeDirectory(path)\n   57          else\n   58:             love.filesystem.remove(path)\n   59          end\n   60      end)\n   61  \n   62:     love.filesystem.remove(directory)\n   63  end\n   64  \n   ..\n   98      -- FAILS TO EMBED\n   99  \n  100:     love.filesystem.createDirectory(\"releases\")\n  101:     love.filesystem.createDirectory(\"releases/\" .. project.name)\n  102  \n  103      copyDirectory(nil, \"releases/kooltool-player-love\", blacklist)\n  ...\n  105      copyDirectory(\"export-resources/love-binary-osx\", \"releases/love-binary-osx\")\n  106  \n  107:     local saves = love.filesystem.getSaveDirectory()\n  108  \n  109      exporters[love.system.getOS()](saves, project.name)\n\n54 matches across 8 files\n",
+			"settings":
+			{
+				"buffer_size": 6172,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
 			}
 		}
 	],
@@ -632,6 +642,7 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools",
@@ -639,11 +650,17 @@
 	],
 	"file_history":
 	[
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Sills-a-Go-Fit_Match/1-Project.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Sills-a-Go-Fit_Match/index.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Filth/4-Tileset.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Filth/3-AnnotationLayer.json",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/sprite.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/tileset.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/annotation.lua",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Dwan/6-nil.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Dwan/4-nil.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Dwan/2-SurfaceLayer.json",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/button.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/tileset.lua",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Parative/2-SurfaceLayer.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Parative/index.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Plotz/index.json",
@@ -752,21 +769,15 @@
 		"/C/Users/ragzouken/AppData/Local/Temp/7zO3BA7.tmp/readme.txt",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/wall.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/event.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/sprite.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/GliderProperties.proj",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/surface.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/annotation.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tutorial/notelayer.json",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/layer.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/bresenham.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/a279994b-cbf8-4c78-b3b4-bbfdc45d094f.dmp",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Myster/tilelayer.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Myster/notelayer.json",
-		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Myster/entitylayer.json",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/json.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/interface.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Resources/Info.plist",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/sparsegrid.lua"
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Myster/entitylayer.json"
 	],
 	"find":
 	{
@@ -785,6 +796,11 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			".file",
+			":file(",
+			"ResourceManager",
+			"root_directory",
+			"save(root_directory",
 			"end",
 			"sprites_index",
 			":blank(",
@@ -907,12 +923,7 @@
 			"EntityLayer",
 			"common",
 			"self.collider",
-			"self",
-			"pixel",
-			"pixelmode",
-			"collider",
-			"focus",
-			"subject"
+			"self"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -920,6 +931,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"self.root",
+			"save(",
 			"resource_to_id",
 			"id_to_resource",
 			"self.editor.project",
@@ -989,7 +1002,7 @@
 	"groups":
 	[
 		{
-			"selected": 6,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -998,15 +1011,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 11701,
+						"buffer_size": 12137,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7109,
-								7109
+								5155,
+								5155
 							]
 						],
 						"settings":
@@ -1016,10 +1029,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4345.0,
+						"translation.y": 3309.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
@@ -1049,7 +1062,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -1079,41 +1092,11 @@
 						"translation.y": 1197.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "layers/annotation.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3678,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								648,
-								648
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
 					"file": "components/notebox.lua",
 					"semi_transient": false,
 					"settings":
@@ -1139,24 +1122,24 @@
 						"translation.y": 399.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 4,
 					"file": "components/project.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5114,
+						"buffer_size": 3930,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2884,
-								2884
+								1989,
+								1989
 							]
 						],
 						"settings":
@@ -1166,43 +1149,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2280.0,
+						"translation.y": 1248.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "components/resourcemanager.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3982,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3944,
-								3944
-							]
-						],
-						"settings":
-						{
-							"auto_name": "local Class = require \"hump.class\"",
-							"syntax": "Packages/Lua/Lua.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 2565.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
+					"buffer": 5,
 					"file": "components/entity.lua",
 					"semi_transient": false,
 					"settings":
@@ -1228,11 +1182,11 @@
 						"translation.y": 57.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 6,
 					"file": "layers/surface.lua",
 					"semi_transient": false,
 					"settings":
@@ -1244,8 +1198,8 @@
 						"selection":
 						[
 							[
-								4986,
-								4986
+								4776,
+								4776
 							]
 						],
 						"settings":
@@ -1255,27 +1209,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3420.0,
+						"translation.y": 1083.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
-					"file": "components/sprite.lua",
+					"buffer": 7,
+					"file": "tools/wall.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2382,
+						"buffer_size": 2828,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								612,
-								612
+								1832,
+								1832
 							]
 						],
 						"settings":
@@ -1285,10 +1239,244 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1539.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "layers/annotation.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3338,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1006,
+								1006
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2179.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "components/resourcemanager.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4059,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2196,
+								2196
+							]
+						],
+						"settings":
+						{
+							"auto_name": "local Class = require \"hump.class\"",
+							"syntax": "Packages/Lua/Lua.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1571.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6172,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										185,
+										190
+									],
+									[
+										332,
+										337
+									],
+									[
+										622,
+										627
+									],
+									[
+										837,
+										842
+									],
+									[
+										1067,
+										1072
+									],
+									[
+										1288,
+										1293
+									],
+									[
+										1545,
+										1550
+									],
+									[
+										1725,
+										1730
+									],
+									[
+										1951,
+										1956
+									],
+									[
+										2183,
+										2188
+									],
+									[
+										2422,
+										2427
+									],
+									[
+										2515,
+										2520
+									],
+									[
+										2738,
+										2743
+									],
+									[
+										2910,
+										2915
+									],
+									[
+										2956,
+										2961
+									],
+									[
+										3236,
+										3241
+									],
+									[
+										3455,
+										3460
+									],
+									[
+										3823,
+										3828
+									],
+									[
+										3863,
+										3868
+									],
+									[
+										4006,
+										4011
+									],
+									[
+										4108,
+										4113
+									],
+									[
+										4298,
+										4303
+									],
+									[
+										4419,
+										4424
+									],
+									[
+										4680,
+										4685
+									],
+									[
+										4760,
+										4765
+									],
+									[
+										5037,
+										5042
+									],
+									[
+										5261,
+										5266
+									],
+									[
+										5408,
+										5413
+									],
+									[
+										5527,
+										5532
+									],
+									[
+										5610,
+										5615
+									],
+									[
+										5717,
+										5722
+									],
+									[
+										5772,
+										5777
+									],
+									[
+										6043,
+										6048
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								3456,
+								3456
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 2166.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -1385,9 +1573,13 @@
 	},
 	"select_symbol":
 	{
-		"height": 392.0,
+		"height": 35.0,
 		"selected_items":
 		[
+			[
+				"Resource",
+				"ResourceManager:init"
+			],
 			[
 				"SetTileset",
 				"SurfaceLayer:SetTileset"

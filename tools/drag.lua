@@ -31,6 +31,8 @@ end
 
 function Drag:cursor(sx, sy)
     if self.drag or self.editor:target("drag", sx, sy) then
+        if self.drag.object.border then self.drag.object:border() end
+
         return love.mouse.getSystemCursor("sizeall")
     end
 end

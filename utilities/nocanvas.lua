@@ -5,7 +5,7 @@
 
 local common = require "utilities.common"
 
-local Brush = require "brush"
+local Brush = require "tools.brush"
 local bresenham = require "utilities.bresenham"
 
 NOCANVAS = true
