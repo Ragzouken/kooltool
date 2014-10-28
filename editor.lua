@@ -143,6 +143,9 @@ function Editor:SetProject(project)
     end
 
     local buttons = {
+    {icon("images/drag.png"), function()
+        self.active = self.tools.drag
+    end},
     {icon("images/pencil.png"), function()
         self.active = self.tools.draw
     end},
@@ -229,6 +232,8 @@ function Editor:SetProject(project)
         marker = tools.Marker(self),
     }
 
+    self.active = self.tools.drag
+
     self.global = {
         self.tools.pan,
     }
@@ -239,8 +244,8 @@ function Editor:update(dt)
 
     if PROJECT then
         self.toolbar:move_to { x = 1, y = 1, anchor = {0, 0} }
-        self.thingbar:move_to { x = 1, y = 144, anchor = {0, 0}}
-        self.filebar:move_to { x = 1, y = 220, anchor = {0, 0}}
+        self.thingbar:move_to { x = 1, y = 176, anchor = {0, 0}}
+        self.filebar:move_to { x = 1, y = 252, anchor = {0, 0}}
 
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
