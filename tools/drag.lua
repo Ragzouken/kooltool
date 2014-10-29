@@ -39,7 +39,7 @@ end
 
 function Drag:mousepressed(button, sx, sy, wx, wy)
     if button == "l" then
-        if love.keyboard.isDown("x") then
+        if love.keyboard.isDown("x", "e") then
             local target, x, y = self.editor:target("remove", sx, sy)
 
             if target then

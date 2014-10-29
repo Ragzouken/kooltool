@@ -67,10 +67,6 @@ function Wall:mousepressed(button, sx, sy, wx, wy)
         self:startdrag("draw")
 
         return true, "begin"
-    elseif self.drag and button == "r" then
-        self.drag.erase = true
-
-        return true
     end
 end
 
@@ -86,7 +82,7 @@ function Wall:mousedragged(action, screen, world)
         local clone = love.keyboard.isDown("lctrl")
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
-            change = layer:setWall(not self.drag.erase, lx, ly, clone) or change
+            change = layer:setWall(not love.keyboard.isDown("x", "e"), lx, ly, clone) or change
         end
 
         if change then
@@ -97,7 +93,7 @@ function Wall:mousedragged(action, screen, world)
 end
 
 function Wall:mousereleased(button, sx, sy, wx, wy)
-    if button == "l" or (self.drag and button == "r") then
+    if button == "l" then
         self:enddrag()
 
         return true, "end"

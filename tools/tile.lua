@@ -47,10 +47,6 @@ function Tile:mousepressed(button, sx, sy, wx, wy)
 
             return true, "begin"
         end
-    elseif self.drag and button == "r" then
-        self.drag.erase = true
-
-        return true
     end
 end
 
@@ -63,7 +59,7 @@ function Tile:mousedragged(action, screen, world)
         local x2, y2 = layer.tilemap:gridCoords(wx, wy)
 
         local change = false
-        local index = not self.drag.erase and self.tile or nil
+        local index = not love.keyboard.isDown("x", "e") and self.tile or nil
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
             change = layer:setTile(index, lx, ly) or change
@@ -77,7 +73,7 @@ function Tile:mousedragged(action, screen, world)
 end
 
 function Tile:mousereleased(button, sx, sy, wx, wy)
-    if button == "l" or (self.drag and button == "r") then
+    if button == "l" then
         self:enddrag()
 
         return true, "end"

@@ -95,7 +95,7 @@ end
 
 function Draw:mousedragged(action, screen, world)
     if action == "draw" then
-        local colour = not love.keyboard.isDown("x") and self.colour or nil
+        local colour = not love.keyboard.isDown("x", "e") and self.colour or nil
         local lock
 
         local wx, wy, dx, dy = unpack(screen)
