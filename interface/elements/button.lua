@@ -5,6 +5,8 @@ local shapes = require "interface.elements.shapes"
 local Button = Class {
     __includes = Panel, 
     name = "Generic Button",
+
+    actions = {"press"},
 }
 
 function Button:init(params)
@@ -14,8 +16,6 @@ function Button:init(params)
                                           w = w,        h = h,
                                           anchor = params.anchor}
     end
-    
-    params.actions = {"press"}
     
     Panel.init(self, params)
     

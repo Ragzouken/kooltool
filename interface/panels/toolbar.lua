@@ -29,11 +29,15 @@ function Toolbar:init(params)
         local row = (i - 1) % 16
 
         local x, y = 32 * col, (h + 1) * row + 1
+        local tooltip = button[3]
         local button = Radio { x = x, y = y,
                                icon = button[1],
                                action = button[2],
-                               group = group }
-        
+                               group = group,
+                               actions = {"press", button[3] and "tooltip"}, }
+
+        button.tooltip = tooltip
+
         self:add(button)
     end
 end

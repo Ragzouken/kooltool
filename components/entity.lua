@@ -12,6 +12,9 @@ local Entity = Class {
     __includes = Panel,
     name = "Generic Entity",
     type = "Entity",
+
+    actions = {"drag", "draw", "remove", "tooltip"},
+    tooltip = "character",
 }
 
 function Entity:deserialise(resources, data)
@@ -33,7 +36,6 @@ function Entity:init(layer)
     Panel.init(self, { 
         shape = shapes.Rectangle { x = 0, y = 0, 
                                    w = 0, h = 0 },
-        actions = {"drag", "draw", "remove"},
     })
 end
 

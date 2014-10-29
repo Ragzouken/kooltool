@@ -6,7 +6,8 @@ local colour = require "utilities.colour"
 local Notebox = Class {
     __includes = Text,
     name = "Generic Notebox",
-    actions = {"drag", "type", "remove", "block"},
+    actions = {"drag", "type", "remove", "block", "tooltip"},
+    tooltip = "note",
 
     font = Text.fonts.small,
 

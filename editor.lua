@@ -145,19 +145,19 @@ function Editor:SetProject(project)
     local buttons = {
     {icon("images/drag.png"), function()
         self.active = self.tools.drag
-    end},
+    end, "move objects"},
     {icon("images/pencil.png"), function()
         self.active = self.tools.draw
-    end},
+    end, "draw tiles and characters"},
     {icon("images/tiles.png"), function()
         self.active = self.tools.tile
-    end},
+    end, "place tiles"},
     {icon("images/walls.png"), function()
         self.active = self.tools.wall
-    end},
+    end, "set walls"},
     {icon("images/marker.png"), function()
         self.active = self.tools.marker
-    end},
+    end, "make annotations"},
     }
     
     local things = {
@@ -171,7 +171,7 @@ function Editor:SetProject(project)
 
         self.action = self.tools.drag
         self.action:grab(entity, sx, sy)
-    end},
+    end, "drag to create a new character"},
     {icon("images/note.png"), function(button, event)
         local sx, sy, wx, wy = unpack(event.coords)
         local target, x, y = self:target("note", sx, sy)
@@ -184,7 +184,7 @@ function Editor:SetProject(project)
         self.action:grab(notebox, sx, sy)
 
         self.focus = notebox
-    end},
+    end, "drag to create a new note"},
     }
 
     local files = {
@@ -193,22 +193,19 @@ function Editor:SetProject(project)
         self.project:save("projects/" ..self.project.name)
         
         MODE = Game(self.project, true)
-
-        --toolbar.interface.project:export()
-        --love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
-    end},
+    end, "playtest"},
     {icon("images/save.png"), function()
         savesound:play()
         self.project:save("projects/" .. self.project.name)
         love.system.openURL("file://"..love.filesystem.getSaveDirectory())
-    end},
+    end, "save"},
     {icon("images/export.png"), function()
         savesound:play()
         self.project:save("projects/" ..self.project.name)
 
         self.project:export()
         love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
-    end},
+    end, "export"},
     }
 
     self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={0, 0}, size={32, 32}}
@@ -218,6 +215,22 @@ function Editor:SetProject(project)
     self:add(self.toolbar, -math.huge)
     self:add(self.thingbar, -math.huge)
     self:add(self.filebar, -math.huge)
+
+    self.tooltip = Text {
+        shape = elements.shapes.Rectangle {x = 32+4, y = 0, 
+                                           w = 512,  h = 24,
+                                           anchor = {0, 0}},
+        colours = {
+            stroke = {  0,   0,   0, 255},
+            fill =   {  0,   0,   0, 255},
+            text =   {255, 255, 255, 255},
+        },
+
+        font = Text.fonts.medium,
+        text = "",
+    }
+
+    self:add(self.tooltip)
 
     self.action = nil
     self.active = nil
@@ -296,6 +309,11 @@ function Editor:cursor(sx, sy, wx, wy)
 
         return false
     end
+
+    local tooltip = self:target("tooltip", sx, sy)
+
+    self.tooltip.text = tooltip and tooltip.tooltip
+    self.tooltip.active = tooltip
 
     if self:target("press", sx, sy) then
         love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
