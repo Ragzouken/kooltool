@@ -103,8 +103,8 @@
       },
       "14":{
         "0":0,
-        "4":1,
-        "7":2
+        "7":2,
+        "4":1
       },
       "15":{
         "0":0,
@@ -116,10 +116,11 @@
         "0":""
       }
     },
-    "tileset":"4-Tileset",
-    "entities":[],
+    "tileset":"5-Tileset",
+    "entities":["4-Entity"],
     "wall_index":{
-      "0":false
+      "0":false,
+      "2":true
     }
   }
 }

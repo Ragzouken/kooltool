@@ -194,6 +194,7 @@ function Editor:SetProject(project)
         
         MODE = Game(self.project, true)
     end, "playtest"},
+    --[[
     {icon("images/save.png"), function()
         savesound:play()
         self.project:save("projects/" .. self.project.name)
@@ -206,6 +207,7 @@ function Editor:SetProject(project)
         self.project:export()
         love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
     end, "export"},
+    ]]
     }
 
     self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={0, 0}, size={32, 32}}
