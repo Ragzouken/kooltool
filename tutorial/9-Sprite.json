@@ -2,6 +2,6 @@
   "type":"Sprite",
   "data":{
     "file":"9-Sprite_sprite.png",
-    "pivot":[16,16]
+    "pivot":[0,0]
   }
 }
