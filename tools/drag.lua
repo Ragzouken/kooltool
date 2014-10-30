@@ -78,8 +78,6 @@ function Drag:mousereleased(button, sx, sy, wx, wy)
 
         return true, "end"
     end
-
-    return 
 end
 
 function Drag:keypressed(key, sx, sy, wx, wy)
@@ -88,14 +86,6 @@ function Drag:keypressed(key, sx, sy, wx, wy)
             self.target = nil
             return true
         end
-
-        --return self.target:keypressed(key)
-    end
-end
-
-function Drag:textinput(character)
-    if self.target then
-        --return self.target:textinput(character)
     end
 end
 

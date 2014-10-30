@@ -66,12 +66,16 @@ function Wall:mousepressed(button, sx, sy, wx, wy)
     if button == "l" and target then
         self:startdrag("draw")
 
+        print("start")
+
         return true, "begin"
     end
 end
 
 function Wall:mousedragged(action, screen, world)
     if action == "draw" then
+        --print("yeah but", love.keyboard.isDown("x", "e"))
+
         local layer = self.project.layers.surface
         local wx, wy, dx, dy = unpack(world)
 

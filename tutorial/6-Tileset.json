@@ -1,0 +1,8 @@
+{
+  "type":"Tileset",
+  "data":{
+    "file":"6-Tileset_tileset.png",
+    "tiles":6,
+    "dimensions":[32,32]
+  }
+}

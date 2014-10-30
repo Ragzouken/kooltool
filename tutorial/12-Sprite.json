@@ -1,0 +1,7 @@
+{
+  "type":"Sprite",
+  "data":{
+    "file":"12-Sprite_sprite.png",
+    "pivot":[16,16]
+  }
+}
