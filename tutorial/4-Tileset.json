@@ -2,7 +2,7 @@
   "type":"Tileset",
   "data":{
     "file":"4-Tileset_tileset.png",
-    "tiles":5,
+    "tiles":6,
     "dimensions":[32,32]
   }
 }
