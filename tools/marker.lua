@@ -41,17 +41,15 @@ function Marker:mousepressed(button, sx, sy, wx, wy)
         self.drag.subject = target
 
         return true, "begin"
-    elseif self.drag and button == "r" then 
-        self.drag.erase = true
-
-        return true
     end
 end
 
 function Marker:mousedragged(action, screen, world)
     if action == "draw" then
-        local colour = not self.drag.erase and {255, 255, 255, 255} or nil
-        local size = not self.drag.erase and self.size or self.size * 3
+        local erase = love.keyboard.isDown("x", "e")
+
+        local colour = not erase and {255, 255, 255, 255} or nil
+        local size = not erase and self.size or self.size * 3
         
         local wx, wy, dx, dy = unpack(screen)
 
