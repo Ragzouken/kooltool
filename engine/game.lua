@@ -27,9 +27,9 @@ function Game:init(project, playtest)
 
         table.insert(choice, actor)
 
-        local cx, cy = entity.shape:coords { anchor={0.5, 0.5} } 
-        local x, y = round(cx, 1/tw)+tw/2, round(cy, 1/th)+th/2
-        entity:move_to { x=x, y=y, anchor={0.5, 0.5} }
+        local px, py = entity.shape:coords { pivot=entity.sprite.pivot } 
+        local x, y = round(px, 1/tw)+tw/2, round(py, 1/th)+th/2
+        entity:move_to { x=x, y=y, pivot=entity.sprite.pivot }
 
         if actor.tags.player then
             self.player = actor
@@ -104,7 +104,7 @@ end
 
 function Game:undo()
     for actor in pairs(self.actors) do
-        actor.entity:move_to { x = actor.ox,  y = actor.oy, anchor={0.5, 0.5} }
+        actor.entity:move_to { x = actor.ox,  y = actor.oy }
         actor.entity.a = 0
         actor.entity.active = true
     end

@@ -129,7 +129,7 @@ end
 function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
     if isrepeat then return end
 
-    if key == "lctrl" then
+    if key == "lctrl" or key == "rctrl" then
         self.state.cloning = {}
 
         return true
@@ -159,7 +159,7 @@ function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
 end
 
 function Draw:keyreleased(key, sx, sy, wx, wy)
-    if key == "lctrl" then
+    if key == "lctrl" or key == "rctrl" then
         self.state.cloning = nil
 
         return true

@@ -23,10 +23,11 @@ function Player:init(game, entity)
     self.va = 0
     self.a = 0
 
-    local cx, cy = entity.shape:coords { anchor = {0.5, 0.5} }
+    self.ox, self.oy = entity.shape:coords()
+
+    local cx, cy = entity.shape:coords { pivot = entity.sprite.pivot }
 
     self.tx, self.ty = PROJECT.layers.surface.tilemap:gridCoords(cx, cy)
-    self.ox, self.oy = cx, cy
 
     local annotations = PROJECT.layers.annotation
     local w, h = self.entity.shape.w, self.entity.shape.h
@@ -138,7 +139,7 @@ function Player:rando()
 end
 
 function Player:move(vector, input)
-    local cx, cy = self.entity.shape:coords { anchor = {0.5, 0.5} }
+    local cx, cy = self.entity.shape:coords { pivot = self.entity.sprite.pivot }
     local gx, gy = PROJECT.layers.surface.tilemap:gridCoords(cx, cy)
 
     local vx, vy = unpack(vector)
@@ -165,7 +166,7 @@ function Player:move(vector, input)
     if not wall and not self.movement then
         local period = self.speed
         local t = 0
-        local x, y = self.entity.shape:coords { anchor = {0.5, 0.5} }
+        local x, y = self.entity.shape:coords()
 
         self.tx, self.ty = dx, dy
 
@@ -173,9 +174,9 @@ function Player:move(vector, input)
             t = t + dt
             local u = t / period
 
-            self.entity:move_to { x = x + vx * tw * u, y = y + vy * th * u, anchor={0.5, 0.5}}
+            self.entity:move_to { x = x + vx * tw * u, y = y + vy * th * u}
         end, function()
-            self.entity:move_to { x = x + vx * tw, y = y + vy * th, anchor={0.5, 0.5}}
+            self.entity:move_to { x = x + vx * tw, y = y + vy * th}
             self.movement = nil
         end)
     end

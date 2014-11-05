@@ -85,7 +85,7 @@ function Text:keypressed(key)
         
         return true
     elseif key == "return" then
-        if self.multiline and love.keyboard.isDown("lshift") then
+        if self.multiline and love.keyboard.isDown("lshift", "rshift") then
             self:type("\n")
         else
             EDITOR.focus = nil
@@ -94,7 +94,7 @@ function Text:keypressed(key)
         return true
     end
 
-    return key ~= "escape" and not love.keyboard.isDown("lctrl")
+    return key ~= "escape" and not love.keyboard.isDown("lctrl", "rctrl")
 end
 
 return Text

@@ -53,8 +53,8 @@ function Sprite:draw(x, y, a, s)
 end
 
 function Sprite:applyBrush(bx, by, brush, lock)
-    local px, py = 0, 0 --unpack(self.pivot)
-    bx, by = bx + px, by + py
+    local px, py = unpack(self.pivot)
+    --bx, by = bx + px, by + py
 
     if lock then
         local bw, bh = brush:getDimensions()

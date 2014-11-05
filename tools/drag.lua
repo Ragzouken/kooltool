@@ -82,7 +82,7 @@ end
 
 function Drag:keypressed(key, sx, sy, wx, wy)
     if self.target then
-        if key == "escape" or (key == "return" and love.keyboard.isDown("lshift")) then
+        if key == "escape" or (key == "return" and love.keyboard.isDown("lshift", "rshift")) then
             self.target = nil
             return true
         end

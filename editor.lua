@@ -122,6 +122,8 @@ function Editor:SetProject(project)
     
     local project = self.project
 
+    self.select.active = false
+
     self.view:clear()
     self.view:add(project.layers.surface, -1)
     self.view:add(project.layers.annotation, -2)
@@ -155,9 +157,10 @@ function Editor:SetProject(project)
     {icon("images/walls.png"), function()
         self.active = self.tools.wall
     end, "set walls"},
+    ---[[
     {icon("images/marker.png"), function()
         self.active = self.tools.marker
-    end, "make annotations"},
+    end, "draw notes"},--]]
     }
     
     local things = {
@@ -194,7 +197,7 @@ function Editor:SetProject(project)
         
         MODE = Game(self.project, true)
     end, "playtest"},
-    --[[
+    ---[[
     {icon("images/save.png"), function()
         savesound:play()
         self.project:save("projects/" .. self.project.name)
@@ -207,7 +210,7 @@ function Editor:SetProject(project)
         self.project:export()
         love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
     end, "export"},
-    ]]
+    --]]
     }
 
     self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={0, 0}, size={32, 32}}
@@ -258,9 +261,9 @@ function Editor:update(dt)
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
     if PROJECT then
-        self.toolbar:move_to { x = 1, y = 1, anchor = {0, 0} }
-        self.thingbar:move_to { x = 1, y = 176, anchor = {0, 0}}
-        self.filebar:move_to { x = 1, y = 252, anchor = {0, 0}}
+        self.toolbar:move_to { x = 64, y = 1, anchor = {0, 0} }
+        self.thingbar:move_to { x = 64, y = 176, anchor = {0, 0}}
+        self.filebar:move_to { x = 64, y = 252, anchor = {0, 0}}
 
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
@@ -292,7 +295,7 @@ function Editor:update(dt)
         end
 
         self.tilebar:init {
-            x = love.window.getWidth() - 1, y=1,
+            x = love.window.getWidth() - 64, y=1,
             buttons=tiles,
             anchor={1, 0},
             size=PROJECT.layers.surface.tileset.dimensions
@@ -431,6 +434,11 @@ function Editor:keypressed(key, isrepeat)
     end
 
     if self.focus then self.focus:keypressed(key, isrepeat) return true end
+
+    if key == "q" then self.active = self.tools.draw return true end
+    if key == "w" then self.active = self.tools.tile return true end
+    if key == "e" then self.active = self.tools.wall return true end
+    if key == "r" then self.active = self.tools.marker return true end
 
     if PROJECT then
         local sx, sy = love.mouse.getPosition()

@@ -75,6 +75,8 @@ function Rectangle:grow(params)
 end
 
 function Rectangle:coords(params)
+    params = params or {}
+    
     local px, py = unpack(params.pivot or {0, 0})
 
     if params.anchor then

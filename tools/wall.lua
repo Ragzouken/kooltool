@@ -18,13 +18,13 @@ function Wall:init(editor, project)
     self.tile = 1
 end
 
+-- TODO: rendering should be a panel that's turned on and off
 function Wall:cursor(sx, sy, wx, wy)
     local target = self.editor:target("tile", sx, sy)
 
-    if not target then return end
-
     local tw, th = unpack(target.tileset.dimensions)
 
+    love.graphics.setBlendMode("alpha")
     for tile, gx, gy in target.tilemap:items() do
         local wall = target.wallmap:get(gx, gy)
 
@@ -38,7 +38,7 @@ function Wall:cursor(sx, sy, wx, wy)
         if wall then
             love.graphics.setColor(colour.walls(0, 0))
         else
-            love.graphics.setColor(colour.walls(0, 85))
+            love.graphics.setColor(colour.walls(0, 85, 128))
         end
 
         love.graphics.rectangle("fill", gx * tw, gy * th, tw, th)
@@ -66,24 +66,22 @@ function Wall:mousepressed(button, sx, sy, wx, wy)
     if button == "l" and target then
         self:startdrag("draw")
 
-        print("start")
-
         return true, "begin"
     end
 end
 
 function Wall:mousedragged(action, screen, world)
     if action == "draw" then
-        --print("yeah but", love.keyboard.isDown("x", "e"))
-
         local layer = self.project.layers.surface
+
+        
         local wx, wy, dx, dy = unpack(world)
 
         local x1, y1 = layer.tilemap:gridCoords(wx-dx, wy-dy)
         local x2, y2 = layer.tilemap:gridCoords(wx, wy)
 
         local change = false
-        local clone = love.keyboard.isDown("lctrl")
+        local clone = love.keyboard.isDown("lctrl", "rctrl")
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
             change = layer:setWall(not love.keyboard.isDown("x", "e"), lx, ly, clone) or change

@@ -22,7 +22,7 @@ function Entity:deserialise(resources, data)
 end
 
 function Entity:serialise(resources)
-    local x, y = self.shape:coords{ anchor = {0.5, 0.5} }
+    local x, y = self.shape:coords{ pivot = self.sprite.pivot }
 
     return {
         x = x, y = y,
@@ -83,7 +83,7 @@ function Entity:border()
 end
 
 function Entity:remove()
-    self.layer:removeEntity(self)
+    if layer then self.layer:removeEntity(self) end
 end
 
 function Entity:applyBrush(...)
