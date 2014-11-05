@@ -69,9 +69,9 @@ function Player:init(game, entity)
     end
 
     if self.tags.spin then 
-        local valid, number = pcall(function() return tonumber(self.tags.spin) end)
+        local number = tonumber(self.tags.spin) or 1
 
-        if valid then self.va = math.pi * 2 * number end
+        self.va = math.pi * 2 * (number or 1)
     end
 
     self.active = true
@@ -82,9 +82,9 @@ function Player:init(game, entity)
     end
 
     if self.tags.speed then
-        local valid, number = pcall(function() return tonumber(self.tags.speed) end)
+        local number = tonumber(self.tags.speed) or 1
 
-        if valid then self.speed = 1 / number end
+        self.speed = 1 / number
     end
 end
 
