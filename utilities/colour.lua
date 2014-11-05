@@ -37,7 +37,7 @@ local function walls(dt, hue, alpha)
     local v = math.sin(u * math.pi * 2) * 0.5 + 0.5
     local r, g, b = hsv(hue, 255, 128 + 127 * 1)--v)
 
-    return r, g, b, v * 128
+    return r, g, b, v * 128 + 127
 end
 
 local function random(low, high)

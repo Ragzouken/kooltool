@@ -22,7 +22,8 @@ function Toolbar:init(params)
     
     Panel.init(self, params)
     
-    local group = Radio.Group()
+    self.group = Radio.Group()
+    self.buttons = {}
 
     for i, button in ipairs(params.buttons) do
         local col = math.floor((i - 1) / 16)
@@ -33,10 +34,12 @@ function Toolbar:init(params)
         local button = Radio { x = x, y = y,
                                icon = button[1],
                                action = button[2],
-                               group = group,
+                               group = self.group,
                                actions = {"press", button[3] and "tooltip"}, }
 
         button.tooltip = tooltip
+
+        self.buttons[i] = button
 
         self:add(button)
     end

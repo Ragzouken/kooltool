@@ -192,6 +192,30 @@ function SurfaceLayer:setWall(solid, gx, gy, clone)
     return false
 end
 
+function SurfaceLayer:toggleWall(gx, gy, instanced)
+    local index = self:getTile(gx, gy)
+    local default = self.wall_index[index]
+    local instance = self.wallmap:get(gx, gy)
+
+    if not index then return false end
+
+    if instanced then
+        local value
+
+        if instance ~= nil then
+            value = nil
+        elseif default ~= nil then
+            value = not default
+        end
+
+        self.wallmap:set(value, gx, gy)
+    else
+        self.wall_index[index] = not default
+    end
+
+    return true
+end
+
 function SurfaceLayer:addEntity(entity)
     self.entities[entity] = true
 

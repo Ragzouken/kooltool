@@ -18,6 +18,12 @@ function Wall:init(editor, project)
     self.tile = 1
 end
 
+function Wall:enddrag()
+    Tool.enddrag(self)
+
+    self.last = nil
+end
+
 -- TODO: rendering should be a panel that's turned on and off
 function Wall:cursor(sx, sy, wx, wy)
     local target = self.editor:target("tile", sx, sy)
@@ -73,7 +79,6 @@ end
 function Wall:mousedragged(action, screen, world)
     if action == "draw" then
         local layer = self.project.layers.surface
-
         
         local wx, wy, dx, dy = unpack(world)
 
@@ -83,14 +88,22 @@ function Wall:mousedragged(action, screen, world)
         local change = false
         local clone = love.keyboard.isDown("lctrl", "rctrl")
 
+        if self.last then
+            local lx, ly = unpack(self.last)
+            if lx == x1 and ly == y1 then return end
+        end
+
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
-            change = layer:setWall(not love.keyboard.isDown("x", "e"), lx, ly, clone) or change
+            change = layer:toggleWall(lx, ly, clone)--layer:setWall(not love.keyboard.isDown("x", "e"), lx, ly, clone) or change
+            self.last = {lx, ly}
         end
 
         if change then
             self.sound:stop()
             self.sound:play()
         end
+
+        if not clone then self:enddrag() end
     end
 end
 

@@ -250,6 +250,14 @@ function Editor:SetProject(project)
         marker = tools.Marker(self),
     }
 
+    self.toolindex = {
+        [self.tools.drag] = 1,
+        [self.tools.draw] = 2, 
+        [self.tools.tile] = 3,
+        [self.tools.wall] = 4,
+        [self.tools.marker] = 5,
+    }
+
     self.active = self.tools.drag
 
     self.global = {
@@ -264,6 +272,8 @@ function Editor:update(dt)
         self.toolbar:move_to { x = 64, y = 1, anchor = {0, 0} }
         self.thingbar:move_to { x = 64, y = 176, anchor = {0, 0}}
         self.filebar:move_to { x = 64, y = 252, anchor = {0, 0}}
+
+        if self.toolindex[self.active] then self.toolbar.group:select(self.toolbar.buttons[self.toolindex[self.active]]) end
 
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
