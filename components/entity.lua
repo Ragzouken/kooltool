@@ -30,9 +30,7 @@ function Entity:serialise(resources)
     }
 end
 
-function Entity:init(layer)
-    self.layer = layer
-
+function Entity:init()
     Panel.init(self, { 
         shape = shapes.Rectangle { x = 0, y = 0, 
                                    w = 0, h = 0 },
@@ -83,7 +81,7 @@ function Entity:border()
 end
 
 function Entity:remove()
-    if layer then self.layer:removeEntity(self) end
+    if self.layer then self.layer:removeEntity(self) end
 end
 
 function Entity:applyBrush(...)

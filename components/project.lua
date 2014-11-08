@@ -146,11 +146,10 @@ function Project:sample(x, y)
 end
 
 function Project:newEntity(x, y)
-    local entity = Entity(self.layers.surface)
-    entity:blank(x, y)
-
+    local entity = Entity()
     self.layers.surface:addEntity(entity)
-
+    entity:blank(x, y)
+    
     return entity
 end
 

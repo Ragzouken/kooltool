@@ -168,9 +168,9 @@ function Editor:SetProject(project)
         local sx, sy, wx, wy = unpack(event.coords)
         local target, x, y = self:target("entity", sx, sy)
 
-        local entity = Entity(target)
-        entity:blank(x, y)
+        local entity = Entity()
         target:addEntity(entity)
+        entity:blank(x, y)
 
         self.action = self.tools.drag
         self.action:grab(entity, sx, sy)

@@ -80,8 +80,7 @@ function SurfaceLayer:deserialise(resources, data)
     for i, reference in ipairs(data.entities) do
         local entity = resources:resource(reference)
 
-        self.entities[entity] = true
-        self:add(entity)
+        self:addEntity(entity)
     end
 end
 
@@ -218,6 +217,7 @@ end
 
 function SurfaceLayer:addEntity(entity)
     self.entities[entity] = true
+    entity.layer = self
 
     self:add(entity)
 end
