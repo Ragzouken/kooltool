@@ -3,12 +3,35 @@ local Camera = require "hump.camera"
 local SparseGrid = require "utilities.sparsegrid"
 local Player = require "engine.player"
 
+function parse_note(text)
+    local code = string.match(text, "%[(.+)%]")
+
+    if code then
+        local key, value
+
+        if code:find("=") then
+            key, value = string.match(code, "(.*)=(.*)")
+        else
+            key, value = code, true
+        end
+
+        return key:lower(), value
+    end
+end
+
 local Game = Class {}
 
 function Game:init(project, playtest)
     self.project = project
     self.camera = Camera(128, 128, 2)
     self.playtest = playtest
+    self.tags = {}
+
+    for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
+        local key, value = parse_note(notebox.text)
+
+        if key then self.tags[key] = value end
+    end
 
     local tw, th = unpack(self.project.layers.surface.tileset.dimensions)
 
@@ -91,7 +114,7 @@ end
 
 function Game:draw()
     self.camera:attach()
-    self.project:draw(false, true)
+    self.project:draw(self.tags.commentary, true)
     for actor in pairs(self.actors) do
         --if actor.active then actor:draw() end
     end

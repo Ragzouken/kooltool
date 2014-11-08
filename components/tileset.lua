@@ -112,14 +112,15 @@ function Tileset:clone(tile)
     return clone
 end
 
-function Tileset:applyBrush(index, brush, quad)
+function Tileset:applyBrush(index, brush, quad, ox, oy)
     local tw, th = unpack(self.dimensions)
-    
+    local ox, oy = ox or 0, oy or 0
+
     love.graphics.setStencil(function()
         love.graphics.rectangle("fill", (index - 1) * tw, 0, tw, th)
     end)
     
-    brush:apply(self.canvas, quad, (index - 1) * tw, 0)
+    brush:apply(self.canvas, quad, (index - 1) * tw + ox, oy)
     
     love.graphics.setStencil()
 end

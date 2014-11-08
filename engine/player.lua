@@ -44,27 +44,15 @@ function Player:init(game, entity)
 
     self.speech = {}
 
-    local function parse_note(text)
-        local code = string.match(text, "%[(.+)%]")
-
-        if code then
-            local key, value
-
-            if code:find("=") then
-                key, value = string.match(code, "(.*)=(.*)")
-            else
-                key, value = code, true
-            end
-
-            self.tags[key:lower()] = value
-        else
-            table.insert(self.speech, text)
-        end
-    end
-
     for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
         if shapes.rect_rect(entity.shape, notebox.shape) then
-            parse_note(notebox.text)
+            local key, value = parse_note(notebox.text)
+
+            if key then
+                self.tags[key] = value
+            else
+                table.insert(self.speech, notebox.text)
+            end
         end
     end
 

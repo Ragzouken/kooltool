@@ -269,9 +269,9 @@ function Editor:update(dt)
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
     if PROJECT then
-        self.toolbar:move_to { x = 64, y = 1, anchor = {0, 0} }
-        self.thingbar:move_to { x = 64, y = 176, anchor = {0, 0}}
-        self.filebar:move_to { x = 64, y = 252, anchor = {0, 0}}
+        self.toolbar:move_to { x = 1, y = 1, anchor = {0, 0} }
+        self.thingbar:move_to { x = 1, y = 176, anchor = {0, 0}}
+        self.filebar:move_to { x = 1, y = 252, anchor = {0, 0}}
 
         if self.toolindex[self.active] then self.toolbar.group:select(self.toolbar.buttons[self.toolindex[self.active]]) end
 
@@ -305,7 +305,7 @@ function Editor:update(dt)
         end
 
         self.tilebar:init {
-            x = love.window.getWidth() - 64, y=1,
+            x = love.window.getWidth() - 1, y=1,
             buttons=tiles,
             anchor={1, 0},
             size=PROJECT.layers.surface.tileset.dimensions

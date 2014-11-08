@@ -79,6 +79,8 @@ end
 
 function love.update(dt)
     MODE:update(dt)
+
+    if PROJECT then love.window.setTitle(string.format("kooltool sketch (%s) [%s]", PROJECT.name, love.timer.getFPS())) end
 end
 
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)

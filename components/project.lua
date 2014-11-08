@@ -60,7 +60,7 @@ local broken = love.graphics.newImage("images/broken.png")
 function Project:blank(tilesize)
     self.icon = broken
 
-    self.palette = PALETTE
+    self.palette = generators.Palette.generate(9)
     self.layers.surface = generators.surface.default(self, tilesize)
     self.layers.annotation = AnnotationLayer(self)
 

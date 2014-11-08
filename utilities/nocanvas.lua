@@ -82,6 +82,9 @@ function love.graphics.newSpriteBatch(texture, ...)
 end
 
 function Brush.line(x1, y1, x2, y2, size, colour)
+    x1, y1 = math.floor(x1), math.floor(y1)
+    x2, y2 = math.floor(x2), math.floor(y2)
+
     local le = math.floor(size / 2)
     local re = size - le
 

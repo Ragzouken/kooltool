@@ -58,6 +58,8 @@ function Notebox:blank(x, y, text)
 end
 
 function Notebox:draw()
+    if MODE ~= EDITOR and string.match(self.text, "%[(.+)%]") then return end 
+
     love.graphics.setFont(self.font)
 
     local lines, width = self.memo.lines, self.memo.width
