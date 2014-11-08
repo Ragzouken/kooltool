@@ -60,7 +60,7 @@ end
 function Editor:init(project, camera)
     Panel.init(self, { shape = shapes.Plane{} })
     
-    PALETTE = generators.Palette.generate(3)
+    PALETTE = generators.Palette.generate(9)
     
     --PROJECTS = projects
     
@@ -394,8 +394,6 @@ function Editor:draw()
 end
 
 function Editor:mousepressed(sx, sy, button)
-    self.focus = nil
-
     local wx, wy = self.view.camera:worldCoords(sx, sy)
 
     local event = { action = "press", coords = {sx, sy, wx, wy}, }
@@ -406,9 +404,15 @@ function Editor:mousepressed(sx, sy, button)
         return
     end
 
+    if self.focus then
+        self.focus:defocus()
+        self.focus = nil
+    end
+
     local target = self:target("type", sx, sy, true)
     if target and button == "l" then
         self.focus = target
+        target:focus()
     end
 
     if PROJECT then

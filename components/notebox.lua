@@ -47,6 +47,7 @@ function Notebox:init(layer)
                                                  w = 0, h = 0 } })
     
     self.layer = layer
+    self.unset = true
 
     self:refresh()
 end
@@ -129,7 +130,22 @@ function Notebox:refresh()
     self.name = "notebox \"" .. self.text .. "\""
 end
 
+function Notebox:defocus()
+    Text.defocus(self)
+
+    if self.text == "" then
+        self.unset = true
+        self.text = "[note]"
+        self:refresh()
+    end
+end
+
 function Notebox:type(string)
+    if self.unset then
+        self.unset = false
+        self.text = ""
+    end
+
     Text.type(self, string)
 
     self:refresh()

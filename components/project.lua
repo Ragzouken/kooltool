@@ -53,6 +53,8 @@ function Project:deserialise(resources, data)
         surface    = resources:resource(data.layers.surface),
         annotation = resources:resource(data.layers.annotation),
     }
+
+    self.palette = generators.Palette.generate(9)
 end
 
 local broken = love.graphics.newImage("images/broken.png")

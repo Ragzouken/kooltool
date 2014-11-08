@@ -42,6 +42,9 @@ function Text:init(params)
     self.padding = params.padding or self.padding
     self.multiline = params.multiline or self.multiline
 
+    self.focused = false
+    self.cursor = 0
+
     self.changed = Event()
 end
 
@@ -51,7 +54,7 @@ function Text:draw()
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(self.colours.text)
     
-    if EDITOR.focus == self then
+    if self.focussed then
         love.graphics.setColor(colour.cursor(0))
     end
 
@@ -65,6 +68,15 @@ function Text:draw()
     love.graphics.printf(self.text, self.padding, self.padding + oy, self.shape.w)
 
     love.graphics.pop()
+end
+
+function Text:focus()
+    self.focused = true
+    self.cursor = #self.text
+end
+
+function Text:defocus()
+    self.focused = false
 end
 
 function Text:type(string)
@@ -92,6 +104,8 @@ function Text:keypressed(key)
         end
 
         return true
+    elseif key == "v" and love.keyboard.isDown("lctrl", "rctrl") then
+        self:type(love.system.getClipboardText())
     end
 
     return key ~= "escape" and not love.keyboard.isDown("lctrl", "rctrl")

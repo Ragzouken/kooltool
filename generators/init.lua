@@ -4,4 +4,5 @@ return {
     grid = require "generators.grid",
     surface = require "generators.surface",
     tileset = require "generators.tileset",
+    sprite = require "generators.sprite",
 }

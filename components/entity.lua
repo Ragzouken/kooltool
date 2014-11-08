@@ -7,6 +7,7 @@ local ScriptLayer = require "layers.scripting"
 local common = require "utilities.common"
 local shapes = require "interface.elements.shapes"
 local colour = require "utilities.colour"
+local generators = require "generators"
 
 local Entity = Class {
     __includes = Panel,
@@ -45,10 +46,7 @@ function Entity:finalise(resources, data)
 end
 
 function Entity:blank(x, y)
-    local sprite = Sprite()
-    sprite:blank(unpack(self.layer.tileset.dimensions))
-
-    self.sprite = sprite
+    self.sprite = generators.sprite.mess(self.layer.tileset.dimensions, PROJECT.palette)
     self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
     self:move_to { x = x, y = y, pivot = self.sprite.pivot }
 

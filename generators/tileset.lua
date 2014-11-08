@@ -12,9 +12,6 @@ function tileset.floor(apply, tilesize, palette)
     apply(brush, false, x, y)
 
     local function line(x1, y1, x2, y2, size, colour)
-        --x1, y1 = x1 % 1, y1 % 1
-        --x2, y2 = x2 % 1, y2 % 1
-
         local brush, x, y = Brush.line(x1*w, y1*h, x2*w, y2*h, size, colour)
         apply(brush, false, x, y)
     end
