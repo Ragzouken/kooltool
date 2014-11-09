@@ -449,12 +449,12 @@ function Editor:keypressed(key, isrepeat)
 
     if self.focus then self.focus:keypressed(key, isrepeat) return true end
 
-    if key == "q" then self.active = self.tools.draw return true end
-    if key == "w" then self.active = self.tools.tile return true end
-    if key == "e" then self.active = self.tools.wall return true end
-    if key == "r" then self.active = self.tools.marker return true end
-
     if PROJECT then
+        if key == "q" then self.active = self.tools.draw   return true end
+        if key == "w" then self.active = self.tools.tile   return true end
+        if key == "e" then self.active = self.tools.wall   return true end
+        if key == "r" then self.active = self.tools.marker return true end
+
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
 

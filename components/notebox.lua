@@ -47,13 +47,14 @@ function Notebox:init(layer)
                                                  w = 0, h = 0 } })
     
     self.layer = layer
-    self.unset = true
+    self.unset = false
 
     self:refresh()
 end
 
 function Notebox:blank(x, y, text)
     self.text = text
+    self.unset = true
     self:refresh()
     self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
 end
@@ -63,6 +64,7 @@ function Notebox:draw()
 
     love.graphics.setFont(self.font)
 
+    ----[[
     local lines, width = self.memo.lines, self.memo.width
 
     local font_height = self.font:getHeight()
@@ -71,27 +73,30 @@ function Notebox:draw()
 
     local x,  y  = self.shape.x * 2, self.shape.y * 2
     local tx, ty = x + self.padding, y + self.padding
+    --]]
 
     love.graphics.push()
     love.graphics.scale(0.5)
 
+    --Text.draw(self)
+
+    ----[[
     love.graphics.setColor(0, 0, 0, 255)
     love.graphics.rectangle("fill", x+0.5, y+0.5, 
                                     width+2*self.padding-1, height+2*self.padding-1)
 
     love.graphics.setColor(255, 255, 255, 255)
     for i, line in ipairs(lines) do
-        love.graphics.printf(line,
-                             tx, ty + oy + (i - 1) * (font_height+self.spacing),
-                             self.memo.width)
+        love.graphics.print(line,
+                            tx, ty + oy + (i - 1) * (font_height+self.spacing))
     end
 
     if EDITOR.focus == self then
         love.graphics.setColor(colour.cursor(0))
-        love.graphics.printf(lines[#lines]:gsub(".", "_") .. "*",
-                             tx, ty + oy + (#lines - 1) * (font_height+self.spacing),
-                             self.memo.width)
+        love.graphics.print(lines[#lines]:gsub(".", "_") .. "*",
+                            tx, ty + oy + (#lines - 1) * (font_height+self.spacing))
     end
+    --]]
     love.graphics.pop()
 
     if EDITOR.focus == self then
