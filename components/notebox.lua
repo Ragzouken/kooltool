@@ -81,11 +81,38 @@ function Notebox:draw()
     --Text.draw(self)
 
     ----[[
+    love.graphics.setBlendMode("alpha")
     love.graphics.setColor(0, 0, 0, 255)
     love.graphics.rectangle("fill", x+0.5, y+0.5, 
                                     width+2*self.padding-1, height+2*self.padding-1)
 
-    love.graphics.setColor(255, 255, 255, 255)
+    local chars = 0
+
+    for i, line in ipairs(lines) do
+        love.graphics.setColor(self.colours.text)
+        love.graphics.print(line,
+                            tx, ty + oy + (i - 1) * (font_height+self.spacing))
+        
+        local cursor = self.cursor - chars
+
+        if cursor >= 0 and cursor < #line + 1 then
+            local left  = string.sub(line, 1, cursor):gsub(".", "_")
+            local right = string.sub(line, cursor+2):gsub(".", "_")
+            line = left .. "<" .. right
+        else
+            line = line:gsub(".", "_")
+        end
+
+        if self.focused then
+            love.graphics.setColor(colour.cursor(0, 255))
+            love.graphics.print(line,
+                                tx, ty + oy + (i - 1) * (font_height+self.spacing))
+        end
+
+        chars = chars + #line - 1
+    end
+
+    --[[
     for i, line in ipairs(lines) do
         love.graphics.print(line,
                             tx, ty + oy + (i - 1) * (font_height+self.spacing))
@@ -95,7 +122,7 @@ function Notebox:draw()
         love.graphics.setColor(colour.cursor(0))
         love.graphics.print(lines[#lines]:gsub(".", "_") .. "*",
                             tx, ty + oy + (#lines - 1) * (font_height+self.spacing))
-    end
+    end]]
     --]]
     love.graphics.pop()
 

@@ -110,18 +110,14 @@ function Project:loadIcon(folder_path)
     end
 end
 
-function Project:preview(folder_path)
-    local file = love.filesystem.read(folder_path .. "/details.json")
-    
-    if file then
-        local data = json.decode(file)
-        if data then 
-            self.name = data.name
-            self.description = data.description
-        end
-    end
+function Project:preview()
+    local resources = ResourceManager("projects/" .. self.name)
+    local meta = resources:meta()
 
-    self:loadIcon(folder_path)
+    self.name = meta.name or self.name
+    self.description = meta.description or self.description
+
+    self:loadIcon("projects/" .. self.name)
 end
 
 function Project:update(dt)

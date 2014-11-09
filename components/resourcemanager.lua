@@ -123,9 +123,15 @@ function ResourceManager:save()
         print("saving", resource.name, "to", name)
     end
 
+    local project = self.id_to_resource[self.labels.project]
+
     local index = {
         files = {},
         labels = self.labels,
+        meta = {
+            name = project.name,
+            description = project.description,
+        }
     }
 
     for id, resource in pairs(self.id_to_resource) do
@@ -169,6 +175,13 @@ function ResourceManager:load()
     for resource, data in pairs(data) do
         resource:finalise(self, data)
     end
+end
+
+function ResourceManager:meta()
+    local content = love.filesystem.read(self.root .. "/index.json")
+    local index = json.decode(content)
+
+    return index.meta or {}
 end
 
 return ResourceManager

@@ -25,6 +25,7 @@ local Text = Class {
     },
 
     padding = 4,
+    spacing = 2,
 
     multiline = false,
 }
@@ -41,12 +42,15 @@ function Text:init(params)
     self.font = params.font or self.fonts.small
     
     self.padding = params.padding or self.padding
+    self.spacing = params.spacing or self.spacing
     self.multiline = params.multiline or self.multiline
 
     self.focused = false
     self.cursor = 1
 
     self.changed = Event()
+
+    self:refresh()
 end
 
 function Text:draw()    
@@ -54,14 +58,14 @@ function Text:draw()
     
     love.graphics.setBlendMode("alpha")
 
-    local height = self.font:getHeight()
+    local height = self.font:getHeight() + self.spacing
     local oy = self.font:getAscent() - self.font:getBaseline()
     love.graphics.setFont(self.font)
 
     love.graphics.push()
     love.graphics.translate(self.shape.x, self.shape.y)
     
-    local text, lines = wrap.wrap(self.font, self.text, self.shape.w - self.padding * 2)
+    local text, lines = self._wrapped, self._lines
 
     local chars = 0
 
@@ -73,16 +77,16 @@ function Text:draw()
         
         local cursor = self.cursor - chars
 
-        if cursor >= 0 and cursor < #line then
+        if cursor >= 0 and cursor < #line + 1 then
             local left  = string.sub(line, 1, cursor):gsub(".", "_")
             local right = string.sub(line, cursor+2):gsub(".", "_")
-            line = string.format("%s*%s", left, right)
+            line = left .. "<" .. right
         else
             line = line:gsub(".", "_")
         end
 
         if self.focused then
-            love.graphics.setColor(colour.cursor(0))
+            love.graphics.setColor(colour.cursor(0, 255))
             love.graphics.print(line,
                                 self.padding,
                                 self.padding + oy + height * (i - 1))
@@ -115,9 +119,15 @@ function Text:type(string)
 
     self.cursor = self.cursor + #string
 
-    --self:refresh()
+    self:refresh()
 
     self.changed:fire(self.text)
+end
+
+function Text:refresh()
+    self._wrapped, self._lines = wrap.wrap(self.font,
+                                           self.text,
+                                           self.shape.w - self.padding * 2)
 end
 
 function Text:keypressed(key)
@@ -148,10 +158,16 @@ function Text:keypressed(key)
 
         return true
     elseif key == "left" then
-        self.cursor = math.max(0, self.cursor - 1)
+        repeat
+            self.cursor = math.max(0, self.cursor - 1)
+        until self.cursor == 0 or self.text:sub(self.cursor, self.cursor) ~= "\n"
+
         self:type("")
     elseif key == "right" then
-        self.cursor = math.min(#self.text, self.cursor + 1)
+            repeat
+            self.cursor = math.min(#self.text, self.cursor + 1)
+        until self.cursor == #self.text or self.text:sub(self.cursor, self.cursor) ~= "\n"
+
         self:type("")
     elseif key == "v" and love.keyboard.isDown("lctrl", "rctrl") then
         self:type(love.system.getClipboardText())

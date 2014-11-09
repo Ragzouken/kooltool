@@ -547,7 +547,7 @@
 			"file": "interface/elements/text.lua",
 			"settings":
 			{
-				"buffer_size": 4475,
+				"buffer_size": 4439,
 				"line_ending": "Windows"
 			}
 		},
@@ -1047,15 +1047,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4475,
+						"buffer_size": 4439,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2056,
-								2056
+								2035,
+								2035
 							]
 						],
 						"settings":
@@ -1065,7 +1065,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 969.0,
+						"translation.y": 1083.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

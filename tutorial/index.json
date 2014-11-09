@@ -1,4 +1,8 @@
 {
+  "meta":{
+    "name":"kooltoolrial",
+    "description":"this project will help to familiarise you with the different parts in kooltool :)"
+  },
   "files":{
     "1-Project":"1-Project.json",
     "6-Entity":"6-Entity.json",
