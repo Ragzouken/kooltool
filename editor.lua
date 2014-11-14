@@ -50,7 +50,7 @@ local function project_list()
 
     local tutorial = Project()
     tutorial.name = "tutorial"
-    tutorial:loadIcon("tutorial")
+    tutorial:preview("tutorial")
     table.insert(projects, 1, tutorial)
 
     return projects

@@ -18,6 +18,17 @@ function ProjectPanel:init(project, params)
         icon = {image = project.icon, quad = love.graphics.newQuad(0, 0, 64, 64, 64, 64)},
     }
 
+    icon.actions["draw"] = true
+    icon.actions["press"] = nil
+
+    function icon:applyBrush(bx, by, brush, lock)
+        brush:apply(project.icon, nil, bx, by)
+    end
+
+    function icon:sample(x, y)
+        return {project.icon:getPixel(x, y)}
+    end
+
     local title = elements.Text{
         shape = elements.shapes.Rectangle { x = 64,  y = 0,
                                             w = 384, h = 32 - 4,

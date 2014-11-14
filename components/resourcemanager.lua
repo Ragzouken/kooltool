@@ -124,6 +124,7 @@ function ResourceManager:save()
     end
 
     local project = self.id_to_resource[self.labels.project]
+    local full, file = self:file(project, "icon.png")
 
     local index = {
         files = {},
@@ -131,8 +132,11 @@ function ResourceManager:save()
         meta = {
             name = project.name,
             description = project.description,
+            icon = file,
         }
     }
+
+    project.icon:getImageData():encode(full)
 
     for id, resource in pairs(self.id_to_resource) do
         index.files[id] = string.format("%s.json", id)

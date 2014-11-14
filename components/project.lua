@@ -60,7 +60,7 @@ end
 local broken = love.graphics.newImage("images/broken.png")
 
 function Project:blank(tilesize)
-    self.icon = broken
+    self.icon = common.canvasFromImage(broken)
 
     self.palette = generators.Palette.generate(9)
     self.layers.surface = generators.surface.default(self, tilesize)
@@ -102,22 +102,16 @@ function Project:save(folder_path)
     resources:save(folder_path)
 end
 
-function Project:loadIcon(folder_path)
-    local file = folder_path .. "/icon.png"
-
-    if not pcall(function() self.icon = common.loadCanvas(file) end) then
-        self.icon = broken
-    end
-end
-
-function Project:preview()
-    local resources = ResourceManager("projects/" .. self.name)
+function Project:preview(path)
+    local resources = ResourceManager(path or "projects/" .. self.name)
     local meta = resources:meta()
 
     self.name = meta.name or self.name
     self.description = meta.description or self.description
 
-    self:loadIcon("projects/" .. self.name)
+    if not pcall(function() self.icon = common.loadCanvas(resources:path(meta.icon)) end) then
+        self.icon = common.canvasFromImage(broken)
+    end
 end
 
 function Project:update(dt)
