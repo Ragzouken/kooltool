@@ -57,7 +57,9 @@ function SETPROJECT(project, camera)
     if project then
         local path
 
-        if project.name == "tutorial" or project.name == "embedded" then
+        if project.name == "kooltoolrial" then
+            path = "tutorial"
+        elseif project.name == "embedded" then
             path = project.name
         else
             path = "projects/" .. project.name

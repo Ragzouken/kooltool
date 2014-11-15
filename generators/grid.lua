@@ -26,23 +26,23 @@ function grid.dungeon()
 
     local agents = {}
 
-    for i=1,math.random(3,7) do
-        agents[common.Turtle(4, 4, math.random(3))] = true
+    for i=1,love.math.random(3,7) do
+        agents[common.Turtle(4, 4, love.math.random(3))] = true
     end
 
     
     for agent in pairs(agents) do
-        for i=1,math.random(5, 7) do
+        for i=1,love.math.random(5, 7) do
             agent:spin()
             
-            if math.random() > 0.125 then
-                for i=1,math.random(4, 7) do
+            if love.math.random() > 0.125 then
+                for i=1,love.math.random(4, 7) do
                     dungeon:set(1, agent.x, agent.y)
                     agent:forward()
                 end
             else
-                for y=-math.random(2),math.random(2) do
-                    for x=-math.random(2),math.random(2) do
+                for y=-love.math.random(2),love.math.random(2) do
+                    for x=-love.math.random(2),love.math.random(2) do
                         dungeon:set(1, x+agent.x, y+agent.y)
                     end
                 end

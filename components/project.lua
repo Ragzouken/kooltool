@@ -94,7 +94,7 @@ function Project:load(folder_path)
 
     local project = resources.labels.project
 
-    project:preview()
+    project:preview(folder_path)
 
     return project
 end

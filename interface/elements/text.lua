@@ -66,8 +66,7 @@ function Text:draw()
     love.graphics.translate(self.shape.x, self.shape.y)
     
     local text, lines = self._wrapped, self._lines
-
-    local chars = 0
+    local cursor_lines = wrap.cursor(lines, self.cursor)
 
     for i, line in ipairs(lines) do
         love.graphics.setColor(self.colours.text)
@@ -75,24 +74,12 @@ function Text:draw()
                             self.padding,
                             self.padding + oy + height * (i - 1))
         
-        local cursor = self.cursor - chars
-
-        if cursor >= 0 and cursor < #line + 1 then
-            local left  = string.sub(line, 1, cursor):gsub(".", "_")
-            local right = string.sub(line, cursor+2):gsub(".", "_")
-            line = left .. "<" .. right
-        else
-            line = line:gsub(".", "_")
-        end
-
         if self.focused then
             love.graphics.setColor(colour.cursor(0, 255))
-            love.graphics.print(line,
+            love.graphics.print(cursor_lines[i],
                                 self.padding,
                                 self.padding + oy + height * (i - 1))
         end
-
-        chars = chars + #line - 1
     end
 
     love.graphics.pop()

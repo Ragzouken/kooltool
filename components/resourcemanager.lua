@@ -182,8 +182,8 @@ function ResourceManager:load()
 end
 
 function ResourceManager:meta()
-    local content = love.filesystem.read(self.root .. "/index.json")
-    local index = json.decode(content)
+    local content, count = love.filesystem.read(self.root .. "/index.json")
+    local index = content and json.decode(content) or {}
 
     return index.meta or {}
 end
