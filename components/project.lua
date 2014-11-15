@@ -92,7 +92,11 @@ function Project:load(folder_path)
 
     resources:load()
 
-    return resources.labels.project
+    local project = resources.labels.project
+
+    project:preview()
+
+    return project
 end
 
 function Project:save(folder_path)
