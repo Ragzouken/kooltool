@@ -9,6 +9,8 @@ dreampath - cyoa in rich text
 http://ambrosine.com/resource.php
 
 lsdj - music tracks, waveform drawer
+milkytracker - music tracks, waveform drawer?
+beepbox - accessible tracker?
 sunvox - music tracker, clean interface
 OHRRPGCE - rpg maker, graphic editor, multiple interfaces, clean interface
 become a great artist - experimental graphics, experimental interface

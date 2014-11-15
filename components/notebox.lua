@@ -2,6 +2,7 @@ local Class = require "hump.class"
 local Text = require "interface.elements.text"
 local shapes = require "interface.elements.shapes"
 local colour = require "utilities.colour"
+local wrap = require "utilities.wrap"
 
 local Notebox = Class {
     __includes = Text,
@@ -64,8 +65,8 @@ function Notebox:draw()
 
     love.graphics.setFont(self.font)
 
-    ----[[
     local lines, width = self.memo.lines, self.memo.width
+    local cursor_lines = wrap.cursor(lines, self.cursor)
 
     local font_height = self.font:getHeight()
     local height = (font_height+self.spacing) * #lines
@@ -73,57 +74,27 @@ function Notebox:draw()
 
     local x,  y  = self.shape.x * 2, self.shape.y * 2
     local tx, ty = x + self.padding, y + self.padding
-    --]]
 
     love.graphics.push()
     love.graphics.scale(0.5)
 
-    --Text.draw(self)
-
-    ----[[
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(0, 0, 0, 255)
     love.graphics.rectangle("fill", x+0.5, y+0.5, 
                                     width+2*self.padding-1, height+2*self.padding-1)
 
-    local chars = 0
-
     for i, line in ipairs(lines) do
-        love.graphics.setColor(self.colours.text)
-        love.graphics.print(line,
-                            tx, ty + oy + (i - 1) * (font_height+self.spacing))
-        
-        local cursor = self.cursor - chars
+        local dx, dy = tx, ty + oy + (i - 1) * (font_height+self.spacing)
 
-        if cursor >= 0 and cursor < #line + 1 then
-            local left  = string.sub(line, 1, cursor):gsub(".", "_")
-            local right = string.sub(line, cursor+2):gsub(".", "_")
-            line = left .. "<" .. right
-        else
-            line = line:gsub(".", "_")
-        end
+        love.graphics.setColor(self.colours.text)
+        love.graphics.print(line, dx, dy)
 
         if self.focused then
             love.graphics.setColor(colour.cursor(0, 255))
-            love.graphics.print(line,
-                                tx, ty + oy + (i - 1) * (font_height+self.spacing))
+            love.graphics.print(cursor_lines[i], dx, dy)
         end
-
-        chars = chars + #line - 1
     end
 
-    --[[
-    for i, line in ipairs(lines) do
-        love.graphics.print(line,
-                            tx, ty + oy + (i - 1) * (font_height+self.spacing))
-    end
-
-    if EDITOR.focus == self then
-        love.graphics.setColor(colour.cursor(0))
-        love.graphics.print(lines[#lines]:gsub(".", "_") .. "*",
-                            tx, ty + oy + (#lines - 1) * (font_height+self.spacing))
-    end]]
-    --]]
     love.graphics.pop()
 
     if EDITOR.focus == self then
@@ -144,6 +115,9 @@ function Notebox:refresh()
         lines[#lines+1] = line
         width = math.max(width, self.font:getWidth(line))
     end
+
+    self._wrapped = self.text
+    self._lines = lines
 
     self.memo = {lines = lines, width = width}
 
@@ -176,6 +150,7 @@ function Notebox:type(string)
     if self.unset then
         self.unset = false
         self.text = ""
+        self.cursor = 0
     end
 
     Text.type(self, string)

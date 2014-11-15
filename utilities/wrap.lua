@@ -1,4 +1,31 @@
+local Class = require "hump.class"
+
 local wrap = {}
+
+local Text = Class {}
+wrap.Text = Text
+
+function Text:init()
+    self.cursor = 0
+end
+
+function Text:refresh()
+    
+end
+
+function Text:action(action)
+        if action == "left"      then
+        self.cursor = math.max(0, self.cursor - 1)
+    elseif action == "right"     then
+        self.cursor = math.min(self.cursor + 1, #self.text)
+    elseif action == "backspace" then
+    elseif action == "delete"    then
+    elseif action == "newline"   then
+    elseif action == "home"      then
+        self.cursor = 0
+    elseif action == "end"       then
+    end
+end
 
 function wrap.wrap(font, text, width)
     local lines = {}
@@ -7,11 +34,13 @@ function wrap.wrap(font, text, width)
     local right = 1
 
     while right < #text do
-        if text:sub(right, right) == " " then
+        local char = text:sub(right, right)
+
+        if char == " " then
             split = right
         end
 
-        if font:getWidth(text:sub(left, right+1)) > width then
+        if font:getWidth(text:sub(left, right+1)) > width or char == "\n" then
             local cut = split or right
 
             table.insert(lines, text:sub(left, cut))
@@ -30,8 +59,6 @@ end
 
 function wrap.cursor(lines, cursor)
     local cursor_lines = {}
-
-    if cursor > 1 then print(#lines[1]) end
 
     for i, line in ipairs(lines) do
         if cursor >= 0 and cursor < #line then

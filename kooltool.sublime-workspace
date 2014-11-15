@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"cursor",
+				"cursor_lines"
+			],
+			[
+				"cur",
+				"cursor_lines"
+			],
+			[
 				"pr",
 				"preview"
 			],
@@ -506,14 +514,6 @@
 			[
 				"object",
 				"object_images"
-			],
-			[
-				"math",
-				"matchstick"
-			],
-			[
-				"text-",
-				"text-align"
 			]
 		]
 	},
@@ -536,29 +536,58 @@
 			}
 		},
 		{
-			"file": "main.lua",
-			"settings":
-			{
-				"buffer_size": 3192,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "local Class = require \"hump.class\"\nlocal Collider = require \"collider\"\nlocal SurfaceLayer = require \"layers.surface\"\nlocal AnnotationLayer = require \"layers.annotation\"\n\nlocal Sprite = require \"components.sprite\"\nlocal Entity = require \"components.entity\"\nlocal Notebox = require \"components.notebox\"\nlocal Tileset = require \"components.tileset\"\n\nlocal generators = require \"generators\"\nlocal common = require \"utilities.common\"\nlocal export = require \"utilities.export\"\nlocal colour = require \"utilities.colour\"\n\nlocal json = require \"utilities.dkjson\"\n\nlocal ResourceManager = require \"components.resourcemanager\"\n\nlocal Project = Class {\n    type = \"Project\",\n}\n\ndo\n    local names = {}\n\n    for line in love.filesystem.lines(\"texts/names.txt\") do\n        names[#names+1] = line\n    end\n\n    Project.name_generator = generators.String(names)\nend\n\nfunction Project:serialise(resources)\n    local data = {}\n\n    data.name = self.name\n    data.description = self.description\n\n    data.layers = {\n        surface    = resources:reference(self.layers.surface),\n        annotation = resources:reference(self.layers.annotation),\n    }\n\n    return data\nend\n\nfunction Project:deserialise(resources, data)\n    self.name = data.name\n    self.description = data.description\n\n    self.layers = {\n        surface    = resources:resource(data.layers.surface),\n        annotation = resources:resource(data.layers.annotation),\n    }\n\n    self.palette = generators.Palette.generate(9)\nend\n\nlocal broken = love.graphics.newImage(\"images/broken.png\")\n\nfunction Project:blank(tilesize)\n    self.icon = common.canvasFromImage(broken)\n\n    self.palette = generators.Palette.generate(9)\n    self.layers.surface = generators.surface.default(self, tilesize)\n    self.layers.annotation = AnnotationLayer(self)\n\n    self.description = \"yr new project\"\nend\n\nfunction Project:init()\n    self.name = \"unnamed\"\n    self.description = \"[NO DESCRIPTION]\"\n\n    self.layers = {}\nend\n\nfunction Project:finalise()\nend\n\nfunction Project:load(folder_path)\n    if self.name == \"tutorial\" then self.name = \"tutorial_copy\" end\n\n    local resources = ResourceManager(folder_path,\n                                      Project,\n                                      SurfaceLayer,\n                                      AnnotationLayer,\n                                      Sprite,\n                                      Entity,\n                                      Tileset)\n\n    resources:load()\n\n    local project = resources.labels.project\n\n    project:preview()\\\n\n    return project\nend\n\nfunction Project:save(folder_path)\n    local resources = ResourceManager(folder_path)\n\n    resources:register(self, { label = \"project\" } )\n    resources:save(folder_path)\nend\n\nfunction Project:preview(path)\n    local resources = ResourceManager(path or \"projects/\" .. self.name)\n    local meta = resources:meta()\n\n    self.name = meta.name or self.name\n    self.description = meta.description or self.description\n\n    if not pcall(function() self.icon = common.loadCanvas(resources:path(meta.icon)) end) then\n        self.icon = common.canvasFromImage(broken)\n    end\nend\n\nfunction Project:update(dt)\n    self.layers.surface:update(dt)\n    self.layers.annotation:update(dt)\n\n    colour.cursor(dt)\n    colour.walls(dt, 0)\nend\n\nfunction Project:draw(annotations, play)\n    self.layers.surface:draw()\n\n    if not play and EDITOR.active ~= EDITOR.tools.draw and not play then\n        for entity in pairs(self.layers.surface.entities) do\n            entity:border()\n        end\n    end\n\n    if annotations then self.layers.annotation:draw() end\nend\n\nfunction Project:sample(x, y)\nend\n\nfunction Project:newEntity(x, y)\n    local entity = Entity()\n    self.layers.surface:addEntity(entity)\n    entity:blank(x, y)\n    \n    return entity\nend\n\nfunction Project:undo()\n--local action = table.remove(self.history)\n--if action then action() end\nend\n\nProject.export = export.export\n\nreturn Project\n",
-			"file": "components/project.lua",
-			"file_size": 4092,
-			"file_write_time": 130605165397868227,
-			"settings":
-			{
-				"buffer_size": 3934,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "components/resourcemanager.lua",
 			"settings":
 			{
-				"buffer_size": 4527,
+				"buffer_size": 4552,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "generators/grid.lua",
+			"settings":
+			{
+				"buffer_size": 1398,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "main.lua",
+			"settings":
+			{
+				"buffer_size": 3243,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "components/project.lua",
+			"settings":
+			{
+				"buffer_size": 3944,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "utilities/wrap.lua",
+			"settings":
+			{
+				"buffer_size": 1289,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "interface/elements/text.lua",
+			"settings":
+			{
+				"buffer_size": 4294,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "components/notebox.lua",
+			"settings":
+			{
+				"buffer_size": 4302,
 				"line_ending": "Windows"
 			}
 		}
@@ -596,10 +625,13 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities"
 	],
 	"file_history":
 	[
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/f51b6fd8-f8b8-4651-8020-35febf0a4fb6.dmp",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/resourcemanager.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/lass/examples/triangles/main.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/lass/examples/triangles/mainscene.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/project.lua",
@@ -650,7 +682,6 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/scripting.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/button.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/annotation.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/resourcemanager.lua",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Sills-a-Go-Fit_Match/1-Project.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Sills-a-Go-Fit_Match/index.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Filth/4-Tileset.json",
@@ -726,8 +757,7 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/FreeType.framework/Versions/A/Headers/freetype/internal/fttrace.h",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/radio.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/init.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/canvas.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/FreeType.framework/Versions/A/Headers/freetype/internal/internal.h"
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/canvas.lua"
 	],
 	"find":
 	{
@@ -952,7 +982,7 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 7,
 			"sheets":
 			[
 				{
@@ -980,7 +1010,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -1010,24 +1040,54 @@
 						"translation.y": 2055.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "main.lua",
+					"file": "components/resourcemanager.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3192,
+						"buffer_size": 4552,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1440,
-								1440
+								4551,
+								4551
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3306.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "generators/grid.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1398,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								835,
+								835
 							]
 						],
 						"settings":
@@ -1037,27 +1097,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": -0.0,
-						"translation.y": 798.0,
+						"translation.y": 228.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "components/project.lua",
+					"buffer": 4,
+					"file": "main.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 3934,
+						"buffer_size": 3243,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2523,
-								2523
+								2501,
+								2501
 							]
 						],
 						"settings":
@@ -1067,27 +1127,117 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1512.0,
+						"translation.y": 912.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "components/project.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3944,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2532,
+								2532
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1968.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "utilities/wrap.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1289,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								961,
+								961
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 339.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "interface/elements/text.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4294,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3825,
+								3825
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2337.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
-					"file": "components/resourcemanager.lua",
+					"buffer": 8,
+					"file": "components/notebox.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4527,
+						"buffer_size": 4302,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2971,
-								2971
+								2528,
+								2528
 							]
 						],
 						"settings":
@@ -1097,10 +1247,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2169.0,
+						"translation.y": 1425.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 1,
 					"type": "text"
 				}
 			]

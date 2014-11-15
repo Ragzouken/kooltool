@@ -69,16 +69,14 @@ function Text:draw()
     local cursor_lines = wrap.cursor(lines, self.cursor)
 
     for i, line in ipairs(lines) do
+        local dx, dy = self.padding, self.padding + oy + height * (i - 1)
+
         love.graphics.setColor(self.colours.text)
-        love.graphics.print(line,
-                            self.padding,
-                            self.padding + oy + height * (i - 1))
+        love.graphics.print(line, dx, dy)
         
         if self.focused then
             love.graphics.setColor(colour.cursor(0, 255))
-            love.graphics.print(cursor_lines[i],
-                                self.padding,
-                                self.padding + oy + height * (i - 1))
+            love.graphics.print(cursor_lines[i], dx, dy)
         end
     end
 
@@ -87,7 +85,7 @@ end
 
 function Text:focus()
     self.focused = true
-    self.cursor = #self.text
+    self.cursor = #self.text:gsub("\n", "")
 end
 
 function Text:defocus()
@@ -104,7 +102,7 @@ function Text:type(string)
     self.typing_sound:stop()
     self.typing_sound:play()
 
-    self.cursor = self.cursor + #string
+    self.cursor = self.cursor + #string:gsub("\n", "")
 
     self:refresh()
 
@@ -145,15 +143,11 @@ function Text:keypressed(key)
 
         return true
     elseif key == "left" then
-        repeat
-            self.cursor = math.max(0, self.cursor - 1)
-        until self.cursor == 0 or self.text:sub(self.cursor, self.cursor) ~= "\n"
+        self.cursor = math.max(0, self.cursor - 1)
 
         self:type("")
     elseif key == "right" then
-            repeat
-            self.cursor = math.min(#self.text, self.cursor + 1)
-        until self.cursor == #self.text or self.text:sub(self.cursor, self.cursor) ~= "\n"
+        self.cursor = math.min(#self.text, self.cursor + 1)
 
         self:type("")
     elseif key == "v" and love.keyboard.isDown("lctrl", "rctrl") then
