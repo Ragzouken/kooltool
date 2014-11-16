@@ -32,7 +32,7 @@ function Tileset:serialise(resources)
 end
 
 function Tileset:init(tilesize)
-    self.dimensions = tilesize or TILESIZE
+    self.dimensions = tilesize or {32, 32}
     local w, h = unpack(self.dimensions)
 
     self.canvas = love.graphics.newCanvas(w, h)

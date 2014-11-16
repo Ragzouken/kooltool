@@ -5,13 +5,9 @@ do
     common = nil
     NOCANVAS = not love.graphics.isSupported("canvas")
     
-    PROJECT = nil
     MODE = nil
     EDITOR = nil
-    TILESIZE = nil
 end
-
-if jit then require "utilities.imagedata-ffi" end
 
 love.graphics.setDefaultFilter("nearest", "nearest")
 
@@ -23,66 +19,32 @@ local Camera = require "hump.camera"
 local Editor = require "editor"
 local Game = require "engine.game"
 local Project = require "components.project"
+local generators = require "generators"
 
 function love.load(arg)
-    --if arg[#arg] == "-debug" then
-    --    require("mobdebug").start()
-    --end
-    
-    local tw = arg[1] and tonumber(arg[1]) or 32
-    local th = arg[2] and tonumber(arg[2]) or tw
-    
-    TILESIZE = {tw, th}
-    
     io.stdout:setvbuf('no')
     
     love.keyboard.setKeyRepeat(true)
     local camera = Camera(128, 128, 2)
 
     if love.filesystem.isDirectory("embedded") then
-        local project = Project()
-        project.name = "embedded"
+        local project = Project("embedded")
+        project = project:load()
 
-        SETPROJECT(project, camera)
-
-        EDITOR = Editor(PROJECT, camera)
-        MODE = Game(PROJECT)
+        EDITOR = Editor(project, camera)
+        MODE = Game(project)
     else
-        MODE = Editor(PROJECT, camera)
+        MODE = Editor(camera)
         EDITOR = MODE
     end
-end
-
-function SETPROJECT(project, camera)
-    if project then
-        local path
-
-        if project.name == "kooltoolrial" then
-            path = "tutorial"
-        elseif project.name == "embedded" then
-            path = project.name
-        else
-            path = "projects/" .. project.name
-        end
-
-        PROJECT = project:load(path) or project
-    else
-        PROJECT = Project()
-        PROJECT.name = Project.name_generator:generate():gsub(" ", "_")
-        PROJECT:blank(TILESIZE)
-    end
-
-    love.window.setTitle(string.format("kooltool sketch (%s)", PROJECT.name))
-    
-    camera:lookAt(128, 128)
-
-    return PROJECT
 end
 
 function love.update(dt)
     MODE:update(dt)
 
-    if PROJECT then love.window.setTitle(string.format("kooltool sketch (%s) [%s]", PROJECT.name, love.timer.getFPS())) end
+    if MODE.project then
+        love.window.setTitle(string.format("kooltool sketch (%s) [%s]", MODE.project.name, love.timer.getFPS()))
+    end
 end
 
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)

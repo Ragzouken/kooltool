@@ -8,6 +8,8 @@ local common = require "utilities.common"
 local Brush = require "tools.brush"
 local bresenham = require "utilities.bresenham"
 
+if jit then require "utilities.imagedata-ffi" end
+
 NOCANVAS = true
 
 local function FakeCanvas(canvas)

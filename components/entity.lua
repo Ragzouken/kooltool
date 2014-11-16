@@ -46,11 +46,14 @@ function Entity:finalise(resources, data)
 end
 
 function Entity:blank(x, y)
-    self.sprite = generators.sprite.mess(self.layer.tileset.dimensions, PROJECT.palette)
+    self.sprite = generators.sprite.mess(self.layer.tileset.dimensions, PALETTE)
     self.shape.w, self.shape.h = self.sprite.canvas:getDimensions()
     self:move_to { x = x, y = y, pivot = self.sprite.pivot }
 
     self.sprite.resized:add(function(...) self:resized(...) end)
+
+    self.script = ScriptLayer()
+    self:add(self.script)
 end
 
 function Entity:draw()

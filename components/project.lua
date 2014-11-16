@@ -1,35 +1,17 @@
 local Class = require "hump.class"
-local Collider = require "collider"
-local SurfaceLayer = require "layers.surface"
-local AnnotationLayer = require "layers.annotation"
-
-local Sprite = require "components.sprite"
-local Entity = require "components.entity"
-local Notebox = require "components.notebox"
-local Tileset = require "components.tileset"
+local Panel = require "interface.elements.panel"
+local ResourceManager = require "components.resourcemanager"
 
 local generators = require "generators"
 local common = require "utilities.common"
 local export = require "utilities.export"
 local colour = require "utilities.colour"
 
-local json = require "utilities.dkjson"
-
-local ResourceManager = require "components.resourcemanager"
-
 local Project = Class {
+    __includes = Panel,
+    name = "Generic Project",
     type = "Project",
 }
-
-do
-    local names = {}
-
-    for line in love.filesystem.lines("texts/names.txt") do
-        names[#names+1] = line
-    end
-
-    Project.name_generator = generators.String(names)
-end
 
 function Project:serialise(resources)
     local data = {}
@@ -54,22 +36,16 @@ function Project:deserialise(resources, data)
         annotation = resources:resource(data.layers.annotation),
     }
 
+    self:add(self.layers.surface)
+    self:add(self.layers.annotation)
+
     self.palette = generators.Palette.generate(9)
 end
 
-local broken = love.graphics.newImage("images/broken.png")
+function Project:init(path)
+    Panel.init(self)
 
-function Project:blank(tilesize)
-    self.icon = common.canvasFromImage(broken)
-
-    self.palette = generators.Palette.generate(9)
-    self.layers.surface = generators.surface.default(self, tilesize)
-    self.layers.annotation = AnnotationLayer(self)
-
-    self.description = "yr new project"
-end
-
-function Project:init()
+    self.path = path
     self.name = "unnamed"
     self.description = "[NO DESCRIPTION]"
 
@@ -79,22 +55,22 @@ end
 function Project:finalise()
 end
 
-function Project:load(folder_path)
-    if self.name == "tutorial" then self.name = "tutorial_copy" end
-
-    local resources = ResourceManager(folder_path,
-                                      Project,
-                                      SurfaceLayer,
-                                      AnnotationLayer,
-                                      Sprite,
-                                      Entity,
-                                      Tileset)
+function Project:load()
+    local resources = ResourceManager(self.path,
+                                      require "components.project",
+                                      require "components.tileset",
+                                      require "components.sprite",
+                                      require "components.entity",
+                                      require "layers.surface",
+                                      require "layers.annotation",
+                                      require "layers.scripting")
 
     resources:load()
 
     local project = resources.labels.project
 
-    project:preview(folder_path)
+    project.path = self.path
+    project:preview()
 
     return project
 end
@@ -106,8 +82,10 @@ function Project:save(folder_path)
     resources:save(folder_path)
 end
 
-function Project:preview(path)
-    local resources = ResourceManager(path or "projects/" .. self.name)
+local broken = love.graphics.newImage("images/broken.png")
+
+function Project:preview()
+    local resources = ResourceManager(self.path)
     local meta = resources:meta()
 
     self.name = meta.name or self.name
@@ -124,34 +102,6 @@ function Project:update(dt)
 
     colour.cursor(dt)
     colour.walls(dt, 0)
-end
-
-function Project:draw(annotations, play)
-    self.layers.surface:draw()
-
-    if not play and EDITOR.active ~= EDITOR.tools.draw and not play then
-        for entity in pairs(self.layers.surface.entities) do
-            entity:border()
-        end
-    end
-
-    if annotations then self.layers.annotation:draw() end
-end
-
-function Project:sample(x, y)
-end
-
-function Project:newEntity(x, y)
-    local entity = Entity()
-    self.layers.surface:addEntity(entity)
-    entity:blank(x, y)
-    
-    return entity
-end
-
-function Project:undo()
---local action = table.remove(self.history)
---if action then action() end
 end
 
 Project.export = export.export

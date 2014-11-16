@@ -40,29 +40,27 @@ local function project_list()
         local path = proj_path .. "/" .. filename
 
         if love.filesystem.isDirectory(path) then
-            local project = Project()
+            local project = Project(path)
             project.name = path:match("[^/]+$")
-            project:preview(path)
+            project:preview()
 
             table.insert(projects, project)
         end
     end)
 
-    local tutorial = Project()
+    local tutorial = Project("tutorial")
     tutorial.name = "tutorial"
-    tutorial:preview("tutorial")
+    tutorial:preview()
     table.insert(projects, 1, tutorial)
 
     return projects
 end
 
 
-function Editor:init(project, camera)
+function Editor:init(camera)
     Panel.init(self, { shape = shapes.Plane{} })
     
     PALETTE = generators.Palette.generate(9)
-    
-    --PROJECTS = projects
     
     self.nocanvas = Text{
         shape = elements.shapes.Rectangle {x = 32+4, y = 0,
@@ -118,15 +116,14 @@ function Editor:init(project, camera)
 end
 
 function Editor:SetProject(project)
-    self.project = SETPROJECT(project, self.view.camera)
-    
-    local project = self.project
+    self.project = project
 
     self.select.active = false
 
     self.view:clear()
-    self.view:add(project.layers.surface, -1)
-    self.view:add(project.layers.annotation, -2)
+    self.view:add(project, -1)
+
+    self.view.camera:lookAt(128, 128)
 
     local projectedit = ProjectPanel(project, { x = 128, y = -256, anchor = {0.5, 0} })
     projectedit.actions["drag"] = true
@@ -208,7 +205,7 @@ function Editor:SetProject(project)
         self.project:save("projects/" ..self.project.name)
 
         self.project:export()
-        love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. PROJECT.name)
+        love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. self.project.name)
     end, "export"},
     --]]
     }
@@ -268,7 +265,7 @@ end
 function Editor:update(dt)
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
-    if PROJECT then
+    if self.project then
         self.toolbar:move_to { x = 1, y = 1, anchor = {0, 0} }
         self.thingbar:move_to { x = 1, y = 176, anchor = {0, 0}}
         self.filebar:move_to { x = 1, y = 252, anchor = {0, 0}}
@@ -286,12 +283,12 @@ function Editor:update(dt)
             --self.toolname.text = self.active.name
         end
 
-        PROJECT:update(dt)
+        self.project:update(dt)
         colour.walls(dt, 0)
 
         -- tilebar
         local tiles = {}
-        local tileset = PROJECT.layers.surface.tileset
+        local tileset = self.project.layers.surface.tileset
         
         for i, quad in ipairs(tileset.quads) do
             local function action()
@@ -308,7 +305,7 @@ function Editor:update(dt)
             x = love.window.getWidth() - 1, y=1,
             buttons=tiles,
             anchor={1, 0},
-            size=PROJECT.layers.surface.tileset.dimensions
+            size = self.project.layers.surface.tileset.dimensions
         }
     end
 end
@@ -382,7 +379,7 @@ local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 function Editor:draw()
     Panel.draw(self)
 
-    if PROJECT then
+    if self.project then
         self.view.camera:attach()
 
         local sx, sy = love.mouse.getPosition()
@@ -415,7 +412,7 @@ function Editor:mousepressed(sx, sy, button)
         target:focus()
     end
 
-    if PROJECT then
+    if self.project then
         if self:input("mousepressed", button, sx, sy, wx, wy) then
             return
         end
@@ -423,7 +420,7 @@ function Editor:mousepressed(sx, sy, button)
 end
 
 function Editor:mousereleased(x, y, button)    
-    if PROJECT then
+    if self.project then
         local wx, wy = self.view.camera:worldCoords(x, y)
 
         self:input("mousereleased", button, x, y, wx, wy)
@@ -445,7 +442,7 @@ function Editor:keypressed(key, isrepeat)
         return
     end
 
-    if key == "escape" and PROJECT then
+    if key == "escape" and self.project then
         self.select.active = not self.select.active
         self.select:SetProjects(project_list())
         return
@@ -453,7 +450,7 @@ function Editor:keypressed(key, isrepeat)
 
     if self.focus then self.focus:keypressed(key, isrepeat) return true end
 
-    if PROJECT then
+    if self.project then
         if key == "q" then self.active = self.tools.draw   return true end
         if key == "w" then self.active = self.tools.tile   return true end
         if key == "e" then self.active = self.tools.wall   return true end
@@ -467,7 +464,7 @@ function Editor:keypressed(key, isrepeat)
 end
 
 function Editor:keyreleased(key)
-    if PROJECT then
+    if self.project then
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
 
@@ -478,7 +475,7 @@ end
 function Editor:textinput(character)
     if self.focus then self.focus:type(character) end
 
-    if PROJECT then
+    if self.project then
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
 

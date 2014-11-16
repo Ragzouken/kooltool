@@ -27,13 +27,17 @@ function Game:init(project, playtest)
     self.playtest = playtest
     self.tags = {}
 
-    for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
+    local layers = self.project.layers
+
+    layers.annotation.active = false
+
+    for notebox in pairs(layers.annotation.noteboxes) do
         local key, value = parse_note(notebox.text)
 
         if key then self.tags[key] = value end
     end
 
-    local tw, th = unpack(self.project.layers.surface.tileset.dimensions)
+    local tw, th = unpack(layers.surface.tileset.dimensions)
 
     self.actors = {}
     self.occupied = SparseGrid(tw, th)
@@ -44,7 +48,7 @@ function Game:init(project, playtest)
 
     local choice = {}
 
-    for entity in pairs(self.project.layers.surface.entities) do
+    for entity in pairs(layers.surface.entities) do
         local actor = Player(self, entity)
         self.actors[actor] = true
 
@@ -131,6 +135,8 @@ function Game:undo()
         actor.entity.a = 0
         actor.entity.active = true
     end
+
+    self.project.layers.annotation.active = true
 end
 
 function Game:mousepressed(x, y, button)

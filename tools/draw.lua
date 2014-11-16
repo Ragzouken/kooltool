@@ -76,9 +76,9 @@ function Draw:cursor(sx, sy, wx, wy)
 end
 
 function Draw:mousepressed(button, sx, sy)
-    if button == "l" then
-        local target, x, y = self.editor:target("draw", sx, sy)
+    local target, x, y = self.editor:target("draw", sx, sy)
 
+    if button == "l" and target then
         if love.keyboard.isDown("lalt") then
             self.colour = target:sample(x, y)
 

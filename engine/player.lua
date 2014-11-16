@@ -20,6 +20,8 @@ function Player:init(game, entity)
     self.timer = Timer()
     self.entity = entity
 
+    local layers = self.game.project.layers
+
     self.va = 0
     self.a = 0
 
@@ -27,9 +29,9 @@ function Player:init(game, entity)
 
     local cx, cy = entity.shape:coords { pivot = entity.sprite.pivot }
 
-    self.tx, self.ty = PROJECT.layers.surface.tilemap:gridCoords(cx, cy)
+    self.tx, self.ty = layers.surface.tilemap:gridCoords(cx, cy)
 
-    local annotations = PROJECT.layers.annotation
+    local annotations = layers.annotation
     local w, h = self.entity.shape.w, self.entity.shape.h
     local px, py = unpack(self.entity.sprite.pivot)
     local x, y = cx-px, cy-py
@@ -44,7 +46,7 @@ function Player:init(game, entity)
 
     self.speech = {}
 
-    for notebox in pairs(PROJECT.layers.annotation.noteboxes) do
+    for notebox in pairs(layers.annotation.noteboxes) do
         if shapes.rect_rect(entity.shape, notebox.shape) then
             local key, value = parse_note(notebox.text)
 
@@ -128,12 +130,12 @@ end
 
 function Player:move(vector, input)
     local cx, cy = self.entity.shape:coords { pivot = self.entity.sprite.pivot }
-    local gx, gy = PROJECT.layers.surface.tilemap:gridCoords(cx, cy)
+    local gx, gy = self.game.project.layers.surface.tilemap:gridCoords(cx, cy)
 
     local vx, vy = unpack(vector)
     local dx, dy = gx+vx, gy+vy
 
-    local wall = PROJECT.layers.surface:getWall(dx, dy)
+    local wall = self.game.project.layers.surface:getWall(dx, dy)
     local occupier = self.game.occupied:get(dx, dy)
 
     if occupier then
@@ -149,7 +151,7 @@ function Player:move(vector, input)
         return
     end
 
-    local tw, th = unpack(PROJECT.layers.surface.tileset.dimensions)
+    local tw, th = unpack(self.game.project.layers.surface.tileset.dimensions)
 
     if not wall and not self.movement then
         local period = self.speed

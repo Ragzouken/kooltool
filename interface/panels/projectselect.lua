@@ -35,7 +35,7 @@ function ProjectSelect:SetProjects(projects)
     
     for i, project in ipairs(projects) do
         local function project_clicked(event)
-            self.editor:SetProject(project)
+            self.editor:SetProject(project:load())
             self.active = false
         end
 
@@ -50,12 +50,12 @@ function ProjectSelect:SetProjects(projects)
         icon = ProjectSelect.new_image,
     }
 
-    local function new()
-        self.editor:SetProject()
+    local function clicked(project)
+        self.editor:SetProject(project)
         self.active = false
     end
 
-    local panel = NewProjectPanel(project, { x = 0, y = #projects * 64 }, new)
+    local panel = NewProjectPanel(project, { x = 0, y = #projects * 64 }, clicked)
     --panel:add(button(new))
     self:add(panel)
 end
