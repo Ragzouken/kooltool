@@ -5,12 +5,15 @@ local wrap = {}
 local Text = Class {}
 wrap.Text = Text
 
-function Text:init()
+function Text:init(wrap)
+    self.wrap = wrap
+
+    self.text = ""
     self.cursor = 0
 end
 
 function Text:refresh()
-    
+    self.wrapped, self.lines = wrap.wrap2(self.text, self.wrap)
 end
 
 function Text:action(action)
@@ -24,7 +27,50 @@ function Text:action(action)
     elseif action == "home"      then
         self.cursor = 0
     elseif action == "end"       then
+        self.cursor = #self.text
     end
+end
+
+function Text:type(text)
+    self.text = string.format("%s%s%s",
+                              self.text:sub(1, self.cursor),
+                              text,
+                              self.text:sub(self.cursor+1))
+
+    self:refresh()
+end
+
+function wrap.wrap2(text, wrap)
+    wrap = wrap or function() return false end
+
+    local lines = {}
+    local left = 1
+    local split = false
+    local right = 1
+
+    while right < #text do
+        local char = text:sub(right, right)
+        local newline = char == "\n"
+
+        if char == " " or newline then
+            split = right
+        end
+
+        if wrap(text:sub(left, right+1)) or newline then
+            local cut = split or right
+
+            table.insert(lines, text:sub(left, newline and cut - 1 or cut ))
+
+            left, right = cut + 1, cut + 1
+            split = false
+        else
+            right = right + 1
+        end
+    end
+
+    table.insert(lines, text:sub(left))
+
+    return table.concat(lines, "\n"), lines
 end
 
 function wrap.wrap(font, text, width)
@@ -57,26 +103,24 @@ function wrap.wrap(font, text, width)
     return table.concat(lines, "\n"), lines
 end
 
-function wrap.cursor(lines, cursor)
-    local cursor_lines = {}
+function wrap.cursor(text, cursor)
+    local output = ""
 
-    for i, line in ipairs(lines) do
-        if cursor >= 0 and cursor < #line then
-            local left  = string.sub(line, 1, cursor):gsub(".", "_")
-            local right = string.sub(line, cursor+2):gsub(".", "_")
-            line = left .. "<" .. right
-        elseif i == #lines and cursor == #line then
-            line = line:gsub(".", "_") .. "<"
-        else
-            line = line:gsub(".", "_")
+    for i=1,#text+1 do
+        local char = i <= #text and text:sub(i, i) or ""
+
+        if char == "\n" and i == cursor + 1 then
+            char = "<\n"
+        elseif i == cursor + 1 then
+            char = "<"
+        elseif char ~= "\n" then
+            char = "_"
         end
 
-        table.insert(cursor_lines, line)
-
-        cursor = cursor - #line
+        output = output .. char
     end
 
-    return cursor_lines
+    return output:split("\n")
 end
 
 return wrap

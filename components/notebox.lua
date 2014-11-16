@@ -66,7 +66,7 @@ function Notebox:draw()
     love.graphics.setFont(self.font)
 
     local lines, width = self.memo.lines, self.memo.width
-    local cursor_lines = wrap.cursor(lines, self.cursor)
+    local cursor_lines = wrap.cursor(self.text, self.cursor)
 
     local font_height = self.font:getHeight()
     local height = (font_height+self.spacing) * #lines

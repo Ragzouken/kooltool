@@ -439,7 +439,11 @@ function Editor:keypressed(key, isrepeat)
         self.view:print()
     end
 
-    if key == "escape" and self.focus then self.focus = nil return end
+    if key == "escape" and self.focus then
+        self.focus:defocus()
+        self.focus = nil
+        return
+    end
 
     if key == "escape" and PROJECT then
         self.select.active = not self.select.active

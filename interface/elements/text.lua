@@ -50,6 +50,9 @@ function Text:init(params)
 
     self.changed = Event()
 
+    self.test = wrap.Text(not self.multiline and function(text) return self.font:getWidth(text) > self.shape.w - self.padding * 2 end)
+    self.changed:add(function(text) self.test.text = text self.test:refresh() end)
+
     self:refresh()
 end
 
@@ -66,7 +69,7 @@ function Text:draw()
     love.graphics.translate(self.shape.x, self.shape.y)
     
     local text, lines = self._wrapped, self._lines
-    local cursor_lines = wrap.cursor(lines, self.cursor)
+    local cursor_lines = wrap.cursor(self._wrapped, self.cursor)
 
     for i, line in ipairs(lines) do
         local dx, dy = self.padding, self.padding + oy + height * (i - 1)
@@ -85,7 +88,7 @@ end
 
 function Text:focus()
     self.focused = true
-    self.cursor = #self.text:gsub("\n", "")
+    self.cursor = #self.text
 end
 
 function Text:defocus()
@@ -93,16 +96,17 @@ function Text:defocus()
 end
 
 function Text:type(string)
-    local i = self.cursor
     self.text = string.format("%s%s%s",
-                              self.text:sub(1,i),
+                              self.text:sub(1, self.cursor),
                               string,
-                              self.text:sub(i+1))
+                              self.text:sub(self.cursor+1))
 
     self.typing_sound:stop()
     self.typing_sound:play()
 
-    self.cursor = self.cursor + #string:gsub("\n", "")
+    self.cursor = self.cursor + #string
+
+    self.test:type(string)
 
     self:refresh()
 
@@ -110,9 +114,7 @@ function Text:type(string)
 end
 
 function Text:refresh()
-    self._wrapped, self._lines = wrap.wrap(self.font,
-                                           self.text,
-                                           self.shape.w - self.padding * 2)
+    self._wrapped, self._lines = wrap.wrap2(self.text, function(text) return self.font:getWidth(text) > self.shape.w - self.padding * 2 end)
 end
 
 function Text:keypressed(key)
@@ -134,6 +136,8 @@ function Text:keypressed(key)
         self:type("")
         
         return true
+    elseif key == "home" then
+        self.test:action("home")
     elseif key == "return" then
         if self.multiline and love.keyboard.isDown("lshift", "rshift") then
             self:type("\n")
@@ -146,10 +150,14 @@ function Text:keypressed(key)
         self.cursor = math.max(0, self.cursor - 1)
 
         self:type("")
+
+        self.test:action("left")
     elseif key == "right" then
         self.cursor = math.min(#self.text, self.cursor + 1)
 
         self:type("")
+
+        self.test:action("right")
     elseif key == "v" and love.keyboard.isDown("lctrl", "rctrl") then
         self:type(love.system.getClipboardText())
     end
