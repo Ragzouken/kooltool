@@ -50,9 +50,6 @@ function Text:init(params)
 
     self.changed = Event()
 
-    self.test = wrap.Text(not self.multiline and function(text) return self.font:getWidth(text) > self.shape.w - self.padding * 2 end)
-    self.changed:add(function(text) self.test.text = text self.test:refresh() end)
-
     self:refresh()
 end
 
@@ -88,7 +85,7 @@ end
 
 function Text:focus()
     self.focused = true
-    self.cursor = #self.text
+    self.cursor = #self._wrapped
 end
 
 function Text:defocus()
@@ -96,17 +93,23 @@ function Text:defocus()
 end
 
 function Text:type(string)
+    local cursor = self.cursor
+
+    if not self.multiline then
+        local left = self._wrapped:sub(1, self.cursor)
+        local _, newlines = left:gsub("\n", "\n")
+        cursor = self.cursor - newlines
+    end
+
     self.text = string.format("%s%s%s",
-                              self.text:sub(1, self.cursor),
+                              self.text:sub(1, cursor),
                               string,
-                              self.text:sub(self.cursor+1))
+                              self.text:sub(cursor+1))
 
     self.typing_sound:stop()
     self.typing_sound:play()
 
     self.cursor = self.cursor + #string
-
-    self.test:type(string)
 
     self:refresh()
 
@@ -137,7 +140,9 @@ function Text:keypressed(key)
         
         return true
     elseif key == "home" then
-        self.test:action("home")
+        self.cursor = 0
+    elseif key == "end" then
+        self.cursor = #self._wrapped + 1
     elseif key == "return" then
         if self.multiline and love.keyboard.isDown("lshift", "rshift") then
             self:type("\n")
@@ -150,14 +155,10 @@ function Text:keypressed(key)
         self.cursor = math.max(0, self.cursor - 1)
 
         self:type("")
-
-        self.test:action("left")
     elseif key == "right" then
-        self.cursor = math.min(#self.text, self.cursor + 1)
+        self.cursor = math.min(#self._wrapped, self.cursor + 1)
 
         self:type("")
-
-        self.test:action("right")
     elseif key == "v" and love.keyboard.isDown("lctrl", "rctrl") then
         self:type(love.system.getClipboardText())
     end
