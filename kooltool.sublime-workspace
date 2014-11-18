@@ -539,7 +539,7 @@
 			"file": "components/entity.lua",
 			"settings":
 			{
-				"buffer_size": 2593,
+				"buffer_size": 2595,
 				"line_ending": "Windows"
 			}
 		},
@@ -1023,18 +1023,18 @@
 				{
 					"buffer": 2,
 					"file": "components/entity.lua",
-					"semi_transient": true,
+					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2593,
+						"buffer_size": 2595,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								503,
-								503
+								1623,
+								1623
 							]
 						],
 						"settings":
@@ -1043,8 +1043,8 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": -0.0,
-						"translation.y": 0.0,
+						"translation.x": 0.0,
+						"translation.y": 570.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
