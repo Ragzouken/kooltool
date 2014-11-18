@@ -263,6 +263,8 @@ function Editor:SetProject(project)
 end
 
 function Editor:update(dt)
+    Panel.update(self, dt)
+
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
     if self.project then

@@ -53,7 +53,7 @@ function Entity:blank(x, y)
     self.sprite.resized:add(function(...) self:resized(...) end)
 
     self.script = ScriptLayer()
-    self:add(self.script)
+    --self:add(self.script)
 end
 
 function Entity:draw()

@@ -101,6 +101,12 @@ function Panel:resort()
     table.sort(self.sorted, depth)
 end
 
+function Panel:update(dt)
+    for child in self.sorted:downwards() do
+        child:update(dt)
+    end
+end
+
 function Panel:draw()
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(self.colours.fill)

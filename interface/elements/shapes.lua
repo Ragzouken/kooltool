@@ -35,9 +35,9 @@ function Rectangle.Null()
 end
 
 function Rectangle:init(params)
-    self.w, self.h = params.w, params.h
+    self.w, self.h = params.w or 0, params.h or 0
 
-    self:move_to {x = params.x, y = params.y,
+    self:move_to {x = params.x or 0, y = params.y or 0,
                   pivot = params.pivot,
                   anchor = params.anchor}
 end
