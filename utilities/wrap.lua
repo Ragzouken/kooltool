@@ -31,7 +31,7 @@ function Text:action(action)
     end
 end
 
-function Text:type(text)
+function Text:typed(text)
     self.text = string.format("%s%s%s",
                               self.text:sub(1, self.cursor),
                               text,

@@ -92,7 +92,7 @@ function Text:defocus()
     self.focused = false
 end
 
-function Text:type(string)
+function Text:typed(string)
     local cursor = self.cursor
 
     if not self.multiline then
@@ -129,14 +129,14 @@ function Text:keypressed(key)
             self.cursor = math.max(0, self.cursor - 1)
         end
 
-        self:type("")
+        self:typed("")
         
         return true
     elseif key == "delete" then
         self.text = string.format("%s%s",
                                   self.text:sub(1,self.cursor),
                                   self.text:sub(self.cursor+2))
-        self:type("")
+        self:typed("")
         
         return true
     elseif key == "home" then
@@ -145,7 +145,7 @@ function Text:keypressed(key)
         self.cursor = #self._wrapped + 1
     elseif key == "return" then
         if self.multiline and love.keyboard.isDown("lshift", "rshift") then
-            self:type("\n")
+            self:typed("\n")
         else
             EDITOR.focus = nil
         end
@@ -154,13 +154,13 @@ function Text:keypressed(key)
     elseif key == "left" then
         self.cursor = math.max(0, self.cursor - 1)
 
-        self:type("")
+        self:typed("")
     elseif key == "right" then
         self.cursor = math.min(#self._wrapped, self.cursor + 1)
 
-        self:type("")
+        self:typed("")
     elseif key == "v" and love.keyboard.isDown("lctrl", "rctrl") then
-        self:type(love.system.getClipboardText())
+        self:typed(love.system.getClipboardText())
     end
 
     return key ~= "escape" and not love.keyboard.isDown("lctrl", "rctrl")

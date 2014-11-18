@@ -18,11 +18,20 @@ function Drag:grab(object, sx, sy)
     self.drag.pivot = self.editor:transform(object, sx, sy)
 end
 
-function Drag:drop()
-    if self.drag and not self.drag.object.sprite then
-        self.target = self.drag.object
-    else
-        self.target = nil
+function Drag:drop(object, sx, sy)
+    print("huh", object.type)
+
+    if object.type == "Notebox" then
+        print("notebox tho")
+        local target, x, y = self.editor:target("note", sx, sy)
+
+        if target then
+            print("yeah target", target)
+
+            object.layer:removeNotebox(object)
+            target:addNotebox(object)
+            object:move_to { x = x, y = y, pivot = self.drag.pivot }
+        end
     end
 
     self:enddrag()
@@ -56,7 +65,7 @@ function Drag:mousepressed(button, sx, sy, wx, wy)
             end
         end
 
-        self:drop()
+        self:enddrag()
     end
 
     return false
@@ -74,18 +83,9 @@ end
 
 function Drag:mousereleased(button, sx, sy, wx, wy)
     if button == "l" then
-        self:drop()
+        if self.drag then self:drop(self.drag.object, sx, sy) end
 
         return true, "end"
-    end
-end
-
-function Drag:keypressed(key, sx, sy, wx, wy)
-    if self.target then
-        if key == "escape" or (key == "return" and love.keyboard.isDown("lshift", "rshift")) then
-            self.target = nil
-            return true
-        end
     end
 end
 

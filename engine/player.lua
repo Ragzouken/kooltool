@@ -46,8 +46,8 @@ function Player:init(game, entity)
 
     self.speech = {}
 
-    for notebox in pairs(layers.annotation.noteboxes) do
-        if shapes.rect_rect(entity.shape, notebox.shape) then
+    if self.entity.script then
+        for notebox in pairs(self.entity.script.annotation.noteboxes) do
             local key, value = parse_note(notebox.text)
 
             if key then

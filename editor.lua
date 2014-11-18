@@ -475,7 +475,7 @@ function Editor:keyreleased(key)
 end
 
 function Editor:textinput(character)
-    if self.focus then self.focus:type(character) end
+    if self.focus then self.focus:typed(character) end
 
     if self.project then
         local sx, sy = love.mouse.getPosition()

@@ -6,6 +6,7 @@ local wrap = require "utilities.wrap"
 
 local Notebox = Class {
     __includes = Text,
+    type = "Notebox",
     name = "Generic Notebox",
     actions = {"drag", "type", "remove", "block", "tooltip"},
     tooltip = "note",
@@ -146,14 +147,14 @@ function Notebox:defocus()
     end
 end
 
-function Notebox:type(string)
+function Notebox:typed(string)
     if self.unset then
         self.unset = false
         self.text = ""
         self.cursor = 0
     end
 
-    Text.type(self, string)
+    Text.typed(self, string)
 
     self:refresh()
 end

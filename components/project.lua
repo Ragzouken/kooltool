@@ -36,8 +36,8 @@ function Project:deserialise(resources, data)
         annotation = resources:resource(data.layers.annotation),
     }
 
-    self:add(self.layers.surface)
-    self:add(self.layers.annotation)
+    self:add(self.layers.surface, -1)
+    self:add(self.layers.annotation, -2)
 
     self.palette = generators.Palette.generate(9)
 end

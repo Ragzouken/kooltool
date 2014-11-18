@@ -32,8 +32,8 @@ function project.default(tilesize)
     project_.layers.surface = generators.surface.default(project_, tilesize)
     project_.layers.annotation = AnnotationLayer(project_)
 
-    project_:add(project_.layers.surface)
-    project_:add(project_.layers.annotation)
+    project_:add(project_.layers.surface, -2)
+    project_:add(project_.layers.annotation, -1)
 
     return project_
 end

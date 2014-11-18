@@ -523,23 +523,47 @@
 			"file": "components/project.lua",
 			"settings":
 			{
-				"buffer_size": 2804,
+				"buffer_size": 2812,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "generators/project.lua",
+			"settings":
+			{
+				"buffer_size": 1107,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "layers/scripting.lua",
 			"settings":
 			{
-				"buffer_size": 2044,
+				"buffer_size": 1836,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "components/entity.lua",
+			"file": "engine/player.lua",
 			"settings":
 			{
-				"buffer_size": 2595,
+				"buffer_size": 4419,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "interface/elements/text.lua",
+			"settings":
+			{
+				"buffer_size": 4558,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "layers/annotation.lua",
+			"settings":
+			{
+				"buffer_size": 3338,
 				"line_ending": "Windows"
 			}
 		},
@@ -563,7 +587,23 @@
 			"file": "editor.lua",
 			"settings":
 			{
-				"buffer_size": 13652,
+				"buffer_size": 13653,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "tools/drag.lua",
+			"settings":
+			{
+				"buffer_size": 2260,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "components/notebox.lua",
+			"settings":
+			{
+				"buffer_size": 4199,
 				"line_ending": "Windows"
 			}
 		}
@@ -598,17 +638,19 @@
 	[
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities"
 	],
 	"file_history":
 	[
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/entity.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/wrap.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/project.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/panel.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/editor.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/draw.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/entity.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/main.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/tileset.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/nocanvas.lua",
@@ -616,7 +658,6 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/game.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/projectselect.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/project.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/project.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/resourcemanager.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/project.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/surface.lua",
@@ -625,7 +666,6 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/scriptnode.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/scripting.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/init.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/wrap.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/notebox.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/text.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/relevant-tools.txt",
@@ -751,6 +791,11 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			":type(",
+			"type(",
+			"end",
+			"self.target",
+			"\"note\"",
 			"transform",
 			":transform",
 			"transform",
@@ -873,12 +918,7 @@
 			"Drag",
 			"DRAG",
 			"Pan",
-			"ACTION:",
-			"DRAG",
-			"huslp",
-			"from_linear",
-			"from_lin",
-			"xyz_to_rgb"
+			"ACTION:"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -957,7 +997,7 @@
 	"groups":
 	[
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -966,15 +1006,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2804,
+						"buffer_size": 2812,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2289,
-								2289
+								1023,
+								1023
 							]
 						],
 						"settings":
@@ -984,27 +1024,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1368.0,
+						"translation.y": 342.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "layers/scripting.lua",
+					"file": "generators/project.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2044,
+						"buffer_size": 1107,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1807,
-								1807
+								1064,
+								1064
 							]
 						],
 						"settings":
@@ -1013,8 +1053,8 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 0.0,
-						"translation.y": 912.0,
+						"translation.x": -0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -1022,19 +1062,19 @@
 				},
 				{
 					"buffer": 2,
-					"file": "components/entity.lua",
+					"file": "layers/scripting.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2595,
+						"buffer_size": 1836,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1623,
-								1623
+								1362,
+								1362
 							]
 						],
 						"settings":
@@ -1044,14 +1084,104 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 570.0,
+						"translation.y": 456.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
 					"buffer": 3,
+					"file": "engine/player.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4419,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1331,
+								1331
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2052.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "interface/elements/text.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4558,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4424,
+								4424
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2643.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "layers/annotation.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3338,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								879,
+								879
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
 					"file": "interface/elements/shapes.lua",
 					"semi_transient": false,
 					"settings":
@@ -1077,11 +1207,11 @@
 						"translation.y": 399.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 7,
 					"file": "layers/layer.lua",
 					"semi_transient": false,
 					"settings":
@@ -1093,8 +1223,8 @@
 						"selection":
 						[
 							[
-								251,
-								251
+								252,
+								252
 							]
 						],
 						"settings":
@@ -1105,24 +1235,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 8,
 					"file": "editor.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 13652,
+						"buffer_size": 13653,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7548,
-								7548
+								13425,
+								13425
 							]
 						],
 						"settings":
@@ -1132,10 +1262,70 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4788.0,
+						"translation.y": 8582.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "tools/drag.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2260,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1656,
+								1656
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1026.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "components/notebox.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4199,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4078,
+								4078
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2622.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
 					"type": "text"
 				}
 			]

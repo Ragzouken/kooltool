@@ -36,17 +36,6 @@ function ScriptingLayer:init()
     self:add(self.border)
 
     self.annotation = AnnotationLayer()
-    self.nodes = {} 
-
-    for i=1,3 do
-        local test = Notebox()
-
-        local x, y = love.math.random(-64, 64), love.math.random(-64, 64)
-
-        test:move_to { x = x, y = y, anchor = {0.5, 0.5} }
-
-        self.annotation:addNotebox(test)
-    end
 
     self:add(self.annotation)
 end
@@ -68,6 +57,8 @@ function ScriptingLayer:update(dt)
 
     local x, y, w, h = unpack(size)
     self.border.shape.x, self.border.shape.y, self.border.shape.w, self.border.shape.h = x, y, w, h
+
+    self.annotation.shape = self.border.shape
 end
 
 --[[
