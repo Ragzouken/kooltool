@@ -523,7 +523,7 @@
 			"file": "components/project.lua",
 			"settings":
 			{
-				"buffer_size": 2812,
+				"buffer_size": 2826,
 				"line_ending": "Windows"
 			}
 		},
@@ -531,7 +531,7 @@
 			"file": "generators/project.lua",
 			"settings":
 			{
-				"buffer_size": 1107,
+				"buffer_size": 1121,
 				"line_ending": "Unix"
 			}
 		},
@@ -639,6 +639,7 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities"
@@ -997,7 +998,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -1006,15 +1007,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2812,
+						"buffer_size": 2826,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1023,
-								1023
+								1076,
+								1076
 							]
 						],
 						"settings":
@@ -1024,10 +1025,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 342.0,
+						"translation.y": 456.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
@@ -1036,15 +1037,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1107,
+						"buffer_size": 1121,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1064,
-								1064
+								402,
+								402
 							]
 						],
 						"settings":
@@ -1054,10 +1055,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": -0.0,
-						"translation.y": 0.0,
+						"translation.y": 114.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{

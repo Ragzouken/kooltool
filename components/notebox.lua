@@ -131,7 +131,7 @@ function Notebox:refresh()
     local dw, dh = w/2 - self.shape.w, h/2 - self.shape.h
 
     self.shape:grow { right = dw, down = dh }
-    self.shape:move_to { x = x, y = y, anchor = {0.5, 0.5} }
+    self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
 
     self.shape.notebox = self
     self.name = "notebox \"" .. self.text .. "\""

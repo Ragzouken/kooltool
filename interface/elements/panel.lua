@@ -17,8 +17,12 @@ function Panel:init(params)
     params = params or {}
     
     self.name = params.name or self.name
-    self.depth = params.depth or 0
+
     self.shape = params.shape or shapes.Plane {x = 0, y = 0}
+    
+    self.x, self.y = params.x or self.shape.x, params.y or self.shape.y
+    self.depth = params.depth or 0
+
     self.actions = params.actions or self.actions
     self.colours = params.colours or self.colours
     
@@ -119,7 +123,7 @@ end
 
 function Panel:draw_children()
     love.graphics.push()
-    love.graphics.translate(self.shape.x, self.shape.y)
+    love.graphics.translate(self.x, self.y)
 
     --[[
     if self.clip and self.shape then
@@ -142,9 +146,8 @@ desired action, along with the coordinates of the hit in it's local coordinates
 
 TODO: maybe track the whole transform chain ffs
 --]]
-function Panel:target(action, x, y, debug)    
-    local ax, ay = self.shape.x, self.shape.y
-    local lx, ly = x - ax, y - ay
+function Panel:target(action, x, y, debug)
+    local lx, ly = x - self.x, y - self.y
 
     for child in self.sorted:downwards() do
         if child.active then
@@ -164,8 +167,7 @@ function Panel:target(action, x, y, debug)
 end
 
 function Panel:transform(target, x, y)
-    local ax, ay = self.shape.x, self.shape.y
-    local lx, ly = x - ax, y - ay
+    local lx, ly = x - self.x, y - self.y
 
     if target == self then
         return {lx, ly}
@@ -180,6 +182,7 @@ end
 
 function Panel:move_to(params)
     self.shape:move_to(params)
+    self.x, self.y = self.shape.x, self.shape.y
 end
 
 return Panel

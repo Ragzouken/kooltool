@@ -50,7 +50,7 @@ end
 
 function Frame:draw()
     love.graphics.push()
-    love.graphics.translate(self.shape.x, self.shape.y)
+    love.graphics.translate(self.x, self.y)
     self.camera:attach()
     
     for child in self.sorted:upwards() do

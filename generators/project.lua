@@ -33,7 +33,7 @@ function project.default(tilesize)
     project_.layers.annotation = AnnotationLayer(project_)
 
     project_:add(project_.layers.surface, -2)
-    project_:add(project_.layers.annotation, -1)
+    project_.layers.surface:add(project_.layers.annotation, 1)
 
     return project_
 end
