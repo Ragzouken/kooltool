@@ -19,15 +19,10 @@ function Drag:grab(object, sx, sy)
 end
 
 function Drag:drop(object, sx, sy)
-    print("huh", object.type)
-
     if object.type == "Notebox" then
-        print("notebox tho")
         local target, x, y = self.editor:target("note", sx, sy)
 
         if target then
-            print("yeah target", target)
-
             object.layer:removeNotebox(object)
             target:addNotebox(object)
             object:move_to { x = x, y = y, pivot = self.drag.pivot }

@@ -71,7 +71,7 @@ function ResourceManager:reference(resource)
 end
 
 function ResourceManager:resource(reference)
-    return self.id_to_resource[reference]
+    return reference and self.id_to_resource[reference]
 end
 
 function ResourceManager:register(resource, params)

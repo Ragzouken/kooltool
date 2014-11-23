@@ -14,12 +14,18 @@ local Entity = Class {
     name = "Generic Entity",
     type = "Entity",
 
-    actions = {"drag", "draw", "remove", "tooltip"},
+    actions = {"drag", "draw", "remove", "tooltip", "script"},
     tooltip = "character",
 }
 
 function Entity:deserialise(resources, data)
     self.sprite = resources:resource(data.sprite)
+    self.script = resources:resource(data.script)
+
+    if not self.script then self.script = ScriptLayer() self.script:blank() end
+
+    self:add(self.script)
+    self.script.active = false
 end
 
 function Entity:serialise(resources)
@@ -28,6 +34,7 @@ function Entity:serialise(resources)
     return {
         x = x, y = y,
         sprite = resources:reference(self.sprite),
+        script = resources:reference(self.script),
     }
 end
 
@@ -53,6 +60,7 @@ function Entity:blank(x, y)
     self.sprite.resized:add(function(...) self:resized(...) end)
 
     self.script = ScriptLayer()
+    self.script:blank()
     self:add(self.script)
 end
 

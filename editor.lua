@@ -395,11 +395,10 @@ end
 function Editor:mousepressed(sx, sy, button)
     local wx, wy = self.view.camera:worldCoords(sx, sy)
 
-    local event = { action = "press", coords = {sx, sy, wx, wy}, }
-    local target = self:target("press", sx, sy, true)
+    local target = self:target("press", sx, sy)
 
     if target and button == "l" then
-        target:event(event)
+        target:event{ action = "press", coords = {sx, sy, wx, wy} }
         return
     end
 
@@ -408,10 +407,15 @@ function Editor:mousepressed(sx, sy, button)
         self.focus = nil
     end
 
-    local target = self:target("type", sx, sy, true)
+    local target = self:target("type", sx, sy)
     if target and button == "l" then
         self.focus = target
         target:focus()
+    end
+
+    local target = self:target("script", sx, sy)
+    if target and button == "l" and love.keyboard.isDown("s") then
+        target.script.active = not target.script.active
     end
 
     if self.project then

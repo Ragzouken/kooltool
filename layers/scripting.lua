@@ -17,9 +17,21 @@ local ScriptingLayer = Class {
 }
 
 function ScriptingLayer:serialise(resources)
+    local data = {}
+
+    data.annotation = resources:reference(self.annotation)
+
+    return data
 end
 
 function ScriptingLayer:deserialise(resources, data)
+    self.annotation = resources:resource(data.annotation)
+    self:add(self.annotation)
+end
+
+function ScriptingLayer:blank()
+    self.annotation = AnnotationLayer()
+    self:add(self.annotation)
 end
 
 function ScriptingLayer:init()
@@ -34,10 +46,9 @@ function ScriptingLayer:init()
     }
 
     self:add(self.border)
+end
 
-    self.annotation = AnnotationLayer()
-
-    self:add(self.annotation)
+function ScriptingLayer:finalise()
 end
 
 function ScriptingLayer:update(dt)
