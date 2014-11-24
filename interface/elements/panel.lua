@@ -20,20 +20,27 @@ function Panel:init(params)
 
     self.shape = params.shape or shapes.Plane {x = 0, y = 0}
     
-    self.x, self.y = params.x or self.shape.x, params.y or self.shape.y
+    self.x = params.x or self.shape.x
+    self.y = params.y or self.shape.y
     self.depth = params.depth or 0
 
     self.actions = params.actions or self.actions
     self.colours = params.colours or self.colours
     
     self.clip = params.clip or self.clip
+    self.tags = params.tags or self.tags or {}
 
     for i, action in ipairs(self.actions) do
         self.actions[action] = true
     end
+
+    for i, tag in ipairs(self.tags) do
+        self.tags[tag] = true
+    end
     
     self.active = true
     self.children = {}
+    self.default_depth = 1
 
     self:resort()
 end
@@ -49,11 +56,13 @@ function Panel:print(depth)
 end
 
 function Panel:add(panel, depth)
-    assert(panel)
+    local depth = depth or panel.depth or self.default_depth
+    self.default_depth = depth + 1
 
     if panel.parent then panel.parent:remove(panel) end
     panel.parent = self
-    self.children[panel] = depth or panel.depth or 0
+
+    self.children[panel] = depth
     self:resort()
 end
 
@@ -111,19 +120,35 @@ function Panel:update(dt)
     end
 end
 
-function Panel:draw()
+function Panel:check_filters(filters)
+    for i, filter in ipairs(filters.whitelist or {}) do
+        if self.tags[filter] then return true end
+    end
+
+    for i, filter in ipairs(filters.blacklist or {}) do
+        if self.tags[filter] then return false end
+    end
+
+    return true
+end
+
+function Panel:draw(params)
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(self.colours.fill)
     self.shape:draw("fill")
     love.graphics.setColor(self.colours.stroke)
     self.shape:draw("line")
-
-    self:draw_children()
 end
 
-function Panel:draw_children()
+function Panel:draw_tree(params)
+    if not self:check_filters(params.filters or {}) then return end
+
     love.graphics.push()
     love.graphics.translate(self.x, self.y)
+    self:draw(params)
+
+    --love.graphics.push()
+    --love.graphics.translate(self.x, self.y)
 
     --[[
     if self.clip and self.shape then
@@ -132,7 +157,7 @@ function Panel:draw_children()
     ]]
 
     for child in self.sorted:upwards() do
-        if child.active then child:draw() end
+        if child.active then child:draw_tree(params) end
     end
        
     love.graphics.setStencil()
@@ -157,7 +182,7 @@ function Panel:target(action, x, y, debug)
         end
     end
 
-    if self.shape:contains(x, y) then
+    if self.shape:contains(lx, ly) then
         if self.actions[action] then
             return self, lx, ly
         elseif self.actions["block"] then
@@ -181,8 +206,13 @@ function Panel:transform(target, x, y)
 end
 
 function Panel:move_to(params)
-    self.shape:move_to(params)
-    self.x, self.y = self.shape.x, self.shape.y
+    local dx, dy = 0, 0
+
+    if self.shape and (params.anchor or params.pivot) then
+        dx, dy = self.shape:coords(params)
+    end
+
+    self.x, self.y = params.x - dx, params.y - dy
 end
 
 return Panel

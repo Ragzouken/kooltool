@@ -16,7 +16,7 @@ function Toolbar:init(params)
     local cols = math.floor((#params.buttons - 1) / 16) + 1
     local width = cols * w
 
-    params.shape = shapes.Rectangle { x = params.x, y = params.y,
+    params.shape = shapes.Rectangle { x = 0, y = 0,
                                       w = width+2,  h = height+2,
                                       anchor = params.anchor }
     

@@ -16,6 +16,8 @@ function Drag:grab(object, sx, sy)
     self.drag.object = object
 
     self.drag.pivot = self.editor:transform(object, sx, sy)
+
+    print(unpack(self.drag.pivot))
 end
 
 function Drag:drop(object, sx, sy)
@@ -25,7 +27,8 @@ function Drag:drop(object, sx, sy)
         if target then
             object.layer:removeNotebox(object)
             target:addNotebox(object)
-            object:move_to { x = x, y = y, pivot = self.drag.pivot }
+            local dx, dy = unpack(self.drag.pivot)
+            object:move_to { x = x - dx, y = y - dy}
         end
     end
 
@@ -71,8 +74,8 @@ function Drag:mousedragged(action, screen, world)
         -- need to get position of mouse in coord space of draggee's parent
         local wx, wy = unpack(self.editor:transform(self.drag.object.parent, unpack(screen)))
 
-        self.drag.object:move_to { x = wx, y = wy,
-                                   pivot = self.drag.pivot }
+        local dx, dy = unpack(self.drag.pivot)
+        self.drag.object:move_to { x = wx - dx, y = wy - dy }
     end
 end
 

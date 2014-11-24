@@ -29,8 +29,6 @@ function Game:init(project, playtest)
 
     local layers = self.project.layers
 
-    layers.annotation.active = false
-
     for notebox in pairs(layers.annotation.noteboxes) do
         local key, value = parse_note(notebox.text)
 
@@ -54,9 +52,9 @@ function Game:init(project, playtest)
 
         table.insert(choice, actor)
 
-        local px, py = entity.shape:coords { pivot=entity.sprite.pivot } 
-        local x, y = round(px, 1/tw)+tw/2, round(py, 1/th)+th/2
-        entity:move_to { x=x, y=y, pivot=entity.sprite.pivot }
+        local px, py = entity.x, entity.y
+        local x, y = round(px, 1/tw), round(py, 1/th)
+        entity:move_to { x = x, y=y }
 
         if actor.tags.player then
             self.player = actor
@@ -86,7 +84,7 @@ function Game:update(dt)
     end
 
     if self.player then
-        self.camera.x, self.camera.y = self.player.entity.shape:coords { anchor = {0.5, 0.5} }
+        self.camera.x, self.camera.y = self.player.entity.x, self.player.entity.y
     end
 end
 
@@ -116,12 +114,16 @@ local function box(message)
         dy + 16 + 4, wrap)
 end
 
-function Game:draw()
+function Game:draw_tree(params)
     self.camera:attach()
-    self.project:draw(self.tags.commentary, true)
-    for actor in pairs(self.actors) do
-        --if actor.active then actor:draw() end
-    end
+    
+    self.project:draw_tree {
+        filters = {
+            whitelist = (self.tags.commentary and { "annotation" } or {}),
+            blacklist = { "editor" },
+        }
+    }
+    
     self.camera:detach()
 
     if self.TEXT then
@@ -135,8 +137,6 @@ function Game:undo()
         actor.entity.a = 0
         actor.entity.active = true
     end
-
-    self.project.layers.annotation.active = true
 end
 
 function Game:mousepressed(x, y, button)

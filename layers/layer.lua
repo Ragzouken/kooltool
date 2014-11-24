@@ -12,8 +12,8 @@ function Layer:init(project)
     self.project = project
 end
 
-function Layer:draw()
-    Panel.draw(self)
+function Layer:draw(params)
+    Panel.draw(self, params)
 
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(255, 255, 255, 32)

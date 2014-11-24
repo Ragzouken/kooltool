@@ -14,6 +14,8 @@ local ScriptingLayer = Class {
 
     padding = 8,
     brain = common.loadCanvas("images/brain.png"),
+
+    tags = { "editor", },
 }
 
 function ScriptingLayer:serialise(resources)
@@ -38,8 +40,7 @@ function ScriptingLayer:init()
     Panel.init(self)
 
     self.border = Panel {
-        shape = shapes.Rectangle { x =  0, y =  0,
-                                   w = 50, h = 50 },
+        shape = shapes.Rectangle { w = 50, h = 50 },
 
         colours = {stroke = {255, 255, 255, 255},
                    fill   = {  0,   0,   0,  32}},
@@ -56,7 +57,7 @@ function ScriptingLayer:update(dt)
 
     local dx, dy = unpack(self.parent.sprite.pivot)
 
-    local size = {0, 0,
+    local size = {self.parent.shape.x, self.parent.shape.y,
                   self.parent.shape.w, self.parent.shape.h}
 
     for notebox in pairs(self.annotation.noteboxes) do
@@ -69,17 +70,9 @@ function ScriptingLayer:update(dt)
     local x, y, w, h = unpack(size)
     self.border.shape.x, self.border.shape.y, self.border.shape.w, self.border.shape.h = x, y, w, h
 
+    print(self.border.shape.w)
+
     self.annotation.shape = self.border.shape
 end
-
---[[
-function ScriptingLayer:draw()
-    Panel.draw_children(self)
-
-    love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(255, 255, 255, 255)
-    love.graphics.draw(self.brain, 0, 0)
-end
-]]
 
 return ScriptingLayer

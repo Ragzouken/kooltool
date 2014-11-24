@@ -10,15 +10,15 @@ local NewProjectPanel = Class {
 
 function NewProjectPanel:init(project, params, new)
     elements.Panel.init(self, {
-        shape = elements.shapes.Rectangle {x = params.x,   y = params.y,
-                                           w = 448, h = 64, 
+        x = params.x, y = params.y,
+        shape = elements.shapes.Rectangle {w = 448, h = 64, 
                                            anchor = params.anchor},
     })
 
     local title = elements.Text{
-        shape = elements.shapes.Rectangle { x =  64, y = 0,
-                                            w = 384, h = 32 - 4,
-                                            anchor = {0, 0}},
+        x = 64, y = 0,
+
+        shape = elements.shapes.Rectangle { w = 384, h = 32 - 4 },
         colours = {
             stroke = PALETTE.colours[1],
             fill = PALETTE.colours[1],
@@ -32,9 +32,9 @@ function NewProjectPanel:init(project, params, new)
     }
     
     local description = elements.Text{
-        shape = elements.shapes.Rectangle { x =  64, y = 32 - 4,
-                                            w = 384, h = 32 + 4,
-                                            anchor = {0, 0}},
+        x = 64, y = 32 - 4,
+
+        shape = elements.shapes.Rectangle { w = 384, h = 32 + 4 },
         colours = {
             stroke = PALETTE.colours[2],
             fill = PALETTE.colours[2],
@@ -48,15 +48,13 @@ function NewProjectPanel:init(project, params, new)
     }
 
     local size = elements.Panel {
-        shape = elements.shapes.Rectangle { x = 192, y =   6,
-                                            w =   0, h =   0,
-                                            anchor = {0, 0} },
+        x = 192, y = 6,
+
+        shape = elements.shapes.Rectangle.Null(),
     }
 
     local width = elements.Text{
-        shape = elements.shapes.Rectangle { x =  0,  y =  0, 
-                                            w = 40,  h = 24,
-                                            anchor = {0, 0}},
+        shape = elements.shapes.Rectangle { w = 40,  h = 24 },
         colours = {
             stroke = {255, 255, 255, 255},
             fill   = {  0,   0,   0, 255},
@@ -68,9 +66,8 @@ function NewProjectPanel:init(project, params, new)
     }
 
     local height = elements.Text{
-        shape = elements.shapes.Rectangle { x = 48,  y =  0, 
-                                            w = 40,  h = 24,
-                                            anchor = {0, 0}},
+        x = 48, y = 0,
+        shape = elements.shapes.Rectangle { w = 40,  h = 24 },
         colours = {
             stroke = {255, 255, 255, 255},
             fill   = {  0,   0,   0, 255},
@@ -95,9 +92,8 @@ function NewProjectPanel:init(project, params, new)
     }
 
     local button = elements.Text {
-        shape = elements.shapes.Rectangle { x = 96,  y =  0, 
-                                            w = 92,  h = 24,
-                                            anchor = {0, 0}},
+        x = 96, y = 0,
+        shape = elements.shapes.Rectangle { w = 92,  h = 24 },
         colours = {
             stroke = PALETTE.colours[1],
             fill = PALETTE.colours[1],

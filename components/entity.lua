@@ -40,8 +40,7 @@ end
 
 function Entity:init()
     Panel.init(self, { 
-        shape = shapes.Rectangle { x = 0, y = 0, 
-                                   w = 0, h = 0 },
+        shape = shapes.Rectangle.Null(),
     })
 end
 
@@ -64,15 +63,13 @@ function Entity:blank(x, y)
     self:add(self.script)
 end
 
-function Entity:draw()
+function Entity:draw(params)
     love.graphics.push()
     love.graphics.translate(self.shape.x, self.shape.y)
 
     self.sprite:draw(0, 0, self.a)
 
     love.graphics.pop()
-
-    self:draw_children()
 end
 
 function Entity:border()

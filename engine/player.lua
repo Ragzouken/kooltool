@@ -129,7 +129,7 @@ function Player:rando()
 end
 
 function Player:move(vector, input)
-    local cx, cy = self.entity.shape:coords { pivot = self.entity.sprite.pivot }
+    local cx, cy = self.entity.x, self.entity.y
     local gx, gy = self.game.project.layers.surface.tilemap:gridCoords(cx, cy)
 
     local vx, vy = unpack(vector)
@@ -156,7 +156,7 @@ function Player:move(vector, input)
     if not wall and not self.movement then
         local period = self.speed
         local t = 0
-        local x, y = self.entity.shape:coords()
+        local x, y = self.entity.x, self.entity.y
 
         self.tx, self.ty = dx, dy
 

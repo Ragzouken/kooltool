@@ -48,13 +48,13 @@ function Frame:transform(target, x, y)
     end
 end
 
-function Frame:draw()
+function Frame:draw_tree(params)
     love.graphics.push()
     love.graphics.translate(self.x, self.y)
     self.camera:attach()
     
     for child in self.sorted:upwards() do
-        if child.active then child:draw() end
+        if child.active then child:draw_tree(params) end
     end
        
     self.camera:detach() 
@@ -64,7 +64,8 @@ end
 function Frame:move_to(params)
     local px, py = unpack(params.pivot)
 
-    self.camera:lookAt((px - params.x) / self.camera.scale, (py - params.y) / self.camera.scale)
+    self.camera:lookAt((px - params.x) / self.camera.scale,
+                       (py - params.y) / self.camera.scale)
 end
 
 return Frame

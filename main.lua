@@ -50,7 +50,7 @@ end
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
 function love.draw()
-    MODE:draw()
+    MODE:draw_tree{}
 
     if EDITOR and MODE ~= EDITOR and MODE.playtest then
         local o = 4-1+2

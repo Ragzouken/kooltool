@@ -268,9 +268,9 @@ function Editor:update(dt)
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
     if self.project then
-        self.toolbar:move_to { x = 1, y = 1, anchor = {0, 0} }
-        self.thingbar:move_to { x = 1, y = 176, anchor = {0, 0}}
-        self.filebar:move_to { x = 1, y = 252, anchor = {0, 0}}
+         self.toolbar:move_to { x = 1, y =   1 }
+        self.thingbar:move_to { x = 1, y = 176 }
+         self.filebar:move_to { x = 1, y = 252 }
 
         if self.toolindex[self.active] then self.toolbar.group:select(self.toolbar.buttons[self.toolindex[self.active]]) end
 
@@ -304,11 +304,13 @@ function Editor:update(dt)
         end
 
         self.tilebar:init {
-            x = love.window.getWidth() - 1, y=1,
-            buttons=tiles,
             anchor={1, 0},
-            size = self.project.layers.surface.tileset.dimensions
+            size = self.project.layers.surface.tileset.dimensions,
+            buttons = tiles,
         }
+
+        self.tilebar.x = love.window.getWidth() - 1
+        self.tilebar.y = 1
     end
 end
 
@@ -378,9 +380,7 @@ end
 local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
-function Editor:draw()
-    Panel.draw(self)
-
+function Editor:draw(params)
     if self.project then
         self.view.camera:attach()
 

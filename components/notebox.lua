@@ -45,8 +45,7 @@ function Notebox:serialise(resources)
 end
 
 function Notebox:init(layer)
-    Text.init(self, { shape = shapes.Rectangle { x = 0, y = 0,
-                                                 w = 0, h = 0 } })
+    Text.init(self, { shape = shapes.Rectangle { anchor = {0.5, 0.5} } })
     
     self.layer = layer
     self.unset = false
@@ -61,7 +60,7 @@ function Notebox:blank(x, y, text)
     self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
 end
 
-function Notebox:draw()
+function Notebox:draw(params)
     if MODE ~= EDITOR and string.match(self.text, "%[(.+)%]") then return end 
 
     love.graphics.setFont(self.font)
@@ -104,8 +103,6 @@ function Notebox:draw()
         self.shape:draw("line")
         love.graphics.setLineWidth(1)
     end
-
-    self:draw_children()
 end
 
 function Notebox:refresh()
@@ -125,13 +122,12 @@ function Notebox:refresh()
     local height = (self.font:getHeight() + self.spacing) * #lines
     local oy = self.font:getAscent() - self.font:getBaseline()
 
-    local x, y = self.shape:coords{ anchor={0.5, 0.5} }
     local w, h = width+self.padding*2, height+self.padding*2
 
     local dw, dh = w/2 - self.shape.w, h/2 - self.shape.h
 
     self.shape:grow { right = dw, down = dh }
-    self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
+    self.shape:move_to { x = 0, y = 0, anchor = {0.5, 0.5} }
 
     self.shape.notebox = self
     self.name = "notebox \"" .. self.text .. "\""

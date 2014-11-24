@@ -35,11 +35,13 @@ function Rectangle.Null()
 end
 
 function Rectangle:init(params)
+    self.x, self.y = params.x or 0, params.y or 0
     self.w, self.h = params.w or 0, params.h or 0
 
-    self:move_to {x = params.x or 0, y = params.y or 0,
-                  pivot = params.pivot,
-                  anchor = params.anchor}
+    self.anchor = params.anchor
+    self.pivot = params.pivot
+
+    self:move_to { x = params.x or 0, y = params.y or 0 }
 end
 
 function Rectangle:draw(mode)
@@ -56,10 +58,10 @@ function Rectangle:contains(x, y)
 end
 
 function Rectangle:move_to(params)
-    local px, py = unpack(params.pivot or {0, 0})
+    local px, py = unpack(params.pivot or self.pivot or {0, 0})
 
-    if params.anchor then
-        px, py = self:pivot(unpack(params.anchor))
+    if params.anchor or self.anchor then
+        px, py = self:pivot_(unpack(params.anchor or self.anchor))
     end
 
     -- TODO: this shouldn't floor, probably, but needs to so draw has int coords
@@ -80,13 +82,13 @@ function Rectangle:coords(params)
     local px, py = unpack(params.pivot or {0, 0})
 
     if params.anchor then
-        px, py = self:pivot(unpack(params.anchor))
+        px, py = self:pivot_(unpack(params.anchor))
     end
 
     return self.x + px, self.y + py
 end
 
-function Rectangle:pivot(ax, ay)
+function Rectangle:pivot_(ax, ay)
     return self.w * ax, self.h * ay
 end
 

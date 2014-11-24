@@ -13,6 +13,7 @@ local AnnotationLayer = Class {
     name = "kooltool annotation layer",
 
     actions = { "mark", "note", },
+    tags = { "editor", "annotation", },
 
     BLOCK_SIZE = 256,
 }
@@ -70,7 +71,7 @@ end
 function AnnotationLayer:finalise()
 end
 
-function AnnotationLayer:draw()
+function AnnotationLayer:draw(params)
     love.graphics.setBlendMode("alpha")
     
     love.graphics.setColor(colour.cursor(0))
@@ -83,8 +84,6 @@ function AnnotationLayer:draw()
     end
 
     love.graphics.setColor(255, 255, 255, 255)
-
-    self:draw_children()
 end
 
 function AnnotationLayer:addNotebox(notebox)

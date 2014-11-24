@@ -12,8 +12,8 @@ local Button = Class {
 function Button:init(params)
     if not params.shape then
         local _, _, w, h = params.icon.quad:getViewport()
-        params.shape = shapes.Rectangle { x = params.x, y = params.y,
-                                          w = w,        h = h,
+        params.shape = shapes.Rectangle { x = 0, y = 0,
+                                          w = w, h = h,
                                           anchor = params.anchor}
     end
     

@@ -104,7 +104,7 @@ function SurfaceLayer:finalise()
     self:refresh()
 end
 
-function SurfaceLayer:draw()
+function SurfaceLayer:draw(params)
     love.graphics.setBlendMode("premultiplied")
     love.graphics.setColor(255, 255, 255, 255)
     
@@ -115,8 +115,6 @@ function SurfaceLayer:draw()
     end
 
     love.graphics.draw(self.tilebatch, 0, 0)
-
-    self:draw_children()
 end
 
 function SurfaceLayer:SetTileset(tileset)

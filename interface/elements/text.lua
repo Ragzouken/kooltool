@@ -53,8 +53,8 @@ function Text:init(params)
     self:refresh()
 end
 
-function Text:draw()    
-    Panel.draw(self)
+function Text:draw(params)    
+    Panel.draw(self, params)
     
     love.graphics.setBlendMode("alpha")
 

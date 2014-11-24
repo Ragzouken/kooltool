@@ -18,18 +18,16 @@ end
 
 function ProjectSelect:SetProjects(projects)
     local function button(action)
-        return elements.Button{
-            shape = elements.shapes.Rectangle { x = 64,  y = 0,
-                                                w = 384, h = 64,
-                                                anchor = {0, 0}},
+        return elements.Button {
+            x = 64, y = 0,
+            shape = elements.shapes.Rectangle { w = 384, h = 64 },
             action = action,
         }
     end
 
     self.projects = projects
-    self.shape = elements.shapes.Rectangle {x = 32,  y = 32,
-                                            w = 448, h = #self.projects * 64,
-                                            anchor = {0, 0}}
+    self.shape = elements.shapes.Rectangle { w = 448,
+                                             h = (#self.projects + 1) * 64 }
     
     self:clear()
     
