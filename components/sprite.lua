@@ -45,8 +45,8 @@ function Sprite:draw(x, y, a, s)
 
     local px, py = unpack(self.pivot)
     
-    love.graphics.draw(self.canvas, 
-                       x + px, y + py,
+    love.graphics.draw(self.canvas,
+                       x or 0, y or 0,
                        a or 0,
                        s or 1, s or 1,
                        px, py)

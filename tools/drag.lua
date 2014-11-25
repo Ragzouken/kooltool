@@ -16,8 +16,6 @@ function Drag:grab(object, sx, sy)
     self.drag.object = object
 
     self.drag.pivot = self.editor:transform(object, sx, sy)
-
-    print(unpack(self.drag.pivot))
 end
 
 function Drag:drop(object, sx, sy)

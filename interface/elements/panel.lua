@@ -162,6 +162,8 @@ function Panel:draw_tree(params)
        
     love.graphics.setStencil()
 
+    if self.draw_above then self:draw_above(params) end
+
     love.graphics.pop()
 end
 

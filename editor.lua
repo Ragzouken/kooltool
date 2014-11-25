@@ -381,6 +381,9 @@ local medium = love.graphics.newFont("fonts/PressStart2P.ttf", 8)
 local large = love.graphics.newFont("fonts/PressStart2P.ttf", 16)
 
 function Editor:draw(params)
+end
+
+function Editor:draw_above(params)
     if self.project then
         self.view.camera:attach()
 

@@ -40,7 +40,7 @@ function ScriptingLayer:init()
     Panel.init(self)
 
     self.border = Panel {
-        shape = shapes.Rectangle { w = 50, h = 50 },
+        shape = shapes.Rectangle { },
 
         colours = {stroke = {255, 255, 255, 255},
                    fill   = {  0,   0,   0,  32}},
@@ -55,22 +55,17 @@ end
 function ScriptingLayer:update(dt)
     Panel.update(self, dt)
 
-    local dx, dy = unpack(self.parent.sprite.pivot)
+    self.border.shape:set(0, 0, 0, 0)
+    self.border.shape:include(self.parent.shape)
 
-    local size = {self.parent.shape.x, self.parent.shape.y,
-                  self.parent.shape.w, self.parent.shape.h}
-
+    local rect = shapes.Rectangle { }
+    
     for notebox in pairs(self.annotation.noteboxes) do
-        local shape = notebox.shape
-        local rect = {shape.x, shape.y, shape.w, shape.h}
+        local x, y, w, h = notebox.shape:get()
+        rect:set(x + notebox.x, y + notebox.y, w, h)
 
-        size = common.expandRectangle(size, rect)
+        self.border.shape:include(rect)
     end
-
-    local x, y, w, h = unpack(size)
-    self.border.shape.x, self.border.shape.y, self.border.shape.w, self.border.shape.h = x, y, w, h
-
-    print(self.border.shape.w)
 
     self.annotation.shape = self.border.shape
 end

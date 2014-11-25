@@ -21,10 +21,10 @@ end
 function Draw:cursor(sx, sy, wx, wy)
     local draw, entity
 
-    if self.drag and self.drag.subject and self.drag.subject.border then
+    if self.drag and self.drag.subject and self.drag.subject.type == "Entity" then
         entity = self.drag.subject
     elseif self.state.lock then
-        if self.state.lock.border then
+        if self.state.lock.type == "Entity" then
             entity = self.state.lock
         else
             local gx, gy = unpack(self.state.lock)
@@ -48,17 +48,15 @@ function Draw:cursor(sx, sy, wx, wy)
 
         draw = target
 
-        if target and target.border then
-            target:border()
-        end
+        if target then target.border = true end
     end
 
     if entity then
         local x, y = unpack(self.editor:transform(entity.parent, sx, sy))
 
-        draw = entity.shape:contains(x, y)
-       
-        entity:border()
+        draw = entity.shape:contains(x-entity.shape.x, y-entity.shape.y)
+
+        entity.border = true
     end
 
     if draw then
@@ -105,6 +103,8 @@ function Draw:mousedragged(action, screen, world)
 
         x1, y1 = unpack(self.editor:transform(self.drag.subject, x1, y1))
         x2, y2 = unpack(self.editor:transform(self.drag.subject, x2, y2))
+
+        print(x1, y1)
 
         local brush, ox, oy = Brush.line(x1, y1, x2, y2, self.size, colour)
         self.drag.subject:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)

@@ -31,7 +31,7 @@ end
 local Rectangle = Class {}
 
 function Rectangle.Null()
-    return Rectangle { x = 0, y = 0, w = 0, h = 0 }
+    return Rectangle { }
 end
 
 function Rectangle:init(params)
@@ -44,11 +44,15 @@ function Rectangle:init(params)
     self:move_to { x = params.x or 0, y = params.y or 0 }
 end
 
-function Rectangle:draw(mode)
+function Rectangle:draw(mode, padding)
     local x, y = self.x, self.y
     local w, h = self.w, self.h
     
-    love.graphics.rectangle(mode, x, y, w, h)
+    padding = padding or 0
+    
+    love.graphics.rectangle(mode,
+                            x - padding, y - padding,
+                            w + padding * 2, h + padding * 2)
 end
 
 function Rectangle:contains(x, y)
@@ -66,6 +70,24 @@ function Rectangle:move_to(params)
 
     -- TODO: this shouldn't floor, probably, but needs to so draw has int coords
     self.x, self.y = math.floor(params.x - px), math.floor(params.y - py)
+end
+
+function Rectangle:set(x, y, w, h)
+    self.x, self.y = x, y
+    self.w, self.h = w, h
+end
+
+function Rectangle:get()
+    return self.x, self.y, self.w, self.h
+end
+
+function Rectangle:include(rectangle)
+    local ox, oy, ow, oh = self:get()
+
+    self.x = math.min(ox, rectangle.x)
+    self.y = math.min(oy, rectangle.y)
+    self.w = math.max(ox + self.w, rectangle.x + rectangle.w) - self.x
+    self.h = math.max(oy + self.h, rectangle.y + rectangle.h) - self.y
 end
 
 function Rectangle:grow(params)
