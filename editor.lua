@@ -125,7 +125,7 @@ function Editor:SetProject(project)
 
     self.view.camera:lookAt(128, 128)
 
-    local projectedit = ProjectPanel(project, { x = 128, y = -256, anchor = {0.5, 0} })
+    local projectedit = ProjectPanel(project, { x = 128, y = -256 })
     projectedit.actions["drag"] = true
     project.layers.surface:add(projectedit)
 
@@ -210,18 +210,16 @@ function Editor:SetProject(project)
     --]]
     }
 
-    self.toolbar = Toolbar{x=1, y=1, buttons=buttons, anchor={0, 0}, size={32, 32}}
-    self.thingbar = Toolbar{x=1, y=love.window.getHeight(), buttons=things, anchor={0, 1}, size={32, 32}}
-    self.filebar = Toolbar {x=0, y=0, buttons=files, anchor={0,0}, size={32,32}}
+    self.toolbar  = Toolbar { x=1, y=1, buttons = buttons, anchor = {0, 0}, size = {32, 32} }
+    self.thingbar = Toolbar { x=1, y=love.window.getHeight(), buttons = things, anchor = {0, 0}, size = {32, 32} }
+    self.filebar  = Toolbar { x=0, y=0, buttons = files, anchor = {0, 0}, size = {32, 32} }
 
-    self:add(self.toolbar, -math.huge)
+    self:add(self.toolbar,  -math.huge)
     self:add(self.thingbar, -math.huge)
-    self:add(self.filebar, -math.huge)
+    self:add(self.filebar,  -math.huge)
 
     self.tooltip = Text {
-        shape = elements.shapes.Rectangle {x = 32+4, y = 0, 
-                                           w = 512,  h = 24,
-                                           anchor = {0, 0}},
+        shape = elements.shapes.Rectangle { w = 512,  h = 24 },
         colours = {
             stroke = {  0,   0,   0, 255},
             fill =   {  0,   0,   0, 255},
@@ -304,13 +302,11 @@ function Editor:update(dt)
         end
 
         self.tilebar:init {
-            anchor={1, 0},
             size = self.project.layers.surface.tileset.dimensions,
             buttons = tiles,
         }
 
-        self.tilebar.x = love.window.getWidth() - 1
-        self.tilebar.y = 1
+        self.tilebar:move_to { x = love.window.getWidth() - self.tilebar.shape.w, y = 1 }
     end
 end
 
