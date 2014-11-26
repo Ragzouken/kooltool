@@ -68,6 +68,7 @@ function ScriptingLayer:update(dt)
     end
 
     self.annotation.shape = self.border.shape
+    self.annotation.clip = true
 end
 
 return ScriptingLayer

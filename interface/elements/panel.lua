@@ -145,24 +145,20 @@ function Panel:draw_tree(params)
 
     love.graphics.push()
     love.graphics.translate(self.x, self.y)
-    self:draw(params)
-
-    --love.graphics.push()
-    --love.graphics.translate(self.x, self.y)
-
-    --[[
+    
     if self.clip and self.shape then
-        love.graphics.setStencil(function self.shape:draw("fill") end)
+        love.graphics.setStencil(function() self.shape:draw("fill") end)
     end
-    ]]
+
+    self:draw(params)
 
     for child in self.sorted:upwards() do
         if child.active then child:draw_tree(params) end
     end
-       
-    love.graphics.setStencil()
 
     if self.draw_above then self:draw_above(params) end
+
+    love.graphics.setStencil()
 
     love.graphics.pop()
 end

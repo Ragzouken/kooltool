@@ -95,7 +95,6 @@ function Entity:sample(...)
 end
 
 function Entity:resized(params)
-    print(params.up, params.down)
     self.shape:grow(params)
 end
 

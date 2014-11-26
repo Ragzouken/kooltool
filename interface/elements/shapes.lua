@@ -114,6 +114,14 @@ function Rectangle:pivot_(ax, ay)
     return self.w * ax, self.h * ay
 end
 
+function Rectangle:to_local(x, y)
+    return x - self.x, y - self.y
+end
+
+function Rectangle:to_world(x, y)
+    return x + self.x, y + self.y
+end
+
 return {
     Plane = Plane,
     Rectangle = Rectangle,

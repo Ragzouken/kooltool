@@ -52,9 +52,9 @@ function Draw:cursor(sx, sy, wx, wy)
     end
 
     if entity then
-        local x, y = unpack(self.editor:transform(entity.parent, sx, sy))
+        local x, y = unpack(self.editor:transform(entity, sx, sy))
 
-        draw = entity.shape:contains(x-entity.shape.x, y-entity.shape.y)
+        draw = entity.shape:contains(x, y)
 
         entity.border = true
     end
@@ -103,8 +103,6 @@ function Draw:mousedragged(action, screen, world)
 
         x1, y1 = unpack(self.editor:transform(self.drag.subject, x1, y1))
         x2, y2 = unpack(self.editor:transform(self.drag.subject, x2, y2))
-
-        print(x1, y1)
 
         local brush, ox, oy = Brush.line(x1, y1, x2, y2, self.size, colour)
         self.drag.subject:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)
