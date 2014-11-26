@@ -1,8 +1,9 @@
 {
   "type":"Entity",
   "data":{
-    "y":495,
-    "x":144,
-    "sprite":"11-Sprite"
+    "y":783,
+    "x":49,
+    "script":"14-ScriptingLayer",
+    "sprite":"13-Sprite"
   }
 }

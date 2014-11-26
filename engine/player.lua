@@ -25,20 +25,12 @@ function Player:init(game, entity)
     self.va = 0
     self.a = 0
 
-    self.ox, self.oy = entity.shape:coords()
-
-    local cx, cy = entity.shape:coords { pivot = entity.sprite.pivot }
-
-    self.tx, self.ty = layers.surface.tilemap:gridCoords(cx, cy)
+    self.ox, self.oy = entity.x, entity.y
+    self.tx, self.ty = layers.surface.tilemap:gridCoords(entity.x, entity.y)
 
     local annotations = layers.annotation
-    local w, h = self.entity.shape.w, self.entity.shape.h
-    local px, py = unpack(self.entity.sprite.pivot)
-    local x, y = cx-px, cy-py
 
     self.notes = {}
-
-    local x1, y1, x2, y2 = x, y, x+w, y+h
 
     self.tags = {
         path = "?",
@@ -156,7 +148,6 @@ function Player:move(vector, input)
     if not wall and not self.movement then
         local period = self.speed
         local t = 0
-        local x, y = self.entity.x, self.entity.y
 
         self.tx, self.ty = dx, dy
 
@@ -164,9 +155,9 @@ function Player:move(vector, input)
             t = t + dt
             local u = t / period
 
-            self.entity:move_to { x = x + vx * tw * u, y = y + vy * th * u}
+            self.entity:move_to { x = cx + vx * tw * u, y = cy + vy * th * u}
         end, function()
-            self.entity:move_to { x = x + vx * tw, y = y + vy * th}
+            self.entity:move_to { x = cx + vx * tw, y = cy + vy * th}
             self.movement = nil
         end)
     end

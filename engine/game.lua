@@ -53,7 +53,7 @@ function Game:init(project, playtest)
         table.insert(choice, actor)
 
         local px, py = entity.x, entity.y
-        local x, y = round(px, 1/tw), round(py, 1/th)
+        local x, y = round(px, 1/tw)+tw/2, round(py, 1/th)+th/2
         entity:move_to { x = x, y=y }
 
         if actor.tags.player then
