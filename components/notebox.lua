@@ -35,13 +35,11 @@ function Notebox:deserialise(resources, data)
     local x, y, text = unpack(data)
     self.text = text
     self:refresh()
-    self:move_to { x = x, y = y, anchor = {0.5, 0.5} }
+    self:move_to { x = x, y = y }
 end
 
 function Notebox:serialise(resources)
-    local x, y = self.shape:coords { anchor = {0.5, 0.5} }
-
-    return {x, y, self.text}
+    return {self.x, self.y, self.text}
 end
 
 function Notebox:init(layer)
