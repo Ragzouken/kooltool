@@ -5,8 +5,6 @@ local Panel = require "interface.elements.panel"
 local colour = require "utilities.colour"
 local wrap = require "utilities.wrap"
 
-local parse = require "engine.parse"
-
 local Text = Class {
     __includes = Panel,
     name = "Generic Textbox",
@@ -51,10 +49,6 @@ function Text:init(params)
     self.cursor = 1
 
     self.changed = Event()
-
-    self.changed:add(function(text)
-        parse.test(text)
-    end)
 
     self:refresh()
 end

@@ -3,6 +3,9 @@ local Camera = require "hump.camera"
 local SparseGrid = require "utilities.sparsegrid"
 local Player = require "engine.player"
 
+local parse = require "engine.parse"
+local json = require "utilities.dkjson"
+
 function parse_note(text)
     local code = string.match(text, "%[(.+)%]")
 
@@ -27,12 +30,26 @@ function Game:init(project, playtest)
     self.playtest = playtest
     self.tags = {}
 
+    self.events = {}
+    self.queue = {}
+    self.active = {}
+    self.globals = {}
+
     local layers = self.project.layers
 
     for notebox in pairs(layers.annotation.noteboxes) do
         local key, value = parse_note(notebox.text)
 
         if key then self.tags[key] = value end
+
+        local action = parse.test(notebox.text)
+
+        if action then
+            self.events[action.trigger] = self.events[action.trigger] or {}
+            table.insert(self.events[action.trigger], action)
+        else
+            print("invalid action")
+        end
     end
 
     local tw, th = unpack(layers.surface.tileset.dimensions)
@@ -70,6 +87,87 @@ function Game:init(project, playtest)
     if not self.player then 
         self.player = choice[love.math.random(#choice)]
     end
+
+    self:trigger("start")
+end
+
+local function unzip(list)
+    return coroutine.wrap(function()
+        for i, item in ipairs(list) do
+            coroutine.yield(unpack(item))
+        end
+    end)
+end
+
+function Game:check(action)
+    local passed = 0
+
+    for key, value in unzip(action.conditions) do
+        if self.globals[key] == value then
+            passed = passed + 1
+        end
+    end
+
+    if not action.combine
+    or (action.combine == "any" and passed > 0)
+    or (action.combine == "all" and passed == #action.conditions) then
+        return true
+    end
+
+    return false
+end
+
+function Game:trigger(event)
+    for i, action in ipairs(self.events[event] or {}) do
+        if self:check(action) then
+            table.insert(self.queue, action.commands)
+        end
+    end
+end
+
+local speech = love.audio.newSource("sounds/tempspeech.wav")
+
+function Game:process()
+    while #self.active > 0 do
+        local stack = {table.remove(self.active, 1)}
+
+        while #stack > 0 do
+            local commands = stack[1]
+
+            for i, command in ipairs(commands) do
+                if command[1] == "say" then
+                    speech:stop()
+                    speech:play()
+
+                    self.TEXT = command[2]
+
+                    local options = command[3]
+
+                    if #options > 0 then
+                        self.OPTIONS = {}
+                        self.TEXT = self.TEXT .. "\n"
+
+                        for i, option in ipairs(options) do
+                            self.TEXT = self.TEXT .. "\n" .. tonumber(i) .. ". " .. option[1]
+                            self.OPTIONS[i] = option[2]
+                        end
+                    end                    
+                elseif command[1] == "stop" then 
+                    stack = {}
+                elseif command[1] == "trigger" then
+                    self:trigger(command[2])
+                elseif command[1] == "do" then
+                    --if self:check()
+                elseif command[1] == "set" then
+                    self.globals[command[2]] = command[3]
+                end
+            end
+
+            table.remove(stack)
+        end
+    end
+
+    self.queue, self.active = {}, self.queue
 end
 
 function Game:update(dt)
@@ -81,6 +179,9 @@ function Game:update(dt)
                 self.occupied:set(actor, actor.tx, actor.ty)
             end
         end
+
+        self:process()
+        self:trigger("updated")
     end
 
     if self.player then
