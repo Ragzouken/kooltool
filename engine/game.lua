@@ -98,6 +98,10 @@ function Game:init(project, playtest)
     end
 
     self:trigger("start")
+
+    for actor in pairs(self.actors) do
+        actor:trigger("start")
+    end
 end
 
 local function unzip(list)
@@ -114,6 +118,7 @@ function Game:check(action)
     for key, value, global in unzip(action.conditions) do
         local vars = global and self.globals or action.locals
 
+        print(vars == self.globals, global, vars[key], value)
         if vars[key] == value then
             passed = passed + 1
         end

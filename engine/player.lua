@@ -102,6 +102,9 @@ end
 function Player:update(dt)
     self.timer:update(dt)
 
+    local number = tonumber(self.locals.spin)
+    self.va = math.pi * 2 * (number or self.va)
+
     self.a = self.a + dt * self.va
     self.entity.a = self.a
 

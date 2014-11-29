@@ -70,7 +70,10 @@ end
 function Drag:mousedragged(action, screen, world)
     if action == "drag" then
         -- need to get position of mouse in coord space of draggee's parent
-        local wx, wy = unpack(self.editor:transform(self.drag.object.parent, unpack(screen)))
+        local coords = self.editor:transform(self.drag.object.parent, unpack(screen))
+        if not coords then return end
+
+        local wx, wy = unpack(coords)
 
         local dx, dy = unpack(self.drag.pivot)
         self.drag.object:move_to { x = wx - dx, y = wy - dy }
