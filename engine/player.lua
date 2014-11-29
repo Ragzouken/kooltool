@@ -1,6 +1,8 @@
 local Class = require "hump.class"
 local Timer = require "hump.timer"
 
+local parse = require "engine.parse"
+
 local shapes = require "interface.elements.shapes"
 local Player = Class {
     speed = 0.5,
@@ -37,6 +39,8 @@ function Player:init(game, entity)
     }
 
     self.speech = {}
+    self.events = {}
+    self.locals = {}
 
     if self.entity.script then
         for notebox in pairs(self.entity.script.annotation.noteboxes) do
@@ -46,6 +50,21 @@ function Player:init(game, entity)
                 self.tags[key] = value
             else
                 table.insert(self.speech, notebox.text)
+            end
+
+            local action = parse.test(notebox.text)
+
+            if action then
+                action.locals = self.locals
+                action.entity = self
+
+                local label, global = unpack(action.trigger)
+                local events = global and game.events or self.events
+
+                events[label] = events[label] or {}
+                table.insert(events[label], action)
+            else
+                print("invalid action") print(notebox.text)
             end
         end
     end
@@ -67,6 +86,14 @@ function Player:init(game, entity)
         local number = tonumber(self.tags.speed) or 1
 
         self.speed = 1 / number
+    end
+end
+
+function Player:trigger(event)
+    for i, action in ipairs(self.events[event] or {}) do
+        if game:check(action) then
+            table.insert(game.queue, action)
+        end
     end
 end
 

@@ -20,7 +20,7 @@ function parse.tokenise(script)
         local valid = c:match("[%w_]")
         local quote = (c == "\"") or (c == "\'")
         local space = (c == " ")  or (c == "\n")
-        local symbo = (c == "=")  or (c == ":")
+        local symbo = (c == "=")  or (c == ":") or (c == "!")
 
         if string then
             if quote then
@@ -61,34 +61,56 @@ local function unzip(list)
     end)
 end
 
+local function check(token, type, value)
+    return token[1] == type and token[2] == value
+end
+
 function parse.header(tokens, action)
-    if #tokens < 2 or tokens[1][1] ~= "word" or tokens[2][2] ~= ":" then
+    local next = 1
+    local global_trigger
+
+    if check(tokens[1], "symbol", "!") then
+        next = 2
+        global_trigger = true
+    end
+
+    if #tokens <= next or tokens[next][1] ~= "word" or not check(tokens[next+1], "symbol", ":") then
         return print("incomplete header")
     end
 
-    action.trigger = tokens[1][2]
+    action.trigger = {tokens[next][2], global_trigger}
 
-    if #tokens > 2 then
-        if #tokens < 4 or tokens[3][1] ~= "word" or not (tokens[3][2] == "any" or tokens[3][2] == "all") then
+    next = next + 2
+
+    if #tokens >= next then
+        if not check(tokens[next], "word", "any") and not check(tokens[next], "word", "all") then
             return print("expected any or all")
         end
 
-        local combine = tokens[3][2]
+        local combine = tokens[next][2]
         local conditions = {}
-        local key, equals
+        local key, equals, global
 
-        for i=4,#tokens do
+        next = next + 1
+
+        for i=next,#tokens do
             local type, token = unpack(tokens[i])
 
             if not key then
-                if type == "word" then
+                if type == "symbol" then
+                    if token == "!" then
+                        global = true
+                    else
+                        return print("expecting !global or no symbol")
+                    end
+                elseif type == "word" then
                     key = token
                 else
                     return print("expecting key in condition")
                 end
             elseif not equals then
                 if type == "word" then
-                    table.insert(conditions, {key, "true"})
+                    table.insert(conditions, {key, "true", global})
                     key = token
                 elseif token == "=" then
                     equals = true
@@ -97,7 +119,7 @@ function parse.header(tokens, action)
                 end
             else
                 if type == "word" then
-                    table.insert(conditions, {key, token})
+                    table.insert(conditions, {key, token, global})
                     key, equals = nil, nil
                 else
                     return print("expecting value to check")
@@ -105,7 +127,7 @@ function parse.header(tokens, action)
             end
         end
 
-        if key then table.insert(conditions, {key, "true"}) end
+        if key then table.insert(conditions, {key, "true", global}) end
 
         action.combine = combine
         action.conditions = conditions
@@ -129,11 +151,21 @@ function parse.command(tokens, action)
             return print("expecting text to say")
         end
     elseif tokens[1][2] == "set" then
-        if #tokens > 1 and tokens[2][1] == "word" then
-            if #tokens == 2 then
-                table.insert(action.commands, {"set", tokens[2][2], "true"})
-            elseif #tokens == 4 and tokens[3][2] == "=" and tokens[4][1] == "word" then
-                table.insert(action.commands, {"set", tokens[2][2], tokens[4][2]})
+        if #tokens > 1 then
+            local next = 2
+            local global
+
+            if check(tokens[next], "symbol", "!") then
+                next = 3
+                global = true
+            end 
+
+            if tokens[next][1] ~= "word" then return print("expecting name to set") end
+
+            if #tokens == next then
+                table.insert(action.commands, {"set", tokens[next][2], "true", global})
+            elseif #tokens == next + 2 and tokens[next+1][2] == "=" and tokens[next+2][1] == "word" then
+                table.insert(action.commands, {"set", tokens[next][2], tokens[next+2][2], global})
             else
                 return print("expecting value to set")
             end
@@ -147,8 +179,22 @@ function parse.command(tokens, action)
             return print("expecting event name")
         end
     elseif tokens[1][2] == "trigger" then
-        if #tokens > 1 and tokens[2][1] == "word" then
-            table.insert(action.commands, {"trigger", tokens[2][2]})
+        local trigger, global
+        local next = 2
+
+        if #tokens > 2 and tokens[2][1] == "symbol" and tokens[2][2] == "!" then
+            global = true
+            next = 3
+        end
+
+        if #tokens >= next and tokens[next][1] == "word" then
+            local delay = #tokens >= next + 1 and tonumber(tokens[next + 1][2])
+
+            if #tokens >= next + 1 and not tonumber(tokens[next + 1][2]) then
+                return print("expending delay as number")
+            end
+
+            table.insert(action.commands, {"trigger", tokens[next][2], delay, global})
         else
             return print("expecting event name")
         end
@@ -200,12 +246,15 @@ function parse.test(text)
         end
     end
 
-    if state then
-        print("trigger on " .. (action.trigger or "nothing"))
+    if state and false then
+        local label, global = unpack(action.trigger)
+        print("trigger on " .. (label or "nothing") .. (global and " (global)" or ""))
         if action.combine then
             io.write("if " .. action.combine .. " of ")
-            for key, value in unzip(action.conditions) do
-                io.write(key .. " is " .. value .. ", ")
+            for key, value, global in unzip(action.conditions) do
+                local tag = global and " (global)" or ""
+
+                io.write(key .. tag .. " is " .. value .. ", ")
             end
             print()
         end
@@ -214,9 +263,17 @@ function parse.test(text)
             local type = command[1]
 
             if type == "stop" then print("stop") end
-            if type == "trigger" then print("trigger " .. command[2]) end
+            if type == "trigger" then 
+                local delay = command[3] and " (" .. tonumber(command[3]) .. " delay)" or ""
+                local scope = command[4] and " (global)" or ""
+
+                print("trigger " .. command[2] .. scope .. delay)
+            end
             if type == "do" then print("do " .. command[2]) end
-            if type == "set" then print("set " .. command[2] .. " to " .. command[3]) end
+            if type == "set" then 
+                local scope = command[4] and " (global)" or ""
+                print("set " .. command[2] .. scope .. " to " .. command[3]) 
+            end
             if type == "say" then
                 local options = command[3]
 

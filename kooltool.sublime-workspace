@@ -571,7 +571,15 @@
 			"file": "interface/elements/text.lua",
 			"settings":
 			{
-				"buffer_size": 4681,
+				"buffer_size": 4572,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "engine/game.lua",
+			"settings":
+			{
+				"buffer_size": 6474,
 				"line_ending": "Windows"
 			}
 		},
@@ -579,7 +587,7 @@
 			"file": "engine/parse.lua",
 			"settings":
 			{
-				"buffer_size": 5156,
+				"buffer_size": 6812,
 				"line_ending": "Unix"
 			}
 		},
@@ -785,6 +793,7 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"]})\n",
 			"ProjectPanel",
 			"\\sprint\\(",
 			"print",
@@ -911,8 +920,7 @@
 			"Pane",
 			"brush",
 			"Editor",
-			"EDITOR",
-			"POO"
+			"EDITOR"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1021,7 +1029,7 @@
 						"translation.y": 513.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 9,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
@@ -1051,7 +1059,7 @@
 						"translation.y": 342.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 8,
+					"stack_index": 9,
 					"type": "text"
 				},
 				{
@@ -1081,7 +1089,7 @@
 						"translation.y": 57.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 8,
 					"type": "text"
 				},
 				{
@@ -1111,7 +1119,7 @@
 						"translation.y": 798.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -1141,7 +1149,7 @@
 						"translation.y": 1482.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 2,
 					"type": "text"
 				},
 				{
@@ -1157,8 +1165,126 @@
 						"selection":
 						[
 							[
-								3873,
-								3873
+								3871,
+								3871
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1824.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "interface/elements/text.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4572,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								204,
+								204
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "engine/game.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6474,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5294,
+								5294
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3594.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "engine/parse.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6812,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3147,
+								3147
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1995.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "engine/player.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4095,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								225,
+								165
 							]
 						],
 						"settings":
@@ -1175,95 +1301,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 6,
-					"file": "interface/elements/text.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4681,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1432,
-								1432
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 741.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "engine/parse.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 5156,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4622,
-								4622
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 2565.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "engine/player.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4095,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3771,
-								3771
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2287.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
+					"buffer": 10,
 					"file": "interface/elements/panel.lua",
 					"semi_transient": false,
 					"settings":
@@ -1289,7 +1327,7 @@
 						"translation.y": 3541.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				}
 			]

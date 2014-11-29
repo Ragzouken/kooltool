@@ -1,5 +1,7 @@
 local Class = require "hump.class"
+local Timer = require "hump.timer"
 local Camera = require "hump.camera"
+
 local SparseGrid = require "utilities.sparsegrid"
 local Player = require "engine.player"
 
@@ -30,6 +32,8 @@ function Game:init(project, playtest)
     self.playtest = playtest
     self.tags = {}
 
+    self.timer = Timer()
+
     self.events = {}
     self.queue = {}
     self.active = {}
@@ -45,10 +49,15 @@ function Game:init(project, playtest)
         local action = parse.test(notebox.text)
 
         if action then
-            self.events[action.trigger] = self.events[action.trigger] or {}
-            table.insert(self.events[action.trigger], action)
+            action.locals = self.globals
+
+            local label, global = unpack(action.trigger)
+            local events = self.events
+
+            events[label] = events[label] or {}
+            table.insert(events[label], action)
         else
-            print("invalid action")
+            print("invalid action") print(notebox.text)
         end
     end
 
@@ -102,8 +111,10 @@ end
 function Game:check(action)
     local passed = 0
 
-    for key, value in unzip(action.conditions) do
-        if self.globals[key] == value then
+    for key, value, global in unzip(action.conditions) do
+        local vars = global and self.globals or action.locals
+
+        if vars[key] == value then
             passed = passed + 1
         end
     end
@@ -120,7 +131,7 @@ end
 function Game:trigger(event)
     for i, action in ipairs(self.events[event] or {}) do
         if self:check(action) then
-            table.insert(self.queue, action.commands)
+            table.insert(self.queue, action)
         end
     end
 end
@@ -132,9 +143,9 @@ function Game:process()
         local stack = {table.remove(self.active, 1)}
 
         while #stack > 0 do
-            local commands = stack[1]
+            local action = stack[1]
 
-            for i, command in ipairs(commands) do
+            for i, command in ipairs(action.commands) do
                 if command[1] == "say" then
                     speech:stop()
                     speech:play()
@@ -155,11 +166,20 @@ function Game:process()
                 elseif command[1] == "stop" then 
                     stack = {}
                 elseif command[1] == "trigger" then
-                    self:trigger(command[2])
+                    local event = command[2]
+
+                    if command[3] then
+                        self.timer:add(command[3] / 10, function() self:trigger(event) end)
+                    else
+                        self:trigger(event)
+                    end
                 elseif command[1] == "do" then
                     --if self:check()
                 elseif command[1] == "set" then
-                    self.globals[command[2]] = command[3]
+                    local type, key, value, global = unpack(command)
+                    local vars = global and self.globals or action.locals
+
+                    vars[key] = value
                 end
             end
 
@@ -180,6 +200,7 @@ function Game:update(dt)
             end
         end
 
+        self.timer:update(dt)
         self:process()
         self:trigger("updated")
     end
@@ -247,7 +268,17 @@ function Game:mousereleased(x, y, button)
 end
 
 function Game:keypressed(key, isrepeat)
-    if not isrepeat then self.TEXT = nil end
+    if self.OPTIONS then
+        for i, option in ipairs(self.OPTIONS) do
+            if key == tostring(i) then
+                self.OPTIONS = nil
+                self.TEXT = nil
+                self:trigger(option)
+            end
+        end
+    else
+        if not isrepeat then self.TEXT = nil end
+    end
 end
 
 function Game:keyreleased(key)
