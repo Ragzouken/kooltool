@@ -167,11 +167,12 @@ function Game:process()
                     stack = {}
                 elseif command[1] == "trigger" then
                     local event = command[2]
+                    local target = not command[4] and action.entity or self
 
                     if command[3] then
-                        self.timer:add(command[3] / 10, function() self:trigger(event) end)
+                        self.timer:add(command[3] / 10, function() target:trigger(event) end)
                     else
-                        self:trigger(event)
+                        target:trigger(event)
                     end
                 elseif command[1] == "do" then
                     --if self:check()
