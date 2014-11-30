@@ -118,7 +118,6 @@ function Game:check(action)
     for key, value, global in unzip(action.conditions) do
         local vars = global and self.globals or action.locals
 
-        print(vars == self.globals, global, vars[key], value)
         if vars[key] == value then
             passed = passed + 1
         end
@@ -165,7 +164,7 @@ function Game:process()
 
                         for i, option in ipairs(options) do
                             self.TEXT = self.TEXT .. "\n" .. tonumber(i) .. ". " .. option[1]
-                            self.OPTIONS[i] = option[2]
+                            self.OPTIONS[i] = {option[2], option[3] and self or action.entity}
                         end
                     end                    
                 elseif command[1] == "stop" then 
@@ -279,7 +278,7 @@ function Game:keypressed(key, isrepeat)
             if key == tostring(i) then
                 self.OPTIONS = nil
                 self.TEXT = nil
-                self:trigger(option)
+                option[2]:trigger(option[1])
             end
         end
     else

@@ -62,6 +62,7 @@ local function unzip(list)
 end
 
 local function check(token, type, value)
+    if not token then return false end
     return token[1] == type and token[2] == value
 end
 
@@ -109,9 +110,10 @@ function parse.header(tokens, action)
                     return print("expecting key in condition")
                 end
             elseif not equals then
-                if type == "word" then
+                if type == "word" or type == "symbol" then
                     table.insert(conditions, {key, "true", global})
-                    key = token
+                    key = (type == "word") and token
+                    global = true
                 elseif token == "=" then
                     equals = true
                 else
@@ -209,9 +211,17 @@ function parse.command(tokens, action)
 end
 
 function parse.options(tokens, action)
-    if #tokens == 2 and tokens[1][1] == "text" then
-        if tokens[2][1] == "word" then
-            table.insert(action.commands[#action.commands][3], {tokens[1][2], tokens[2][2]})
+    if #tokens > 1 and tokens[1][1] == "text" then
+        local global
+        local next = 2
+
+        if check(tokens[next], "symbol", "!") then
+            next = 3
+            global = true
+        end 
+
+        if tokens[next][1] == "word" then
+            table.insert(action.commands[#action.commands][3], {tokens[1][2], tokens[next][2], global})
         else
             return print("expecting trigger for dialogue choice")
         end
