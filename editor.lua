@@ -404,6 +404,11 @@ function Editor:draw_above(params)
 end
 
 function Editor:mousepressed(sx, sy, button)
+    if self.focus then
+        self.focus:defocus()
+        self.focus = nil
+    end
+
     local wx, wy = self.view.camera:worldCoords(sx, sy)
 
     local target = self:target("press", sx, sy)
@@ -411,11 +416,6 @@ function Editor:mousepressed(sx, sy, button)
     if target and button == "l" then
         target:event{ action = "press", coords = {sx, sy, wx, wy} }
         return
-    end
-
-    if self.focus then
-        self.focus:defocus()
-        self.focus = nil
     end
 
     local target = self:target("type", sx, sy)
