@@ -3,6 +3,7 @@ local Text = require "interface.elements.text"
 local shapes = require "interface.elements.shapes"
 local colour = require "utilities.colour"
 local wrap = require "utilities.wrap"
+local parse = require "engine.parse"
 
 local Notebox = Class {
     __includes = Text,
@@ -129,6 +130,9 @@ function Notebox:refresh()
 
     self.shape.notebox = self
     self.name = "notebox \"" .. self.text .. "\""
+
+    local _, error = parse.test(self.text)
+    self.tooltip = error
 end
 
 function Notebox:defocus()

@@ -76,7 +76,7 @@ function parse.header(tokens, action)
     end
 
     if #tokens <= next or tokens[next][1] ~= "word" or not check(tokens[next+1], "symbol", ":") then
-        return print("incomplete header")
+        return false, "incomplete header"
     end
 
     action.trigger = {tokens[next][2], global_trigger}
@@ -85,7 +85,7 @@ function parse.header(tokens, action)
 
     if #tokens >= next then
         if not check(tokens[next], "word", "any") and not check(tokens[next], "word", "all") then
-            return print("expected any or all")
+            return false, "expected any or all"
         end
 
         local combine = tokens[next][2]
@@ -102,12 +102,12 @@ function parse.header(tokens, action)
                     if token == "!" then
                         global = true
                     else
-                        return print("expecting !global or no symbol")
+                        return false, "expecting !global or no symbol"
                     end
                 elseif type == "word" then
                     key = token
                 else
-                    return print("expecting key in condition")
+                    return false, "expecting key in condition"
                 end
             elseif not equals then
                 if type == "word" or type == "symbol" then
@@ -117,14 +117,14 @@ function parse.header(tokens, action)
                 elseif token == "=" then
                     equals = true
                 else
-                    return print("expecting equals or new key")
+                    return false, "expecting equals or new key"
                 end
             else
                 if type == "word" then
                     table.insert(conditions, {key, token, global})
                     key, equals = nil, nil
                 else
-                    return print("expecting value to check")
+                    return false, "expecting value to check"
                 end
             end
         end
@@ -142,7 +142,7 @@ function parse.command(tokens, action)
     action = action or ACTION
 
     if #tokens < 1 or tokens[1][1] ~= "word" then
-        return print("expecting command")
+        return false, "expecting command"
     end 
 
     if tokens[1][2] == "say" then
@@ -150,7 +150,7 @@ function parse.command(tokens, action)
             table.insert(action.commands, {"say", tokens[2][2], {}})
             return parse.options
         else
-            return print("expecting text to say")
+            return false, "expecting text to say"
         end
     elseif tokens[1][2] == "set" then
         if #tokens > 1 then
@@ -162,23 +162,23 @@ function parse.command(tokens, action)
                 global = true
             end 
 
-            if tokens[next][1] ~= "word" then return print("expecting name to set") end
+            if tokens[next][1] ~= "word" then return false, "expecting name to set" end
 
             if #tokens == next then
                 table.insert(action.commands, {"set", tokens[next][2], "true", global})
             elseif #tokens == next + 2 and tokens[next+1][2] == "=" and tokens[next+2][1] == "word" then
                 table.insert(action.commands, {"set", tokens[next][2], tokens[next+2][2], global})
             else
-                return print("expecting value to set")
+                return false, "expecting value to set"
             end
         else
-            return print("expecting memory to set")
+            return false, "expecting memory to set"
         end
     elseif tokens[1][2] == "do" then
         if #tokens > 1 and tokens[2][1] == "word" then
             table.insert(action.commands, {"do", tokens[2][2]})
         else
-            return print("expecting event name")
+            return false, "expecting event name"
         end
     elseif tokens[1][2] == "trigger" then
         local trigger, global
@@ -193,18 +193,18 @@ function parse.command(tokens, action)
             local delay = #tokens >= next + 1 and tonumber(tokens[next + 1][2])
 
             if #tokens >= next + 1 and not tonumber(tokens[next + 1][2]) then
-                return print("expending delay as number")
+                return false, "expending delay as number"
             end
 
             table.insert(action.commands, {"trigger", tokens[next][2], delay, global})
         else
-            return print("expecting event name")
+            return false, "expecting event name"
         end
     elseif tokens[1][2] == "stop" then
         table.insert(action.commands, {"stop"})
         return parse.comment
     else
-        return print("expecting command")
+        return false, "expecting command"
     end
 
     return parse.command
@@ -223,7 +223,7 @@ function parse.options(tokens, action)
         if tokens[next][1] == "word" then
             table.insert(action.commands[#action.commands][3], {tokens[1][2], tokens[next][2], global})
         else
-            return print("expecting trigger for dialogue choice")
+            return false, "expecting trigger for dialogue choice"
         end
     else
         return parse.command(tokens)
@@ -248,9 +248,11 @@ function parse.test(text)
 
     ACTION = action
 
+    local error
+
     for i, line in ipairs(tokens) do
         if state then
-            state = state(line, action)
+            state, error = state(line, action)
         else
             break
         end
@@ -299,7 +301,7 @@ function parse.test(text)
         end
     end
 
-    return state and action
+    return state and action, error or "script understood"
 end
 
 return parse

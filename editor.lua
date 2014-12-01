@@ -77,20 +77,6 @@ function Editor:init(camera)
             .. "-------' please email ragzouken@gmail.com or tweet @ragzouken",
     }
 
-    self.toolname = Text{
-        shape = elements.shapes.Rectangle {x = 32+4, y = 0, 
-                                           w = 512,  h = 32 + 4,
-                                           anchor = {1, 1}},
-        colours = {
-            stroke = {  0,   0,   0, 255},
-            fill =   {  0,   0,   0, 255},
-            text =   {255, 255, 255, 255},
-        },
-
-        font = Text.fonts.medium,
-        text = "",
-    }
-
     self.nocanvas.active = NOCANVAS
 
     self.select = ProjectSelect(self)
@@ -106,11 +92,51 @@ function Editor:init(camera)
 
     self.tilebar.active = false
 
+    self.toolbar = Toolbar {
+        x=1, y=1, 
+        buttons={},
+        anchor={ 1, -1},
+        size={0, 0},
+    }
+
+    self.thingbar = Toolbar {
+        x=1, y=1, 
+        buttons={},
+        anchor={ 1, -1},
+        size={0, 0},
+    }
+
+    self.filebar = Toolbar {
+        x=1, y=1, 
+        buttons={},
+        anchor={ 1, -1},
+        size={0, 0},
+    }
+
     self:add(self.select, -math.huge)
     self:add(self.view)
     self:add(self.nocanvas, -math.huge)
-    self:add(self.toolname, -math.huge)
     self:add(self.tilebar,  -math.huge)
+    
+    self:add(self.toolbar,  -math.huge)
+    self:add(self.thingbar, -math.huge)
+    self:add(self.filebar,  -math.huge)
+
+    self.tooltip = Text {
+        x = 48, y = 0,
+
+        shape = elements.shapes.Rectangle { w = 512,  h = 24 },
+        colours = {
+            stroke = {  0,   0,   0, 255},
+            fill =   {  0,   0,   0, 255},
+            text =   {255, 255, 255, 255},
+        },
+
+        font = Text.fonts.medium,
+        text = "",
+    }
+
+    self:add(self.tooltip)
 
     self.select:SetProjects(project_list())
 end
@@ -210,27 +236,9 @@ function Editor:SetProject(project)
     --]]
     }
 
-    self.toolbar  = Toolbar { x=1, y=1, buttons = buttons, anchor = {0, 0}, size = {32, 32} }
-    self.thingbar = Toolbar { x=1, y=love.window.getHeight(), buttons = things, anchor = {0, 0}, size = {32, 32} }
-    self.filebar  = Toolbar { x=0, y=0, buttons = files, anchor = {0, 0}, size = {32, 32} }
-
-    self:add(self.toolbar,  -math.huge)
-    self:add(self.thingbar, -math.huge)
-    self:add(self.filebar,  -math.huge)
-
-    self.tooltip = Text {
-        shape = elements.shapes.Rectangle { w = 512,  h = 24 },
-        colours = {
-            stroke = {  0,   0,   0, 255},
-            fill =   {  0,   0,   0, 255},
-            text =   {255, 255, 255, 255},
-        },
-
-        font = Text.fonts.medium,
-        text = "",
-    }
-
-    self:add(self.tooltip)
+    self.toolbar:init  { x=1, y=1, buttons = buttons, anchor = {0, 0}, size = {32, 32} }
+    self.thingbar:init { x=1, y=love.window.getHeight(), buttons = things, anchor = {0, 0}, size = {32, 32} }
+    self.filebar:init  { x=0, y=0, buttons = files, anchor = {0, 0}, size = {32, 32} }
 
     self.action = nil
     self.active = nil
@@ -336,8 +344,9 @@ function Editor:cursor(sx, sy, wx, wy)
 
     local tooltip = self:target("tooltip", sx, sy)
 
-    self.tooltip.text = tooltip and tooltip.tooltip
+    self.tooltip.text = tooltip and tooltip.tooltip or ""
     self.tooltip.active = tooltip
+    self.tooltip:refresh()
 
     if self:target("press", sx, sy) then
         love.mouse.setCursor(love.mouse.getSystemCursor("hand"))
