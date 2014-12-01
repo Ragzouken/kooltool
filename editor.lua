@@ -307,6 +307,18 @@ function Editor:update(dt)
         }
 
         self.tilebar:move_to { x = love.window.getWidth() - self.tilebar.shape.w, y = 1 }
+
+        if not self.focus then
+            local scale = self.view.camera.scale
+            local pans = { left = {-1, 0}, right = {1, 0}, up = {0, -1}, down = {0, 1}}
+
+            if not love.keyboard.isDown("lshift", "rshift") then
+                for key, vector in pairs(pans) do
+                    local vx, vy = unpack(vector)
+                    if love.keyboard.isDown(key) then self.view.camera:move(vx / scale * 4, vy / scale * 4) end
+                end
+            end
+        end 
     end
 end
 

@@ -98,6 +98,20 @@ function Pan:mousepressed(button, sx, sy, wx, wy)
     end
 end
 
+function Pan:keypressed(key, isrepeat, sx, sy, wx, wy)
+    if not isrepeat and love.keyboard.isDown("lshift", "rshift") then
+        if key == "up" then
+            self:zoomin(wx, wy)
+
+            return true
+        elseif key == "down" then
+            self:zoomout(wx, wy)
+            
+            return true
+        end
+    end
+end
+
 function Pan:mousedragged(action, screen, world)
     if action == "pan" then
         local cx, cy = unpack(self.drag.camera)

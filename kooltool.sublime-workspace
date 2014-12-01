@@ -579,17 +579,8 @@
 			"file": "engine/parse.lua",
 			"settings":
 			{
-				"buffer_size": 8761,
+				"buffer_size": 8931,
 				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "<p><img alt=\"image\" src=\"https://31.media.tumblr.com/bc03be4762a2ea949bc0cabe9ea3a112/tumblr_inline_nfugz5d3DO1r3ucpi.jpg\" /></p>\n<p>lsdj is a kool tool for making music. it's made for the original gameboy, and while you can get it on an actual cartridge, it works on an emulator too - which is much easier to obtain. these days i run it on a gameboy emulator for my nintendo ds, which is almost like having it on a real gameboy</p>\n<p>[[MORE]]</p>\n<p>the interface is limited severely by having to made do with a d-pad and four buttons for input, and a tiny screen for output. there's no way you're going to figure this out for yourself, even with the manual. but the kool thing is that one of the most prominent chiptune artists who uses this tool has made <a href=\"http://www.douban.com/group/topic/8715664/\">a really good tutoolrial for it</a>. the tutorial walks you step by step (including button presses) through creating a real music track - you not only learn the tool, but a little bit about making a song. this was a real turning point for me in feeling like i could make music for real<br /><br />the tool itself works in a \"tracker\" format: each instrument is a column, and you create templates of notes that you can repeat in the columns to build up a song. the instruments in this case are the gameboy's sound chip: two square waves generators (these are your bleeps and bloops), a custom waveform player (you can either draw this in the editor, or use the interface to generate one), and a noise generator. you are given a lot of control to change the instrument settings per note, which means you can make a lot of fantastic sounds.</p>\n<p>one i made:<br /><iframe frameborder=\"no\" height=\"166\" scrolling=\"no\" src=\"https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/116359708&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false\" width=\"100%\"></iframe></p>\n<p>the pros:<br /><iframe frameborder=\"no\" height=\"166\" scrolling=\"no\" src=\"https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/132204460&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false\" width=\"100%\"></iframe><iframe frameborder=\"no\" height=\"166\" scrolling=\"no\" src=\"https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/92136336&amp;color=ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false\" width=\"100%\"></iframe></p>",
-			"settings":
-			{
-				"buffer_size": 2567,
-				"line_ending": "Unix",
-				"name": "<p><img alt=\"image\" src=\"https://31.media.tumblr.c"
 			}
 		},
 		{
@@ -606,7 +597,7 @@
 			"file": "engine/game.lua",
 			"settings":
 			{
-				"buffer_size": 7317,
+				"buffer_size": 7364,
 				"line_ending": "Windows"
 			}
 		},
@@ -1022,7 +1013,7 @@
 	"groups":
 	[
 		{
-			"selected": 8,
+			"selected": 7,
 			"sheets":
 			[
 				{
@@ -1052,7 +1043,7 @@
 						"translation.y": 513.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 13,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
@@ -1142,7 +1133,7 @@
 						"translation.y": 668.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
@@ -1202,7 +1193,7 @@
 						"translation.y": 1824.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
@@ -1241,15 +1232,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 8761,
+						"buffer_size": 8931,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6213,
-								6213
+								6347,
+								6347
 							]
 						],
 						"settings":
@@ -1257,42 +1248,14 @@
 							"syntax": "Packages/Lua/Lua.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 3534.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2567,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2567,
-								2567
-							]
-						],
-						"settings":
-						{
-							"auto_name": "<p><img alt=\"image\" src=\"https://31.media.tumblr.c",
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3762.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 8,
 					"semi_transient": false,
 					"settings":
 					{
@@ -1747,24 +1710,24 @@
 						"translation.y": 1083.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 9,
 					"file": "engine/game.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7317,
+						"buffer_size": 7364,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2765,
-								2765
+								6355,
+								6355
 							]
 						],
 						"settings":
@@ -1774,14 +1737,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1920.0,
+						"translation.y": 4029.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 1,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 10,
 					"file": "engine/player.lua",
 					"semi_transient": false,
 					"settings":
@@ -1811,7 +1774,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 11,
 					"file": "tools/drag.lua",
 					"semi_transient": false,
 					"settings":
@@ -1837,11 +1800,11 @@
 						"translation.y": 798.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 12,
 					"file": "interface/elements/panel.lua",
 					"semi_transient": false,
 					"settings":
@@ -1864,10 +1827,10 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3541.0,
+						"translation.y": 3366.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 12,
+					"stack_index": 2,
 					"type": "text"
 				}
 			]
