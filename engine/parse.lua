@@ -18,7 +18,7 @@ function parse.tokenise(script)
 
     for c in (script .. "\n"):gmatch(".") do
         local valid = c:match("[%w_%^%?%.]")
-        local quote = (c == "\"") or (c == "\'")
+        local quote = (c == "\"")
         local space = (c == " ")  or (c == "\n")
         local symbo = (c == "=")  or (c == ":") or (c == "!")
 
@@ -110,7 +110,7 @@ function parse.header(tokens, action)
                     return false, "expecting key in condition"
                 end
             elseif not equals then
-                if type == "word" or type == "symbol" then
+                if type == "word" or check("symbol", "!") then
                     table.insert(conditions, {key, "true", global})
                     key = (type == "word") and token
                     global = true

@@ -15,7 +15,8 @@ function Drag:grab(object, sx, sy)
 
     self.drag.object = object
 
-    self.drag.pivot = self.editor:transform(object, sx, sy)
+    local px, py = unpack(self.editor:transform(object, sx, sy))
+    self.drag.pivot = {math.floor(px), math.floor(py)}
 end
 
 function Drag:drop(object, sx, sy)

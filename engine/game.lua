@@ -30,7 +30,6 @@ function Game:init(project, playtest)
     self.project = project
     self.camera = Camera(128, 128, 2)
     self.playtest = playtest
-    self.tags = {}
 
     self.timer = Timer()
 
@@ -42,10 +41,6 @@ function Game:init(project, playtest)
     local layers = self.project.layers
 
     for notebox in pairs(layers.annotation.noteboxes) do
-        local key, value = parse_note(notebox.text)
-
-        if key then self.tags[key] = value end
-
         local action = parse.test(notebox.text)
 
         if action then
@@ -98,6 +93,9 @@ function Game:init(project, playtest)
     for actor in pairs(self.actors) do
         actor:trigger("start")
     end
+
+    self:process()
+    self:process()
 end
 
 local function unzip(list)
@@ -242,7 +240,7 @@ function Game:draw_tree(params)
     
     self.project:draw_tree {
         filters = {
-            whitelist = (self.tags.commentary and { "annotation" } or {}),
+            whitelist = (self.globals.commentary and { "annotation" } or {}),
             blacklist = { "editor" },
         }
     }

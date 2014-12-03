@@ -137,8 +137,11 @@ function Player:move(vector, input)
     local wall = self.game.project.layers.surface:getWall(dx, dy)
     local occupier = self.game.occupied:get(dx, dy)
 
-    if occupier then
+    if occupier and not occupier.blocked and self == self.game.player then
         occupier:trigger("bump")
+
+        occupier.blocked = true
+        occupier.timer:add(0.1, function() occupier.blocked = false end)
 
         return
     end
