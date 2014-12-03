@@ -81,10 +81,6 @@ function Game:init(project, playtest)
         local px, py = entity.x, entity.y
         local x, y = round(px, 1/tw)+tw/2, round(py, 1/th)+th/2
         entity:move_to { x = x, y=y }
-
-        if actor.tags.player then
-            self.player = actor
-        end
     end
 
     if #choice == 0 then

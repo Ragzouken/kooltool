@@ -34,24 +34,14 @@ function Player:init(game, entity)
 
     self.notes = {}
 
-    self.tags = {
-        path = "?",
-    }
-
     self.speech = {}
     self.events = {}
-    self.locals = {}
+    self.locals = { path = "?" }
+
+    self.pathprogress = 1
 
     if self.entity.script then
         for notebox in pairs(self.entity.script.annotation.noteboxes) do
-            local key, value = parse_note(notebox.text)
-
-            if key then
-                self.tags[key] = value
-            else
-                table.insert(self.speech, notebox.text)
-            end
-
             local action = parse.test(notebox.text)
 
             if action then
@@ -69,28 +59,12 @@ function Player:init(game, entity)
         end
     end
 
-    if self.tags.spin then 
-        local number = tonumber(self.tags.spin) or 1
-
-        self.va = math.pi * 2 * (number or 1)
-    end
-
     self.active = true
-
-    if self.tags.path then
-        self.pathprogress = 1
-        self.tags.path = self.tags.path:gsub("[^%^<>v%?%.]", "")
-    end
-
-    if self.tags.speed then
-        local number = tonumber(self.tags.speed) or 1
-
-        self.speed = 1 / number
-    end
 end
 
 function Player:trigger(event)
-    if event == "remove" then return self:destroy() end 
+    if event == "remove" then return self:destroy() end
+    if event == "player" then self.game.player = self end
 
     for i, action in ipairs(self.events[event] or {}) do
         if self.game:check(action) then
@@ -138,15 +112,16 @@ local directions = {
 }
 
 function Player:rando()
-    if self.tags.path and #self.tags.path >= 1 then
-        local direction = self.tags.path:sub(self.pathprogress, self.pathprogress)
+    if self.locals.path and #self.locals.path >= 1 then
+        if self.pathprogress > #self.locals.path then
+            self.pathprogress = 1
+        end
+
+        local direction = self.locals.path:sub(self.pathprogress, self.pathprogress)
 
         if direction == "?" then direction = love.math.random(4) end
 
         self.pathprogress = self.pathprogress + 1
-        if self.pathprogress > #self.tags.path then
-            self.pathprogress = 1
-        end
 
         self:move(directions[direction])
     end
@@ -171,7 +146,7 @@ function Player:move(vector, input)
     local tw, th = unpack(self.game.project.layers.surface.tileset.dimensions)
 
     if not wall and not self.movement then
-        local period = self.speed
+        local period = 1 / (tonumber(self.locals.speed) or 2)
         local t = 0
 
         self.tx, self.ty = dx, dy

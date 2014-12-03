@@ -17,7 +17,7 @@ function parse.tokenise(script)
     local string = false
 
     for c in (script .. "\n"):gmatch(".") do
-        local valid = c:match("[%w_]")
+        local valid = c:match("[%w_%^%?%.]")
         local quote = (c == "\"") or (c == "\'")
         local space = (c == " ")  or (c == "\n")
         local symbo = (c == "=")  or (c == ":") or (c == "!")
