@@ -48,7 +48,7 @@ function Rectangle:draw(mode, padding)
     local x, y = self.x, self.y
     local w, h = self.w, self.h
     
-    padding = padding or 0
+    padding = padding or self.padding or 0
     
     love.graphics.rectangle(mode,
                             x - padding, y - padding,

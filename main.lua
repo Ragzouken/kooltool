@@ -7,6 +7,7 @@ do
     
     MODE = nil
     EDITOR = nil
+    BINDINGS = nil
 end
 
 love.graphics.setDefaultFilter("nearest", "nearest")
@@ -19,7 +20,7 @@ local Camera = require "hump.camera"
 local Editor = require "editor"
 local Game = require "engine.game"
 local Project = require "components.project"
-local generators = require "generators"
+local json = require "utilities.dkjson"
 
 function love.load(arg)
     io.stdout:setvbuf('no')
@@ -36,6 +37,22 @@ function love.load(arg)
     else
         MODE = Editor(camera)
         EDITOR = MODE
+    end
+
+    local content, count = love.filesystem.read("config.json")
+
+    if not content then
+        content = love.filesystem.read("texts/config.json")
+
+        local file = love.filesystem.newFile("config.json", "w")
+        file:write(content)
+        file:close()
+    end
+
+    local bindings = json.decode(content)
+
+    function BINDINGS(action, default)
+        return bindings[action] or {default}
     end
 end
 

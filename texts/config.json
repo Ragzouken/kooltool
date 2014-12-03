@@ -1,0 +1,7 @@
+{
+    "drag": ["tab"],
+    "draw": ["q"],
+    "tile": ["w"],
+    "wall": ["e"],
+    "mark": ["r"],
+}

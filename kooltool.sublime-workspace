@@ -520,108 +520,26 @@
 	"buffers":
 	[
 		{
-			"file": "components/sprite.lua",
-			"settings":
-			{
-				"buffer_size": 2398,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "tools/draw.lua",
-			"settings":
-			{
-				"buffer_size": 4401,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "components/entity.lua",
-			"settings":
-			{
-				"buffer_size": 2545,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "layers/scripting.lua",
-			"settings":
-			{
-				"buffer_size": 1738,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "editor.lua",
 			"settings":
 			{
-				"buffer_size": 13686,
+				"buffer_size": 14144,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "components/notebox.lua",
+			"file": "texts/config.json",
 			"settings":
 			{
-				"buffer_size": 3996,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "interface/elements/text.lua",
-			"settings":
-			{
-				"buffer_size": 4572,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "engine/parse.lua",
-			"settings":
-			{
-				"buffer_size": 8931,
+				"buffer_size": 101,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Searching 373 files for \"print\" (regex, case sensitive)\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\editor.lua:\n  439  \n  440      if key == \"f2\" and not isrepeat then\n  441:         self.view:print()\n  442      end\n  443  \n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\main.lua:\n   60          love.graphics.setColor(255, 255, 255, 255)\n   61          love.graphics.setFont(large)\n   62:         love.graphics.print(\"press escape to end playtest\", 3+o, 5)\n   63      end\n   64  end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\collider\\spatialhash.lua:\n  139  end\n  140  \n  141: function Spatialhash:draw(how, show_empty, print_key)\n  142  	if show_empty == nil then show_empty = true end\n  143  	for k1,v in pairs(self.cells) do\n  ...\n  149  				love.graphics.rectangle(how or 'line', x,y, self.cell_size, self.cell_size)\n  150  \n  151: 				if print_key then\n  152: 					love.graphics.print((\"%d:%d\"):format(k1,k2), x+3,y+3)\n  153  				end\n  154  			end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\components\\entity.lua:\n   76          self.border = false\n   77  \n   78:         --print(self.shape.x, self.shape.y, self.shape.w, self.shape.h)\n   79      end\n   80  end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\components\\notebox.lua:\n   86  \n   87          love.graphics.setColor(self.colours.text)\n   88:         love.graphics.print(line, dx, dy)\n   89  \n   90          if self.focused then\n   91              love.graphics.setColor(colour.cursor(0, 255))\n   92:             love.graphics.print(cursor_lines[i], dx, dy)\n   93          end\n   94      end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\components\\resourcemanager.lua:\n  121          file:close()\n  122  \n  123:         print(\"saving\", resource.name, \"to\", name)\n  124      end\n  125  \n  ...\n  165              data[resource] = wrapped.data\n  166          else\n  167:             print(\"DESERIALISATION: no matching type (\" .. tostring(wrapped.type) .. \") for \" .. path)\n  168          end\n  169      end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\components\\tileset.lua:\n   67  function Tileset:undo()\n   68      if #self.snapshots > 0 then\n   69:         print(\"UNDO\")\n   70          self.canvas = table.remove(self.snapshots)\n   71      end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\engine\\game.lua:\n   58              table.insert(events[label], action)\n   59          else\n   60:             print(\"invalid action\") print(notebox.text)\n   61          end\n   62      end\n   ..\n  119          local vars = global and self.globals or action.locals\n  120  \n  121:         print(vars == self.globals, global, vars[key], value)\n  122          if vars[key] == value then\n  123              passed = passed + 1\n  ...\n  238      love.graphics.rectangle(\"fill\", dx, dy, w, h)\n  239      love.graphics.setColor(255, 255, 255, 255)\n  240:     love.graphics.printf(message,\n  241          dx + 16 + 1,\n  242          dy + 16 + 4, wrap)\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\engine\\parse.lua:\n   77  \n   78      if #tokens <= next or tokens[next][1] ~= \"word\" or not check(tokens[next+1], \"symbol\", \":\") then\n   79:         return print(\"incomplete header\")\n   80      end\n   81  \n   ..\n   86      if #tokens >= next then\n   87          if not check(tokens[next], \"word\", \"any\") and not check(tokens[next], \"word\", \"all\") then\n   88:             return print(\"expected any or all\")\n   89          end\n   90  \n   ..\n  103                          global = true\n  104                      else\n  105:                         return print(\"expecting !global or no symbol\")\n  106                      end\n  107                  elseif type == \"word\" then\n  108                      key = token\n  109                  else\n  110:                     return print(\"expecting key in condition\")\n  111                  end\n  112              elseif not equals then\n  ...\n  118                      equals = true\n  119                  else\n  120:                     return print(\"expecting equals or new key\")\n  121                  end\n  122              else\n  ...\n  125                      key, equals = nil, nil\n  126                  else\n  127:                     return print(\"expecting value to check\")\n  128                  end\n  129              end\n  ...\n  143  \n  144      if #tokens < 1 or tokens[1][1] ~= \"word\" then\n  145:         return print(\"expecting command\")\n  146      end \n  147  \n  ...\n  151              return parse.options\n  152          else\n  153:             return print(\"expecting text to say\")\n  154          end\n  155      elseif tokens[1][2] == \"set\" then\n  ...\n  163              end \n  164  \n  165:             if tokens[next][1] ~= \"word\" then return print(\"expecting name to set\") end\n  166  \n  167              if #tokens == next then\n  ...\n  170                  table.insert(action.commands, {\"set\", tokens[next][2], tokens[next+2][2], global})\n  171              else\n  172:                 return print(\"expecting value to set\")\n  173              end\n  174          else\n  175:             return print(\"expecting memory to set\")\n  176          end\n  177      elseif tokens[1][2] == \"do\" then\n  ...\n  179              table.insert(action.commands, {\"do\", tokens[2][2]})\n  180          else\n  181:             return print(\"expecting event name\")\n  182          end\n  183      elseif tokens[1][2] == \"trigger\" then\n  ...\n  194  \n  195              if #tokens >= next + 1 and not tonumber(tokens[next + 1][2]) then\n  196:                 return print(\"expending delay as number\")\n  197              end\n  198  \n  199              table.insert(action.commands, {\"trigger\", tokens[next][2], delay, global})\n  200          else\n  201:             return print(\"expecting event name\")\n  202          end\n  203      elseif tokens[1][2] == \"stop\" then\n  ...\n  205          return parse.comment\n  206      else\n  207:         return print(\"expecting command\")\n  208      end\n  209  \n  ...\n  216              table.insert(action.commands[#action.commands][3], {tokens[1][2], tokens[2][2]})\n  217          else\n  218:             return print(\"expecting trigger for dialogue choice\")\n  219          end\n  220      else\n  ...\n  251      if state and false then\n  252          local label, global = unpack(action.trigger)\n  253:         print(\"trigger on \" .. (label or \"nothing\") .. (global and \" (global)\" or \"\"))\n  254          if action.combine then\n  255              io.write(\"if \" .. action.combine .. \" of \")\n  ...\n  259                  io.write(key .. tag .. \" is \" .. value .. \", \")\n  260              end\n  261:             print()\n  262          end\n  263:         print(\"actions\")\n  264          for i, command in pairs(action.commands) do\n  265              local type = command[1]\n  266  \n  267:             if type == \"stop\" then print(\"stop\") end\n  268              if type == \"trigger\" then \n  269                  local delay = command[3] and \" (\" .. tonumber(command[3]) .. \" delay)\" or \"\"\n  270                  local scope = command[4] and \" (global)\" or \"\"\n  271  \n  272:                 print(\"trigger \" .. command[2] .. scope .. delay)\n  273              end\n  274:             if type == \"do\" then print(\"do \" .. command[2]) end\n  275              if type == \"set\" then \n  276                  local scope = command[4] and \" (global)\" or \"\"\n  277:                 print(\"set \" .. command[2] .. scope .. \" to \" .. command[3]) \n  278              end\n  279              if type == \"say\" then\n  ...\n  281  \n  282                  if #options > 0 then\n  283:                     print(\"prompt with \\\"\" .. command[2] .. \"\\\"\")\n  284                      for choice, label in unzip(options) do\n  285:                         print(\"choosing \\\"\" .. choice .. \"\\\" triggers \" .. label)\n  286                      end \n  287                  else\n  288:                     print(\"say \\\"\" .. command[2] .. \"\\\"\")\n  289                  end\n  290              end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\engine\\player.lua:\n   65                  table.insert(events[label], action)\n   66              else\n   67:                 print(\"invalid action\") print(notebox.text)\n   68              end\n   69          end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\FreeType.framework\\Versions\\A\\FreeType:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\FreeType.framework\\Versions\\A\\Headers\\freetype\\config\\ftoption.h:\n  404    /*                                                                       */\n  405    /*   Additionally, the following functions provide dumps of various      */\n  406:   /*   internal autofit structures to stdout (using `printf'):             */\n  407    /*                                                                       */\n  408    /*     af_glyph_hints_dump_points                                        */\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\FreeType.framework\\Versions\\A\\Headers\\freetype\\config\\ftstdlib.h:\n  107  #define ft_fseek    fseek\n  108  #define ft_ftell    ftell\n  109: #define ft_sprintf  sprintf\n  110  \n  111  \n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\FreeType.framework\\Versions\\A\\Headers\\freetype\\internal\\ftdebug.h:\n  215  #ifdef FT_DEBUG_LEVEL_ERROR\n  216  \n  217: #include \"stdio.h\"  /* for vfprintf() */\n  218  \n  219:   /* print a message */\n  220    FT_BASE( void )\n  221    FT_Message( const char*  fmt,\n  222                ... );\n  223  \n  224:   /* print a message and exit */\n  225    FT_BASE( void )\n  226    FT_Panic( const char*  fmt,\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\IL.framework\\Versions\\A\\IL:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\libmodplug.framework\\Versions\\A\\libmodplug:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\love.framework\\Versions\\A\\love:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\Lua.framework\\Versions\\A\\Lua:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\Lua.framework\\Versions\\A\\Headers\\luaconf.h:\n  123  #define LUA_NUMBER_SCAN		\"%lf\"\n  124  #define LUA_NUMBER_FMT		\"%.14g\"\n  125: #define lua_number2str(s, n)	sprintf((s), LUA_NUMBER_FMT, (n))\n  126  #define LUAI_MAXNUMBER2STR	32\n  127  #define LUA_INTFRMLEN		\"l\"\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\mpg123.framework\\Versions\\A\\mpg123:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\mpg123.framework\\Versions\\A\\Headers\\mpg123.h:\n  165  	,MPG123_FORCE_STEREO = 0x8  /**<     1000 Force stereo output.                  */\n  166  	,MPG123_FORCE_8BIT   = 0x10 /**< 00010000 Force 8bit formats.                   */\n  167: 	,MPG123_QUIET        = 0x20 /**< 00100000 Suppress any printouts (overrules verbose).                    */\n  168  	,MPG123_GAPLESS      = 0x40 /**< 01000000 Enable gapless decoding (default on if libmpg123 has support). */\n  169  	,MPG123_NO_RESYNC    = 0x80 /**< 10000000 Disable resync stream after error.                             */\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\OpenAL-Soft.framework\\Versions\\A\\OpenAL-Soft:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\physfs.framework\\Versions\\A\\physfs:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\physfs.framework\\Versions\\A\\Headers\\physfs.h:\n  452   * PHYSFS_VERSION(&compiled);\n  453   * PHYSFS_getLinkedVersion(&linked);\n  454:  * printf(\"We compiled against PhysFS version %d.%d.%d ...\\n\",\n  455   *           compiled.major, compiled.minor, compiled.patch);\n  456:  * printf(\"But we linked against PhysFS version %d.%d.%d.\\n\",\n  457   *           linked.major, linked.minor, linked.patch);\n  458   * \\endcode\n  ...\n  535   * for (i = PHYSFS_supportedArchiveTypes(); *i != NULL; i++)\n  536   * {\n  537:  *     printf(\"Supported archive: [%s], which is [%s].\\n\",\n  538   *              (*i)->extension, (*i)->description);\n  539   * }\n  ...\n  660   *\n  661   * for (i = cds; *i != NULL; i++)\n  662:  *     printf(\"cdrom dir [%s] is available.\\n\", *i);\n  663   *\n  664   * PHYSFS_freeList(cds);\n  ...\n  805   *\n  806   * for (i = PHYSFS_getSearchPath(); *i != NULL; i++)\n  807:  *     printf(\"[%s] is in the search path.\\n\", *i);\n  808   * \\endcode\n  809   *\n  ...\n  986   *\n  987   * for (i = rc; *i != NULL; i++)\n  988:  *     printf(\" * We've got [%s].\\n\", *i);\n  989   *\n  990   * PHYSFS_freeList(rc);\n  991   * \\endcode\n  992   *\n  993:  *  \\...will print:\n  994   *\n  995   * \\verbatim\n  ...\n 2164   * static void foundDisc(void *data, const char *cddir)\n 2165   * {\n 2166:  *     printf(\"cdrom dir [%s] is available.\\n\", cddir);\n 2167   * }\n 2168   *\n ....\n 2196   * \\code\n 2197   *\n 2198:  * static void printSearchPath(void *data, const char *pathItem)\n 2199   * {\n 2200:  *     printf(\"[%s] is in the search path.\\n\", pathItem);\n 2201   * }\n 2202   *\n 2203   * // ...\n 2204:  * PHYSFS_getSearchPathCallback(printSearchPath, NULL);\n 2205   * \\endcode\n 2206   *\n ....\n 2232   * \\code\n 2233   *\n 2234:  * static void printDir(void *data, const char *origdir, const char *fname)\n 2235   * {\n 2236:  *     printf(\" * We've got [%s] in [%s].\\n\", fname, origdir);\n 2237   * }\n 2238   *\n 2239   * // ...\n 2240:  * PHYSFS_enumerateFilesCallback(\"/some/path\", printDir, NULL);\n 2241   * \\endcode\n 2242   *\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\SDL2.framework\\Versions\\A\\SDL2:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\SDL2.framework\\Versions\\A\\Headers\\SDL_assert.h:\n  252   *  const SDL_assert_data *item = SDL_GetAssertionReport();\n  253   *  while (item) {\n  254:  *      printf(\"'%s', %s (%s:%d), triggered %u times, always ignore: %s.\\n\",\n  255   *             item->condition, item->function, item->filename,\n  256   *             item->linenum, item->trigger_count,\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\SDL2.framework\\Versions\\A\\Headers\\SDL_haptic.h:\n  960   *  \\code\n  961   *  if (SDL_HapticQuery(haptic) & SDL_HAPTIC_CONSTANT) {\n  962:  *      printf(\"We have constant haptic effect!\");\n  963   *  }\n  964   *  \\endcode\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\SDL2.framework\\Versions\\A\\Headers\\SDL_keyboard.h:\n   71   *  const Uint8 *state = SDL_GetKeyboardState(NULL);\n   72   *  if ( state[SDL_SCANCODE_RETURN] )   {\n   73:  *      printf(\"<RETURN> is pressed.\\n\");\n   74   *  }\n   75   *  \\endcode\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\SDL2.framework\\Versions\\A\\Headers\\SDL_pixels.h:\n  142        (SDL_PIXELORDER(format) == SDL_PACKEDORDER_BGRA)))\n  143  \n  144: /* The flag is set to 1 because 0x1? is not in the printable ASCII range */\n  145  #define SDL_ISPIXELFORMAT_FOURCC(format)    \\\n  146      ((format) && (SDL_PIXELFLAG(format) != 1))\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\SDL2.framework\\Versions\\A\\Headers\\SDL_stdinc.h:\n  343  extern DECLSPEC int SDLCALL SDL_sscanf(const char *text, const char *fmt, ...);\n  344  extern DECLSPEC int SDLCALL SDL_vsscanf(const char *text, const char *fmt, va_list ap);\n  345: extern DECLSPEC int SDLCALL SDL_snprintf(char *text, size_t maxlen, const char *fmt, ...);\n  346: extern DECLSPEC int SDLCALL SDL_vsnprintf(char *text, size_t maxlen, const char *fmt, va_list ap);\n  347  \n  348  #ifndef HAVE_M_PI\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\Frameworks\\SDL2.framework\\Versions\\A\\Headers\\SDL_version.h:\n  121   *  SDL_VERSION(&compiled);\n  122   *  SDL_GetVersion(&linked);\n  123:  *  printf(\"We compiled against SDL version %d.%d.%d ...\\n\",\n  124   *         compiled.major, compiled.minor, compiled.patch);\n  125:  *  printf(\"But we linked against SDL version %d.%d.%d.\\n\",\n  126   *         linked.major, linked.minor, linked.patch);\n  127   *  \\endcode\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\export-resources\\love-binary-osx\\Contents\\MacOS\\love:\n    <binary>\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\fonts\\FONTLOG.txt:\n   10  Press Start 2P is a bitmap font based on the font design from 1980s Namco\n   11  arcade games. Although the design of uppercase letters and digits dates\n   12: back to Atari's \"Sprint\" (1977), the specific glyph forms in this TrueType\n   13  conversion are based on those from \"Return of Ishtar\" (1986), one of the\n   14  first games to include and regularly use lowercase as well as uppercase\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\interface\\elements\\panel.lua:\n   46  end\n   47  \n   48: function Panel:print(depth)\n   49      depth = depth or 0\n   50  \n   51:     print(string.rep(\"  \", depth) .. self.name)\n   52  \n   53      for child in self.sorted:upwards() do\n   54:         child:print(depth + 1)\n   55      end\n   56  end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\interface\\elements\\text.lua:\n   73  \n   74          love.graphics.setColor(self.colours.text)\n   75:         love.graphics.print(line, dx, dy)\n   76          \n   77          if self.focused then\n   78              love.graphics.setColor(colour.cursor(0, 255))\n   79:             love.graphics.print(cursor_lines[i], dx, dy)\n   80          end\n   81      end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\utilities\\export.lua:\n   39  \n   40          for file, contents in pairs(writing) do\n   41:             print(\"missed \", file, #contents)\n   42              local wrote, error = love.filesystem.write(file, contents)\n   43:             if not wrote then missed[file] = contents print(error) end\n   44              missing = true\n   45          end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\utilities\\lovebird.lua:\n   19  lovebird.pages = {}\n   20  \n   21: lovebird.wrapprint = true\n   22  lovebird.timestamp = true\n   23  lovebird.allowhtml = false\n   ..\n  403    lovebird.addr, lovebird.port = lovebird.server:getsockname()\n  404    lovebird.server:settimeout(0)\n  405:   -- Wrap print\n  406:   lovebird.origprint = print\n  407:   if lovebird.wrapprint then\n  408:     local oldprint = print\n  409:     print = function(...)\n  410:       oldprint(...)\n  411:       lovebird.print(...)\n  412      end\n  413    end\n  ...\n  445  function lovebird.trace(...)\n  446    local str = \"[lovebird] \" .. table.concat(lovebird.map({...}, tostring), \" \")\n  447:   print(str)\n  448:   if not lovebird.wrapprint then lovebird.print(str) end\n  449  end\n  450  \n  ...\n  546  \n  547  \n  548: function lovebird.print(...)\n  549    local t = {}\n  550    for i = 1, select(\"#\", ...) do\n  ...\n  567  function lovebird.onerror(err)\n  568    lovebird.pushline({ type = \"error\", str = err })\n  569:   if lovebird.wrapprint then\n  570:     lovebird.origprint(\"[lovebird] ERROR: \" .. err)\n  571    end\n  572  end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\utilities\\nocanvas.lua:\n   17  \n   18      function canvas:renderTo(render)\n   19:         print(\"RENDERING TO FAKE CANVAS IS NOT SUPPORTED\")\n   20          --assert(false)    \n   21      end\n\nC:\\Users\\ragzouken\\Google Drive\\LOVE\\kooltool\\utilities\\probe.lua:\n   22  \n   23  if love.timer.getMicroTime then\n   24: 	print(\"warning: pre-0.9.0 LOVE timer\")\n   25  	now = love.timer.getMicroTime\n   26  else\n   ..\n  187  \n  188  	if self.warmingUp then\n  189: 		love.graphics.print(title..\"\\nwarming up...\", x, y-fh)\n  190  		return\n  191  	end\n  ...\n  193  	local total = self.avg.delta\n  194  \n  195: 	love.graphics.print(\n  196  		string.format(\"%s: %.3f ms\", title, 1000*total),\n  197  		x, y-fh)\n  ...\n  203  		text = string.format(\"%.0fx %s\\n%.3f ms (%.1f %%)\",\n  204  			event.count, name, 1000*event.delta, 100*event.delta/total)\n  205: 		love.graphics.print(text, x+5, y+dh/2, 0, 1,\n  206  			math.min(1, dh/(2*fh)), 0, 2*fh/2)\n  207  		y = y+dh\n  ...\n  241  	end\n  242  \n  243: 	print(\"Hooked: \" .. human)\n  244  end\n  245  \n  ...\n  283  		t[fk] = self.hooks[t][fk]\n  284  		self.hooks[t][fk] = nil\n  285: 		print(\"Unhooked: \" .. fk .. ' from ' .. tostring(t))\n  286  	end\n  287  end\n\n180 matches across 39 files\n",
+			"file": "main.lua",
 			"settings":
 			{
-				"buffer_size": 20748,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
-			}
-		},
-		{
-			"file": "engine/game.lua",
-			"settings":
-			{
-				"buffer_size": 7364,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "engine/player.lua",
-			"settings":
-			{
-				"buffer_size": 4702,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "tools/drag.lua",
-			"settings":
-			{
-				"buffer_size": 2259,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "interface/elements/panel.lua",
-			"settings":
-			{
-				"buffer_size": 4824,
+				"buffer_size": 2751,
 				"line_ending": "Windows"
 			}
 		}
@@ -657,34 +575,46 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/texts",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools"
 	],
 	"file_history":
 	[
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/game.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/shapes.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/notebox.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/parse.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/common.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_gesture.h",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/texts/config.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/config.json",
+		"/C/Users/ragzouken/AppData/Local/Temp/7zO23B2.tmp/re.lua",
+		"/C/Users/RAGZOU~1/AppData/Local/Temp/7zO6B3.tmp/test.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/sprite.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/draw.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/entity.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/panel.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/drag.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/player.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/game.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/scripting.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/text.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/editor.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/pan.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/shapes.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/newproject.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/toolbar.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/project.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/projectselect.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/player.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/resourcemanager.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/drag.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/draw.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/editor.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/notebox.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/scripting.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/button.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/annotation.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/surface.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/main.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/layer.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/text.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/frame.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/project.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/project.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/entity.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/wrap.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/tileset.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/nocanvas.lua",
@@ -696,17 +626,14 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/f51b6fd8-f8b8-4651-8020-35febf0a4fb6.dmp",
 		"/C/Users/ragzouken/Google Drive/LOVE/lass/examples/triangles/main.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/lass/examples/triangles/mainscene.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/sprite.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/kooltool.sublime-project",
 		"/C/Users/ragzouken/Google Drive/LOVE/pastel/effects/portal.glsl",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/tool.lua",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/Bowel_Motel/index.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/_Hournals_of_Fuckin_Lifesto/index.json",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/texts/names.txt",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/common.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/tileset.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/sprite.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/pan.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/wall.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/colour.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/tile.lua",
@@ -758,7 +685,6 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/sounds/tempspeech.wav",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/string.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/palette.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_gesture.h",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/collider/gjk.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/brush.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_gamecontroller.h",
@@ -783,12 +709,7 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/OpenAL-Soft.framework/Versions/A/Headers/alext.h",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/OpenAL-Soft.framework/Versions/A/Headers/efx-creative.h",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/OpenAL-Soft.framework/Versions/A/Headers/efx.h",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_name.h",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/common.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/fonts/LICENSE.txt",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities/lovebird-license",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/Ogg.framework/Versions/Current",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/OpenAL-Soft.framework/OpenAL-Soft"
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_name.h"
 	],
 	"find":
 	{
@@ -807,6 +728,10 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"Came",
+			"project",
+			"gener",
+			"tooltip",
 			"print",
 			"]})\n",
 			"ProjectPanel",
@@ -930,11 +855,7 @@
 			"INTERFACE",
 			"INTERFACE_",
 			"()\n",
-			"self.zoom",
-			"Button",
-			"Pane",
-			"brush",
-			"Editor"
+			"self.zoom"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1013,24 +934,82 @@
 	"groups":
 	[
 		{
-			"selected": 7,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "components/sprite.lua",
+					"file": "editor.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2398,
+						"buffer_size": 14144,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1073,
-								1073
+								13232,
+								13232
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 8542.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "texts/config.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 101,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								98,
+								98
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "main.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2751,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1293,
+								1293
 							]
 						],
 						"settings":
@@ -1041,793 +1020,6 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 513.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 12,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "tools/draw.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4401,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1402,
-								1402
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 342.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "components/entity.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2545,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2497,
-								2497
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 57.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "layers/scripting.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1738,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1710,
-								1710
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 668.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "editor.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 13686,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3543,
-								3543
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1482.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "components/notebox.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3996,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3871,
-								3871
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1824.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "interface/elements/text.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4572,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								204,
-								204
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "engine/parse.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 8931,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6347,
-								6347
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 3762.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 20748,
-						"regions":
-						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										196,
-										201
-									],
-									[
-										415,
-										420
-									],
-									[
-										629,
-										634
-									],
-									[
-										852,
-										857
-									],
-									[
-										893,
-										898
-									],
-									[
-										1092,
-										1097
-									],
-									[
-										1345,
-										1350
-									],
-									[
-										1507,
-										1512
-									],
-									[
-										1702,
-										1707
-									],
-									[
-										1862,
-										1867
-									],
-									[
-										2143,
-										2148
-									],
-									[
-										2388,
-										2393
-									],
-									[
-										2412,
-										2417
-									],
-									[
-										2564,
-										2569
-									],
-									[
-										2841,
-										2846
-									],
-									[
-										3122,
-										3127
-									],
-									[
-										3344,
-										3349
-									],
-									[
-										3521,
-										3526
-									],
-									[
-										3743,
-										3748
-									],
-									[
-										3957,
-										3962
-									],
-									[
-										4163,
-										4168
-									],
-									[
-										4340,
-										4345
-									],
-									[
-										4483,
-										4488
-									],
-									[
-										4676,
-										4681
-									],
-									[
-										4928,
-										4933
-									],
-									[
-										5029,
-										5034
-									],
-									[
-										5248,
-										5253
-									],
-									[
-										5475,
-										5480
-									],
-									[
-										5681,
-										5686
-									],
-									[
-										5856,
-										5861
-									],
-									[
-										6058,
-										6063
-									],
-									[
-										6256,
-										6261
-									],
-									[
-										6555,
-										6560
-									],
-									[
-										6597,
-										6602
-									],
-									[
-										6766,
-										6771
-									],
-									[
-										7031,
-										7036
-									],
-									[
-										7144,
-										7149
-									],
-									[
-										7310,
-										7315
-									],
-									[
-										7521,
-										7526
-									],
-									[
-										7664,
-										7669
-									],
-									[
-										7809,
-										7814
-									],
-									[
-										8069,
-										8074
-									],
-									[
-										8093,
-										8098
-									],
-									[
-										8704,
-										8709
-									],
-									[
-										9150,
-										9155
-									],
-									[
-										9159,
-										9164
-									],
-									[
-										9428,
-										9433
-									],
-									[
-										9460,
-										9465
-									],
-									[
-										9591,
-										9596
-									],
-									[
-										10525,
-										10530
-									],
-									[
-										11169,
-										11174
-									],
-									[
-										11999,
-										12004
-									],
-									[
-										12138,
-										12143
-									],
-									[
-										12379,
-										12384
-									],
-									[
-										12574,
-										12579
-									],
-									[
-										12752,
-										12757
-									],
-									[
-										12896,
-										12901
-									],
-									[
-										13022,
-										13027
-									],
-									[
-										13154,
-										13159
-									],
-									[
-										13279,
-										13284
-									],
-									[
-										13355,
-										13360
-									],
-									[
-										13484,
-										13489
-									],
-									[
-										13591,
-										13596
-									],
-									[
-										13678,
-										13683
-									],
-									[
-										13827,
-										13832
-									],
-									[
-										14274,
-										14279
-									],
-									[
-										14716,
-										14721
-									],
-									[
-										15066,
-										15071
-									],
-									[
-										15411,
-										15416
-									],
-									[
-										15914,
-										15919
-									],
-									[
-										16013,
-										16018
-									],
-									[
-										16341,
-										16346
-									],
-									[
-										16476,
-										16481
-									],
-									[
-										16978,
-										16983
-									],
-									[
-										17312,
-										17317
-									],
-									[
-										17374,
-										17379
-									],
-									[
-										17496,
-										17501
-									],
-									[
-										17709,
-										17714
-									],
-									[
-										17879,
-										17884
-									],
-									[
-										18095,
-										18100
-									],
-									[
-										18268,
-										18273
-									],
-									[
-										18464,
-										18469
-									],
-									[
-										18676,
-										18681
-									],
-									[
-										18704,
-										18709
-									],
-									[
-										18712,
-										18717
-									],
-									[
-										18743,
-										18748
-									],
-									[
-										18774,
-										18779
-									],
-									[
-										18782,
-										18787
-									],
-									[
-										18799,
-										18804
-									],
-									[
-										18837,
-										18842
-									],
-									[
-										18870,
-										18875
-									],
-									[
-										19047,
-										19052
-									],
-									[
-										19087,
-										19092
-									],
-									[
-										19107,
-										19112
-									],
-									[
-										19188,
-										19193
-									],
-									[
-										19388,
-										19393
-									],
-									[
-										19423,
-										19428
-									],
-									[
-										19620,
-										19625
-									],
-									[
-										19844,
-										19849
-									],
-									[
-										20001,
-										20006
-									],
-									[
-										20143,
-										20148
-									],
-									[
-										20386,
-										20391
-									],
-									[
-										20514,
-										20519
-									],
-									[
-										20643,
-										20648
-									]
-								],
-								"scope": ""
-							}
-						},
-						"selection":
-						[
-							[
-								2569,
-								2569
-							]
-						],
-						"settings":
-						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1083.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 5,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "engine/game.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7364,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								6355,
-								6355
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 4029.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 10,
-					"file": "engine/player.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4702,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2091,
-								2091
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1254.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "tools/drag.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2259,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1413,
-								1413
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 798.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "interface/elements/panel.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4824,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4755,
-								4755
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 3366.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 2,

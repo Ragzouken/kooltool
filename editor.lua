@@ -382,7 +382,7 @@ function Editor:input(callback, ...)
         end
     end
 
-    if love.keyboard.isDown("tab") and input(self.tools.drag, ...) then return true end
+    if love.keyboard.isDown(unpack(BINDINGS("drag", "tab"))) and input(self.tools.drag, ...) then return true end
 
     if self.action and input(self.action, ...) then return true end
     if self.active and input(self.active, ...) then return true end

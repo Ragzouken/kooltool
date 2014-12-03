@@ -43,10 +43,10 @@ function ScriptingLayer:init()
         shape = shapes.Rectangle { },
 
         colours = {stroke = {255, 255, 255, 255},
-                   fill   = {  0,   0,   0,  32}},
+                   fill   = {  0,   0,   0,  64}},
     }
 
-    self:add(self.border)
+    self:add(self.border, 5)
 end
 
 function ScriptingLayer:finalise()
@@ -68,6 +68,10 @@ function ScriptingLayer:update(dt)
     end
 
     self.annotation.shape = self.border.shape
+
+    self.border.shape.padding = 2.5
+    self.border.colours.fill = {colour.cursor(0, 64)}
+
     self.annotation.clip = true
 end
 
