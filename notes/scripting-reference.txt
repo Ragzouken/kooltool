@@ -1,0 +1,82 @@
+basics
+======
+
+an ACTION is a series of COMMANDs that happen when an EVENT occurs and certain
+conditions are met. a list of conditions can be given as pairs of KEYs and the
+VALUEs they should have, along with whether or not the ACTION should happen only
+if all of the KEYs have the right VALUEs or just if any one of them does
+
+ => event:                                 (e.g bump:
+    command                                     say "watch where you're going")
+    command
+    ...
+ => event: any/all key=value key=value ... (e.g bump: all mood=happy
+    command                                     set mood=startled
+    command                                     say "you surprised me!")
+    ...
+
+
+an EVENT is a name for some kind of happening in the world. any number of
+ACTIONs can be triggered by the occurence of an event. an EVENT can be triggered
+with the "trigger" COMMAND. normally, an EVENT happens inside a character and
+does not interfere with anyone else, but EVENTs with a ! in front of them are
+seen by everybody
+
+ e.g bump
+     !start
+     remove
+
+
+a KEY is a name for some kind of information about a character or the world.
+a KEY can be set to a VALUE with the "set" command. when an ACTION is triggered
+by an EVENT, it can require that a KEY have a certain VALUE
+
+ e.g KEY        VALUE
+     mood       happy
+     !weather   rain
+     path       ^^VV??.
+     spin       2.1
+
+
+the "set" COMMAND saves information (VALUE) into a named location (KEY). the
+pairing of a KEY and VALUE is also known as a STATE
+
+ => set key        (e.g set opened)
+ => set key=value  (e.g set mood=sad)
+
+
+the "say" COMMAND shows a speech box to the user, optionally presenting them
+with choices to respond with. each response has an associated EVENT that will
+be triggered when it is chosen
+
+ => say text   (e.g say "hello there, friend")
+ => say text   (e.g say "how are you feeling?"
+    text event      "i'm feeling fine" chat
+    text event      "a bit sad really" sympathise)
+    ...
+
+
+the "trigger" COMMAND can be used to trigger an EVENT; to TRIGGER all ACTIONs
+that are triggered by that EVENT
+
+ => trigger event       (e.g trigger upset)
+ => trigger event delay (e.g trigger upset 2)
+
+
+built-in events
+===============
+
+!start - triggered when the game starts
+bump   - triggered when the player walks into this character
+remove - when triggered, this character will disappear
+player - when triggered, this character becomes the player
+
+built-in keys
+=============
+
+spin  = how many full circles this character spins per second
+speed = how many tiles this character can cross per second
+path  = the path this character will follow
+        e.g >>>^^^>>>vvv???...
+            walk right three tiles, up three tiles, right three tiles, down
+            three tiles, choose three random directions, stand still three times
