@@ -68,11 +68,12 @@ that are triggered by that EVENT
 built-in events
 ===============
 
-!start - triggered when the game starts
-bump   - triggered when the player walks into this character
-remove - when triggered, this character will disappear
-player - when triggered, this character becomes the player
-bring  - when triggered, the player is teleported to this character
+!start   - triggered when the game starts
+!updated - triggered very frequently!
+bump     - triggered when the player walks into this character
+remove   - when triggered, this character will disappear
+player   - when triggered, this character becomes the player
+bring    - when triggered, the player is teleported to this character
 
 built-in keys
 =============
@@ -81,6 +82,6 @@ spin  - how many full circles this character spins per second
 speed - how many tiles this character can cross per second
 ghost - can this character pass through / be passed through by others (yes/no) 
 path  - the path this character will follow
-        e.g >>>^^^>>>vvv???...
-            walk right three tiles, up three tiles, right three tiles, down
-            three tiles, choose three random directions, stand still three times
+        e.g >>>^^^>>v???...
+            walk right three tiles, up three tiles, right two tiles, down a
+            tile, choose three random directions, stand still three times
