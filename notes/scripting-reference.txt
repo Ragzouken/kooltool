@@ -4,7 +4,8 @@ basics
 an ACTION is a series of COMMANDs that happen when an EVENT occurs and certain
 conditions are met. a list of conditions can be given as pairs of KEYs and the
 VALUEs they should have, along with whether or not the ACTION should happen only
-if all of the KEYs have the right VALUEs or just if any one of them does
+if all of the KEYs have the right VALUEs or just if any one of them does. if no
+VALUE is given, "yes" will be checked
 
  => event:                                 (e.g bump:
     command                                     say "watch where you're going")
@@ -39,7 +40,8 @@ by an EVENT, it can require that a KEY have a certain VALUE
 
 
 the "set" COMMAND saves information (VALUE) into a named location (KEY). the
-pairing of a KEY and VALUE is also known as a STATE
+pairing of a KEY and VALUE is also known as a STATE. if no VALUE is given, "yes"
+will be used
 
  => set key        (e.g set opened)
  => set key=value  (e.g set mood=sad)
@@ -70,13 +72,15 @@ built-in events
 bump   - triggered when the player walks into this character
 remove - when triggered, this character will disappear
 player - when triggered, this character becomes the player
+bring  - when triggered, the player is teleported to this character
 
 built-in keys
 =============
 
-spin  = how many full circles this character spins per second
-speed = how many tiles this character can cross per second
-path  = the path this character will follow
+spin  - how many full circles this character spins per second
+speed - how many tiles this character can cross per second
+ghost - can this character pass through / be passed through by others (yes/no) 
+path  - the path this character will follow
         e.g >>>^^^>>>vvv???...
             walk right three tiles, up three tiles, right three tiles, down
             three tiles, choose three random directions, stand still three times

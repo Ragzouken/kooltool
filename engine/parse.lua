@@ -111,7 +111,7 @@ function parse.header(tokens, action)
                 end
             elseif not equals then
                 if type == "word" or check("symbol", "!") then
-                    table.insert(conditions, {key, "true", global})
+                    table.insert(conditions, {key, "yes", global})
                     key = (type == "word") and token
                     global = true
                 elseif token == "=" then
@@ -129,7 +129,7 @@ function parse.header(tokens, action)
             end
         end
 
-        if key then table.insert(conditions, {key, "true", global}) end
+        if key then table.insert(conditions, {key, "yes", global}) end
 
         action.combine = combine
         action.conditions = conditions
@@ -165,7 +165,7 @@ function parse.command(tokens, action)
             if tokens[next][1] ~= "word" then return false, "expecting name to set" end
 
             if #tokens == next then
-                table.insert(action.commands, {"set", tokens[next][2], "true", global})
+                table.insert(action.commands, {"set", tokens[next][2], "yes", global})
             elseif #tokens == next + 2 and tokens[next+1][2] == "=" and tokens[next+2][1] == "word" then
                 table.insert(action.commands, {"set", tokens[next][2], tokens[next+2][2], global})
             else

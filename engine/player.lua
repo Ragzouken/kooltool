@@ -36,7 +36,7 @@ function Player:init(game, entity)
 
     self.speech = {}
     self.events = {}
-    self.locals = { path = "?" }
+    self.locals = { path = "?", ghost = "no" }
 
     self.pathprogress = 1
 
@@ -63,8 +63,19 @@ function Player:init(game, entity)
 end
 
 function Player:trigger(event)
-    if event == "remove" then return self:destroy() end
-    if event == "player" then self.game.player = self end
+    if event == "remove" then 
+        self:destroy()
+    elseif event == "player" then
+        self.game.player = self
+    elseif event == "bring" then
+        local tw, th = unpack(self.game.project.layers.surface.tileset.dimensions)
+        local player = self.game.player
+        player.tx, player.ty = self.tx, self.ty
+        player.entity:move_to { x = (player.tx + 0.5) * tw, 
+                                y = (player.ty + 0.5) * th }
+        if player.movement then player.timer:cancel(player.movement) end
+        player.movement = nil
+    end
 
     for i, action in ipairs(self.events[event] or {}) do
         if self.game:check(action) then
@@ -137,11 +148,13 @@ function Player:move(vector, input)
     local wall = self.game.project.layers.surface:getWall(dx, dy)
     local occupier = self.game.occupied:get(dx, dy)
 
-    if occupier and not occupier.blocked and self == self.game.player then
-        occupier:trigger("bump")
+    if occupier and occupier.locals.ghost == "no" and self.locals.ghost == "no" then
+        if not occupier.blocked and self == self.game.player then
+            occupier:trigger("bump")
 
-        occupier.blocked = true
-        occupier.timer:add(0.1, function() occupier.blocked = false end)
+            occupier.blocked = true
+            occupier.timer:add(0.1, function() occupier.blocked = false end)
+        end
 
         return
     end
