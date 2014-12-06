@@ -82,11 +82,9 @@ function Sprite:applyBrush(bx, by, brush, lock)
     brush:apply(self.canvas, nil, bx, by)
 end
 
--- TODO: dunno why i had to change this
 function Sprite:sample(x, y)
     local px, py = unpack(self.pivot)
-    return {self.canvas:getPixel(x, y)}
-    --return {self.canvas:getPixel(x + px, y + py)}
+    return {self.canvas:getPixel(math.floor(x + px), math.floor(y + py))}
 end
 
 return Sprite
