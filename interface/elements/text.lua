@@ -147,6 +147,7 @@ function Text:keypressed(key)
         if self.multiline and love.keyboard.isDown("lshift", "rshift") then
             self:typed("\n")
         else
+            self:defocus()
             EDITOR.focus = nil
         end
 
