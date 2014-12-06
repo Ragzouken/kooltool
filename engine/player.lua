@@ -36,7 +36,7 @@ function Player:init(game, entity)
 
     self.speech = {}
     self.events = {}
-    self.locals = { path = "?", ghost = "no" }
+    self.locals = { path = "?", ghost = "no", alpha = 1 }
 
     self.pathprogress = 1
 
@@ -86,6 +86,8 @@ end
 
 function Player:update(dt)
     self.timer:update(dt)
+
+    self.entity.sprite.alpha = self.locals.alpha
 
     local number = tonumber(self.locals.spin)
     self.va = math.pi * 2 * (number or self.va)
@@ -146,18 +148,24 @@ function Player:move(vector, input)
     local dx, dy = gx+vx, gy+vy
 
     local wall = self.game.project.layers.surface:getWall(dx, dy)
-    local occupier = self.game.occupied:get(dx, dy)
+    local occupied = self.game.occupied:get(dx, dy) or {}
 
-    if occupier and occupier.locals.ghost == "no" and self.locals.ghost == "no" then
-        if not occupier.blocked and self == self.game.player then
-            occupier:trigger("bump")
+    local blocked = false
 
-            occupier.blocked = true
-            occupier.timer:add(0.1, function() occupier.blocked = false end)
+    for occupier in pairs(occupied) do
+        if occupier.locals.ghost == "no" and self.locals.ghost == "no" then
+            if not occupier.blocked and self == self.game.player then
+                occupier:trigger("bump")
+
+                occupier.blocked = true
+                occupier.timer:add(0.1, function() occupier.blocked = false end)
+            end
+
+            blocked = true
         end
-
-        return
     end
+
+    if blocked then return end
 
     local tw, th = unpack(self.game.project.layers.surface.tileset.dimensions)
 

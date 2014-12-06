@@ -1,4 +1,12 @@
+local class = require "hump.class"
 local json = require "utilities.dkjson"
+
+local parts = {
+    state = {{"any", "symbol", "!"}, {"one", "word"}, {"one", "symbol", "="}, {"one", "word"}},
+    condition = {{"one", "word"}, {"some", "state"}},
+    header = {{"any", "symbol", "!"}, {"one", "word"}, {"one", "symbol", ":"}, {"any", "condition"}},
+    command = {{}},
+}
 
 local parse = {}
 
@@ -162,7 +170,7 @@ function parse.command(tokens, action)
                 global = true
             end 
 
-            if tokens[next][1] ~= "word" then return false, "expecting name to set" end
+            if #tokens < next or tokens[next][1] ~= "word" then return false, "expecting name to set" end
 
             if #tokens == next then
                 table.insert(action.commands, {"set", tokens[next][2], "yes", global})

@@ -193,9 +193,15 @@ function Game:update(dt)
     if not self.TEXT then
         for actor in pairs(self.actors) do
             if actor.active then
-                self.occupied:set(nil, actor.tx, actor.ty)
+                local occupied = self.occupied:get(actor.tx, actor.ty) or {}
+                occupied[actor] = nil
+                self.occupied:set(occupied, actor.tx, actor.ty)
+
                 actor:update(dt)
-                self.occupied:set(actor, actor.tx, actor.ty)
+
+                local occupied = self.occupied:get(actor.tx, actor.ty) or {}
+                occupied[actor] = true
+                self.occupied:set(occupied, actor.tx, actor.ty)
             end
         end
 

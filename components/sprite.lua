@@ -6,6 +6,7 @@ local Event = require "utilities.event"
 local Sprite = Class {
     name = "Generic Sprite",
     type = "Sprite",
+    alpha = 1,
 }
 
 function Sprite:serialise(resources)
@@ -40,8 +41,8 @@ function Sprite:blank(w, h)
 end
 
 function Sprite:draw(x, y, a, s)
-    love.graphics.setBlendMode("premultiplied")
-    love.graphics.setColor(255, 255, 255, 255)
+    love.graphics.setBlendMode("alpha")
+    love.graphics.setColor(255, 255, 255, 255 * self.alpha)
 
     local px, py = unpack(self.pivot)
     
