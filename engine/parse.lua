@@ -25,7 +25,7 @@ function parse.tokenise(script)
     local string = false
 
     for c in (script .. "\n"):gmatch(".") do
-        local valid = c:match("[%w_%^%?%.]")
+        local valid = c:match("[%w_%^%?%.<>]")
         local quote = (c == "\"")
         local space = (c == " ")  or (c == "\n")
         local symbo = (c == "=")  or (c == ":") or (c == "!")
@@ -187,6 +187,12 @@ function parse.command(tokens, action)
             table.insert(action.commands, {"do", tokens[2][2]})
         else
             return false, "expecting event name"
+        end
+    elseif tokens[1][2] == "move" then
+        if #tokens > 2 then
+            table.insert(action.commands, {"move", tokens[2][2], tokens[3] and tokens[3][2]})
+        else
+            return false, "expecting path"
         end
     elseif tokens[1][2] == "trigger" then
         local trigger, global

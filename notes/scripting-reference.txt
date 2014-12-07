@@ -65,6 +65,14 @@ that are triggered by that EVENT
  => trigger event delay (e.g trigger upset 2)
 
 
+the "move" COMMAND can be used to make a character do a sequence of moves and,
+optionally, TRIGGER an EVENT when done. ^v<> for up, down, left right, ? for a
+random move, and . to wait for a move.
+
+ => move path       (e.g move >>>)
+ => move path event (e.g move >v<^ pace)
+
+
 built-in events
 ===============
 

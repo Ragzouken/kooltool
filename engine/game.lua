@@ -144,7 +144,9 @@ function Game:process()
             local action = stack[1]
 
             for i, command in ipairs(action.commands) do
-                if command[1] == "say" then
+                if command[1] == "move" then
+                    action.entity.path = {command[2], 1, command[3]}
+                elseif command[1] == "say" then
                     speech:stop()
                     speech:play()
 

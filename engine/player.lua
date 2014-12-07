@@ -125,18 +125,20 @@ local directions = {
 }
 
 function Player:rando()
-    if self.locals.path and #self.locals.path >= 1 then
-        if self.pathprogress > #self.locals.path then
-            self.pathprogress = 1
-        end
-
-        local direction = self.locals.path:sub(self.pathprogress, self.pathprogress)
+    if self.path then
+        local route, progress, trigger = unpack(self.path)
+        local direction = route:sub(progress, progress)
 
         if direction == "?" then direction = love.math.random(4) end
 
-        self.pathprogress = self.pathprogress + 1
-
         self:move(directions[direction])
+
+        if progress == #route then
+            if trigger then self:trigger(trigger) end
+            self.path = nil
+        else
+            self.path[2] = progress + 1
+        end
     end
 end
 

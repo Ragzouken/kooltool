@@ -1,7 +1,7 @@
 {
   "type":"AnnotationLayer",
   "data":{
-    "notes":[[141.43474808445,23.196472604355,"!start:\nset asked=no\nset path=."],[152.88037720753,-46.806136125378,"bump: all asked=yes\nsay \"there is nothing more to say\"\nset path=v>>^^^?"],[101.78838303499,53.481780892719,"bump: all asked=no\nsay \"are you ready to discover the secrets of scripting?\"\n\"yes, i must know more!!\" more\n\"no, i am not prepared\" no\nset asked=yes"],[47.365100007235,26.119853269386,"no:\nsay \"you'll get there one day\""],[87.738593652473,-1.1808684318512,"more:\nsay \"it's all about triggers\""]],
+    "notes":[[1.3599722431181,24.699904673466,"start:\ntrigger player"]],
     "blocks":{
       "0":{
         "0":""

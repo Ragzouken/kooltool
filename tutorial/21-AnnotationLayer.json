@@ -1,7 +1,7 @@
 {
   "type":"AnnotationLayer",
   "data":{
-    "notes":[[1.3599722431181,24.699904673466,"start:\ntrigger player"]],
+    "notes":[[16.420624891255,28.831219068345,"!start:\ntrigger pace"],[6.3386752850205,45.797004080509,"pace:\nmove ^^>>vv<< pace"]],
     "blocks":{
       "0":{
         "0":""
