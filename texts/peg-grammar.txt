@@ -1,0 +1,71 @@
+start
+  = action:action { return action }
+
+action
+  = header:header "\n" commands:commands { return {"header":header, "commands":commands} }
+
+header
+  = event:event ": " combine:combine " " conditions:conditions { return {"trigger":event, "conditions":{"combine":combine, "states":conditions } } }
+  / event:event ":" { return {"trigger":event} }
+
+combine
+  = type:("any" / "all") { return type }
+
+conditions
+  = condition:state " " conditions:conditions { return [condition].concat(conditions) }
+  / condition:state { return [condition] }
+
+state
+  = key:key "=" value:value { return {"key":key, "value":value} }
+  / key:key { return {"key":key, "value":"yes"} }
+
+commands
+  = command:command "\n" commands:commands { return [command].concat(commands) }
+  / command:command { return [command] }
+
+command
+  = trigger
+  / set
+  / say
+  / move
+
+trigger
+  = "trigger " event:event " " delay:number { return {"type":"trigger",  "event":event, "delay":delay} }
+  / "trigger " event:event { return {"type":"trigger",  "event":event, "delay":0} }
+
+set
+  = "set " state:state { return {"type":"set", "state":state} }
+
+say
+  = "say " text:text "\n" options:options { return {"type":"say", "text":text, "options":options} }
+  / "say " text:text { return {"type":"say", "text":text} }
+
+move
+  = "move " path:path " " event:event { return {"type":"move", "path":path, "trigger":event} }
+  / "move " path:path { return {"type":"move", "path":path} }
+
+path
+  = string:[.?^v<>]+ { return string.join("") }
+
+options
+  = text:text " " event:event "\n" options:options { return [{"text":text, "trigger":event}].concat(options) }
+  / text:text " " event:event { return [{"text":text, "trigger":event}] }
+
+event
+  = key
+
+key
+  = global:"!"? key:word { return {"name":key, "global":global ? true : false} }
+
+value
+  = string:[^\n]+ { return string.join("") }
+
+word
+  = string:[a-z]+ { return string.join("") }
+
+text
+  = "\"" string:[^\"]+ "\"" { return string.join("") }
+
+number
+  = digits:[0-9.]+ { return parseInt(digits, 10) }
+  
