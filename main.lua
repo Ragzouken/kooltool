@@ -113,3 +113,8 @@ end
 function love.textinput(...)
     MODE:textinput(...)
 end
+
+function love.threaderror(thread, errorstr)
+    print("Thread error!\n"..errorstr)
+    -- thread:getError() will return the same error string now.
+end

@@ -37,6 +37,7 @@ function Game:init(project, playtest)
     self.queue = {}
     self.active = {}
     self.globals = {}
+    self.anchors = {}
 
     local layers = self.project.layers
 
@@ -181,6 +182,14 @@ function Game:process()
                     local vars = global and self.globals or action.locals
 
                     vars[key] = value
+                elseif command[1] == "warp" then
+                    local target = self.anchors[command[2]]
+
+                    if target then
+                        action.entity:warp(target)
+                    else
+                        print("couldn't find " .. command[2])
+                    end
                 end
             end
 

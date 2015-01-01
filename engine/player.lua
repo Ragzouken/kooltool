@@ -17,6 +17,16 @@ local controls = {
     right = { 1,  0},
 }
 
+local function select(i, ...)
+    for match in ... do
+        if i == 1 then
+            return match
+        else
+            i = i - 1
+        end
+    end
+end
+
 function Player:init(game, entity)
     self.game = game
     self.timer = Timer()
@@ -40,22 +50,33 @@ function Player:init(game, entity)
 
     self.pathprogress = 1
 
+    local function process_notebox(text)
+        if text:sub(1, 1) == "@" then
+            local label = select(1, text:gmatch("@([^\n]*)")) or true
+
+            game.anchors[label] = self
+            return
+        end
+
+        local action = parse.test(text)
+
+        if action then
+            action.locals = self.locals
+            action.entity = self
+
+            local label, global = unpack(action.trigger)
+            local events = global and game.events or self.events
+
+            events[label] = events[label] or {}
+            table.insert(events[label], action)
+        else
+            print("invalid action") print(text)
+        end
+    end
+
     if self.entity.script then
         for notebox in pairs(self.entity.script.annotation.noteboxes) do
-            local action = parse.test(notebox.text)
-
-            if action then
-                action.locals = self.locals
-                action.entity = self
-
-                local label, global = unpack(action.trigger)
-                local events = global and game.events or self.events
-
-                events[label] = events[label] or {}
-                table.insert(events[label], action)
-            else
-                print("invalid action") print(notebox.text)
-            end
+            process_notebox(notebox.text)
         end
     end
 
@@ -68,13 +89,7 @@ function Player:trigger(event)
     elseif event == "player" then
         self.game.player = self
     elseif event == "bring" then
-        local tw, th = unpack(self.game.project.layers.surface.tileset.dimensions)
-        local player = self.game.player
-        player.tx, player.ty = self.tx, self.ty
-        player.entity:move_to { x = (player.tx + 0.5) * tw, 
-                                y = (player.ty + 0.5) * th }
-        if player.movement then player.timer:cancel(player.movement) end
-        player.movement = nil
+        self.game.player:warp(self)
     end
 
     for i, action in ipairs(self.events[event] or {}) do
@@ -187,6 +202,15 @@ function Player:move(vector, input)
             self.movement = nil
         end)
     end
+end
+
+function Player:warp(target)
+    local tw, th = unpack(self.game.project.layers.surface.tileset.dimensions)
+    self.tx, self.ty = target.tx, target.ty
+    self.entity:move_to { x = (self.tx + 0.5) * tw, 
+                          y = (self.ty + 0.5) * th }
+    if self.movement then self.timer:cancel(self.movement) end
+    self.movement = nil
 end
 
 function Player:destroy()

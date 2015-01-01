@@ -153,14 +153,16 @@ function parse.command(tokens, action)
         return false, "expecting command"
     end 
 
-    if tokens[1][2] == "say" then
+    local command = tokens[1][2]
+
+    if command == "say" then
         if #tokens > 1 and tokens[2][1] == "text" then
             table.insert(action.commands, {"say", tokens[2][2], {}})
             return parse.options
         else
             return false, "expecting text to say"
         end
-    elseif tokens[1][2] == "set" then
+    elseif command == "set" then
         if #tokens > 1 then
             local next = 2
             local global
@@ -182,19 +184,19 @@ function parse.command(tokens, action)
         else
             return false, "expecting memory to set"
         end
-    elseif tokens[1][2] == "do" then
+    elseif command == "do" then
         if #tokens > 1 and tokens[2][1] == "word" then
             table.insert(action.commands, {"do", tokens[2][2]})
         else
             return false, "expecting event name"
         end
-    elseif tokens[1][2] == "move" then
+    elseif command == "move" then
         if #tokens > 2 then
             table.insert(action.commands, {"move", tokens[2][2], tokens[3] and tokens[3][2]})
         else
             return false, "expecting path"
         end
-    elseif tokens[1][2] == "trigger" then
+    elseif command == "trigger" then
         local trigger, global
         local next = 2
 
@@ -214,9 +216,15 @@ function parse.command(tokens, action)
         else
             return false, "expecting event name"
         end
-    elseif tokens[1][2] == "stop" then
+    elseif command == "stop" then
         table.insert(action.commands, {"stop"})
         return parse.comment
+    elseif command == "warp" then
+        if #tokens == 2 and tokens[2][1] == "word" then
+            table.insert(action.commands, {"warp", tokens[2][2]})
+        else
+            return false, "expecting label"
+        end
     else
         return false, "expecting command"
     end

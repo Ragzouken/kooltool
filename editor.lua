@@ -24,6 +24,7 @@ local colour = require "utilities.colour"
 
 local Game = require "engine.game"
 local savesound = love.audio.newSource("sounds/save.wav")
+local nopesound = love.audio.newSource("sounds/nope.wav")
 
 PALETTE = nil
 
@@ -222,16 +223,24 @@ function Editor:SetProject(project)
     end, "playtest"},
     ---[[
     {icon("images/save.png"), function()
-        savesound:play()
-        self.project:save("projects/" .. self.project.name)
-        love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+        if not self.export_thread then
+            savesound:play()
+            self.project:save("projects/" .. self.project.name)
+            love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+        else
+            nopesound:play()
+        end
     end, "save"},
     {icon("images/export.png"), function()
-        savesound:play()
-        self.project:save("projects/" ..self.project.name)
+        if not self.export_thread then
+            savesound:play()
+            self.project:save("projects/" ..self.project.name)
 
-        self.project:export()
-        love.system.openURL("file://"..love.filesystem.getSaveDirectory().."/releases/" .. self.project.name)
+            self.export_thread = love.thread.newThread("utilities/export.lua")
+            self.export_thread:start(self.project.name)
+        else
+            nopesound:play()
+        end
     end, "export"},
     --]]
     }
@@ -272,6 +281,10 @@ function Editor:update(dt)
     Panel.update(self, dt)
 
     self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
+
+    if self.export_thread and not self.export_thread:isRunning() then
+        self.export_thread = nil
+    end
 
     if self.project then
          self.toolbar:move_to { x = 1, y =   1 }
@@ -427,15 +440,16 @@ function Editor:mousepressed(sx, sy, button)
         return
     end
 
+    local target = self:target("script", sx, sy)
+    if target and button == "l" and love.keyboard.isDown("s") then
+        target.script.active = not target.script.active
+        return
+    end
+
     local target = self:target("type", sx, sy)
     if target and button == "l" then
         self.focus = target
         target:focus()
-    end
-
-    local target = self:target("script", sx, sy)
-    if target and button == "l" and love.keyboard.isDown("s") then
-        target.script.active = not target.script.active
     end
 
     if self.project then

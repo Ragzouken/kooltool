@@ -4,7 +4,6 @@ local ResourceManager = require "components.resourcemanager"
 
 local generators = require "generators"
 local common = require "utilities.common"
-local export = require "utilities.export"
 local colour = require "utilities.colour"
 
 local Project = Class {
@@ -104,6 +103,8 @@ function Project:update(dt)
     colour.walls(dt, 0)
 end
 
-Project.export = export.export
+function Project:export()
+    export.export(self.name)
+end
 
 return Project

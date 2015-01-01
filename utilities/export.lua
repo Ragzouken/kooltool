@@ -62,30 +62,31 @@ local function removeDirectory(directory)
     love.filesystem.remove(directory)
 end
 
-local exporters = {}
+local exporters = {
+    ["Windows"] = function(saves, name)
+        saves = saves:gsub("/", "\\")
 
-function exporters.Windows(saves, name)
-    saves = saves:gsub("/", "\\")
+        copyFile("export-resources/export-windows.bat", "releases/export-windows.bat")
+        copyFile("export-resources/7za.exe", "releases/7za.exe")
+        os.execute(saves .. "\\releases\\export-windows.bat \"" .. name .. "\" " .. saves)
+    end,
 
-    copyFile("export-resources/export-windows.bat", "releases/export-windows.bat")
-    copyFile("export-resources/7za.exe", "releases/7za.exe")
-    os.execute(saves .. "\\releases\\export-windows.bat " .. name .. " " .. saves)
-end
+    ["OS X"] = function(saves, name)
+        copyFile("export-resources/export-osx.sh", "releases/export-osx.sh")
+        os.execute("chmod +x \"" .. saves .. "/releases/export-osx.sh\"")
+        os.execute("sh \"" .. saves .. "/releases/export-osx.sh\" \"" .. name .. "\" \"" .. saves .. "\"")
+    end,
 
-exporters["OS X"] = function(saves, name)
-    copyFile("export-resources/export-osx.sh", "releases/export-osx.sh")
-    os.execute("chmod +x \"" .. saves .. "/releases/export-osx.sh\"")
-    os.execute("sh \"" .. saves .. "/releases/export-osx.sh\" \"" .. name .. "\" \"" .. saves .. "\"")
-end
+    ["Linux"] = function(saves, name)
+        copyFile("export-resources/export-linux.sh", "releases/export-linux.sh")
+        os.execute("chmod +x \"" .. saves .. "/releases/export-linux.sh\"")
+        os.execute("sh \"" .. saves .. "/releases/export-linux.sh\" \"" .. name .. "\" \"" .. saves .. "\"")
+    end,
+}
 
-function exporters.Linux(saves, name)
-    copyFile("export-resources/export-linux.sh", "releases/export-linux.sh")
-    os.execute("chmod +x \"" .. saves .. "/releases/export-linux.sh\"")
-    os.execute("sh \"" .. saves .. "/releases/export-linux.sh\" \"" .. name .. "\" \"" .. saves .. "\"")
-end
+local function export(project_folder)
+    print(project_folder)
 
-
-local function export(project)
     local blacklist = {
         ["tutorial"] = true,
         ["notes"] = true,
@@ -95,10 +96,8 @@ local function export(project)
         ["export-resources"] = true,
     }
 
-    -- FAILS TO EMBED
-
     love.filesystem.createDirectory("releases")
-    love.filesystem.createDirectory("releases/" .. project.name)
+    love.filesystem.createDirectory("releases/" .. project_folder)
 
     copyDirectory(nil, "releases/kooltool-player-love", blacklist)
     copyDirectory("export-resources/love-binary-win", "releases/love-binary-win")
@@ -106,9 +105,14 @@ local function export(project)
 
     local saves = love.filesystem.getSaveDirectory()
 
-    exporters[love.system.getOS()](saves, project.name)
+    exporters[love.system.getOS()](saves, project_folder)
+
+    love.system.openURL("file://" .. love.filesystem.getSaveDirectory() .. "/releases/" .. project_folder)
 end
 
-return {
-    export = export,
-}
+do
+    require "love.filesystem"
+    require "love.system"
+
+    export(...)
+end

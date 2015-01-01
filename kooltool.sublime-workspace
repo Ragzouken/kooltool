@@ -4,6 +4,54 @@
 		"selected_items":
 		[
 			[
+				"proje",
+				"project_folder"
+			],
+			[
+				"expor",
+				"export_thread"
+			],
+			[
+				"pro",
+				"process_notebox"
+			],
+			[
+				"con",
+				"conditions"
+			],
+			[
+				"pa",
+				"path_progress"
+			],
+			[
+				"char",
+				"character"
+			],
+			[
+				"path",
+				"path"
+			],
+			[
+				"ch",
+				"Character"
+			],
+			[
+				"oc",
+				"occupiers"
+			],
+			[
+				"occu",
+				"occupiers"
+			],
+			[
+				"to",
+				"toString"
+			],
+			[
+				"prot",
+				"prototype"
+			],
+			[
 				"for",
 				"for	for (…) {…}"
 			],
@@ -18,10 +66,6 @@
 			[
 				"min",
 				"min_x"
-			],
-			[
-				"occu",
-				"occupied"
 			],
 			[
 				"globa",
@@ -76,10 +120,6 @@
 				"wall_index"
 			],
 			[
-				"to",
-				"tooltip"
-			],
-			[
 				"reo",
 				"resource_to_id"
 			],
@@ -120,10 +160,6 @@
 				"reference"
 			],
 			[
-				"path",
-				"pathprogress"
-			],
-			[
 				"set",
 				"setStencil"
 			],
@@ -156,10 +192,6 @@
 				"listener"
 			],
 			[
-				"proje",
-				"project_list"
-			],
-			[
 				"ent",
 				"entities"
 			],
@@ -169,10 +201,6 @@
 			],
 			[
 				"project",
-				"projectselect"
-			],
-			[
-				"pro",
 				"projectselect"
 			],
 			[
@@ -486,92 +514,16 @@
 			[
 				"TE",
 				"TELEPORTS"
-			],
-			[
-				"p",
-				"positions"
-			],
-			[
-				"boun",
-				"bound_right"
-			],
-			[
-				"bou",
-				"bound_right"
-			],
-			[
-				"bound_",
-				"bound_left"
-			],
-			[
-				"NPC",
-				"NPCMode"
-			],
-			[
-				"Object",
-				"ObjectMode"
-			],
-			[
-				"Editor",
-				"EditorMode"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "editor.lua",
+			"file": "engine/game.lua",
 			"settings":
 			{
-				"buffer_size": 14144,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "layers/scripting.lua",
-			"settings":
-			{
-				"buffer_size": 1833,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "interface/elements/shapes.lua",
-			"settings":
-			{
-				"buffer_size": 2982,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "tools/drag.lua",
-			"settings":
-			{
-				"buffer_size": 2319,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "interface/elements/panel.lua",
-			"settings":
-			{
-				"buffer_size": 4824,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "interface/elements/text.lua",
-			"settings":
-			{
-				"buffer_size": 4599,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "engine/parse.lua",
-			"settings":
-			{
-				"buffer_size": 9552,
+				"buffer_size": 7895,
 				"line_ending": "Windows"
 			}
 		},
@@ -579,40 +531,47 @@
 			"file": "engine/player.lua",
 			"settings":
 			{
-				"buffer_size": 5132,
+				"buffer_size": 5496,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/Users/ragzouken/nginx-1.7.8/html/index.html",
+			"file": "components/project.lua",
 			"settings":
 			{
-				"buffer_size": 3940,
+				"buffer_size": 2812,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "texts/peg-grammar.txt",
+			"file": "main.lua",
 			"settings":
 			{
-				"buffer_size": 1500,
-				"line_ending": "Unix",
-				"name": "start"
+				"buffer_size": 2903,
+				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/Users/ragzouken/nginx-1.7.8/html/js/parser.js",
+			"file": "engine/parse.lua",
 			"settings":
 			{
-				"buffer_size": 16883,
-				"line_ending": "Unix"
+				"buffer_size": 9781,
+				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "/C/Users/ragzouken/nginx-1.7.8/html/js/phaser.js",
+			"file": "editor.lua",
 			"settings":
 			{
-				"buffer_size": 2707054,
+				"buffer_size": 14161,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "utilities/export.lua",
+			"settings":
+			{
+				"buffer_size": 3749,
 				"line_ending": "Windows"
 			}
 		}
@@ -648,32 +607,49 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/texts",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools"
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/utilities"
 	],
 	"file_history":
 	[
+		"/C/Users/ragzouken/Downloads/zine 2014-12-25/About  this game.txt",
+		"/C/Users/ragzouken/Downloads/fgallery-1.7/fgallery",
+		"/C/Users/ragzouken/AppData/Local/Temp/scp37880/srv/ragzouken/var/www/notebook/page0017.jpg",
+		"/C/Users/ragzouken/Downloads/journey_cont/readme.txt",
+		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/2-SurfaceLayer.json",
+		"/C/Users/ragzouken/nginx-1.7.8/html/index.html",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/game.lua",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/the best game/32-AnnotationLayer.json",
+		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/1-Project.json",
+		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/index.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/the best game/2-SurfaceLayer.json",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/editor.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/text.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/panel.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/drag.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/shapes.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/scripting.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/player.lua",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/texts/peg-grammar.txt",
+		"/C/Users/ragzouken/nginx-1.7.8/html/js/phaser.js",
+		"/C/Users/ragzouken/nginx-1.7.8/html/js/parser.js",
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/parse.lua",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/the best game/26-AnnotationLayer.json",
+		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/the best game/21-ScriptingLayer.json",
 		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/3-AnnotationLayer.json",
 		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/15-ScriptingLayer.json",
 		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/5-Entity.json",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/sprite.lua",
 		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/12-Sprite.json",
-		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/2-SurfaceLayer.json",
 		"/C/Users/ragzouken/nginx-1.7.8/html/the best game/4-Entity.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/the best game/11-Tileset.json",
 		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/the best game/index.json",
-		"/C/Users/ragzouken/AppData/Roaming/LOVE/kooltool/projects/the best game/2-SurfaceLayer.json",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/notes/scripting-reference.txt",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/main.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/frame.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/game.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/entity.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/parse.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/engine/player.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/texts/config.json",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/components/notebox.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/common.lua",
@@ -682,13 +658,7 @@
 		"/C/Users/ragzouken/AppData/Local/Temp/7zO23B2.tmp/re.lua",
 		"/C/Users/RAGZOU~1/AppData/Local/Temp/7zO6B3.tmp/test.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/draw.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/panel.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/drag.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/layers/scripting.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/text.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/editor.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/pan.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/elements/shapes.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/newproject.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/toolbar.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/interface/panels/project.lua",
@@ -771,20 +741,7 @@
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/string.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/generators/palette.lua",
 		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/collider/gjk.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/brush.lua",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_gamecontroller.h",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-win/love-license.txt",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/Lua.framework/Versions/A/Headers/lauxlib.h",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/libmodplug.framework/Versions/A/Resources/Info.plist",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_platform.h",
-		"/C/Users/ragzouken/AppData/Local/Temp/scp32887/srv/ragzouken/var/www/press/channel_hopping/data.xml",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/MacOS/love",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/libmodplug.framework/Versions/A/Headers/modplug.h",
-		"/C/Users/ragzouken/AppData/Local/Temp/scp13930/srv/ragzouken/var/www/press/kooltool/data.xml",
-		"/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
-		"/C/Users/ragzouken/AppData/Roaming/Sublime Text 3/Packages/Default/Default (Windows).sublime-keymap",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/export-resources/love-binary-osx/Contents/Frameworks/SDL2.framework/Versions/A/Headers/SDL_endian.h",
-		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/sounds/seal.sfs"
+		"/C/Users/ragzouken/Google Drive/LOVE/kooltool/tools/brush.lua"
 	],
 	"find":
 	{
@@ -803,6 +760,12 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"console",
+			"trigger",
+			"console",
+			"locals",
+			"tiles",
+			"surface",
 			"true\"",
 			"true",
 			"print",
@@ -924,13 +887,7 @@
 			"self.x",
 			"print",
 			"h",
-			"target",
-			"self.project",
-			"project",
-			"}))",
-			"INTERFACE",
-			"newEntity",
-			"self"
+			"target"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1009,24 +966,24 @@
 	"groups":
 	[
 		{
-			"selected": 10,
+			"selected": 5,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "editor.lua",
+					"file": "engine/game.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 14144,
+						"buffer_size": 7895,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12942,
-								12942
+								5074,
+								5074
 							]
 						],
 						"settings":
@@ -1036,7 +993,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 8747.0,
+						"translation.y": 3249.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 6,
@@ -1044,169 +1001,19 @@
 				},
 				{
 					"buffer": 1,
-					"file": "layers/scripting.lua",
+					"file": "engine/player.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1833,
+						"buffer_size": 5496,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1586,
-								1586
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 7,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "interface/elements/shapes.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2982,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2646,
-								2646
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1489.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 8,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "tools/drag.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2319,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2305,
-								2305
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 767.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 9,
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "interface/elements/panel.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4824,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								4805,
-								4805
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 2508.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 10,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "interface/elements/text.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4599,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3870,
-								3870
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Lua/Lua.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 11,
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "engine/parse.lua",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 9552,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								833,
-								833
+								760,
+								760
 							]
 						],
 						"settings":
@@ -1219,24 +1026,24 @@
 						"translation.y": 171.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 4,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "engine/player.lua",
+					"buffer": 2,
+					"file": "components/project.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5132,
+						"buffer_size": 2812,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3325,
-								3325
+								2583,
+								2583
 							]
 						],
 						"settings":
@@ -1246,126 +1053,127 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2223.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "/C/Users/ragzouken/nginx-1.7.8/html/index.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 3940,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								235,
-								235
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "texts/peg-grammar.txt",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1500,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1500,
-								1500
-							]
-						],
-						"settings":
-						{
-							"auto_name": "start",
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 596.0,
+						"translation.y": 1653.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 10,
-					"file": "/C/Users/ragzouken/nginx-1.7.8/html/js/parser.js",
+					"buffer": 3,
+					"file": "main.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16883,
+						"buffer_size": 2903,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								2898,
+								2898
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
-							"tab_size": 2,
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 1995.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "engine/parse.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9781,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6863,
+								6863
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 4617.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "editor.lua",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14161,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5851,
+								5851
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Lua/Lua.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 3925.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 11,
-					"file": "/C/Users/ragzouken/nginx-1.7.8/html/js/phaser.js",
+					"buffer": 6,
+					"file": "utilities/export.lua",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2707054,
+						"buffer_size": 3749,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								2887,
+								2887
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"syntax": "Packages/Lua/Lua.tmLanguage",
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 15846.0,
+						"translation.y": 1596.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
