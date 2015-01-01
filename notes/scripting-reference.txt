@@ -73,6 +73,11 @@ random move, and . to wait for a move.
  => move path event (e.g move >v<^ pace)
 
 
+the "warp" COMMAND can be used to make a character instantly move to another
+labelled character. label a character by adding a @somelabel note to it
+
+ => warp label (e.g warp airship (when another character has an @airship note))
+
 built-in events
 ===============
 
