@@ -18,6 +18,8 @@ local tools = require "tools"
 local Project = require "components.project"
 local ProjectSelect = require "interface.panels.projectselect"
 local ProjectPanel = require "interface.panels.project"
+local Toolbox = require "interface.panels.toolbox"
+local Button = require "interface.elements.button"
 
 local generators = require "generators"
 local colour = require "utilities.colour"
@@ -137,7 +139,10 @@ function Editor:init(camera)
         text = "",
     }
 
-    self:add(self.tooltip)
+    self.toolbox = Toolbox { editor=self }
+    self:add(self.toolbox, -math.huge)
+
+    self:add(self.tooltip, -math.huge)
 
     self.select:SetProjects(project_list())
 end
@@ -159,13 +164,7 @@ function Editor:SetProject(project)
     self.tilebar.active = true
 
     local function icon(path)
-        local image = love.graphics.newImage(path)
-        local w, h = image:getDimensions()
-        
-        return {
-            image = image,
-            quad = love.graphics.newQuad(0, 0, w, h, w, h),
-        }
+        return Button.Icon(love.graphics.newImage(path))
     end
 
     local buttons = {
@@ -271,6 +270,7 @@ function Editor:SetProject(project)
     }
 
     self.active = self.tools.drag
+    self.toolbox.tool = self.tools.tile
 
     self.global = {
         self.tools.pan,
@@ -287,7 +287,7 @@ function Editor:update(dt)
     end
 
     if self.project then
-         self.toolbar:move_to { x = 1, y =   1 }
+        --self.toolbar:move_to { x = 1, y =   1 }
         self.thingbar:move_to { x = 1, y = 176 }
          self.filebar:move_to { x = 1, y = 252 }
 
@@ -317,15 +317,15 @@ function Editor:update(dt)
                 self.tools.tile.tile = i
             end
             
-            table.insert(tiles, {{image = tileset.canvas,
-                                  quad = quad},
-                                 action})
+            table.insert(tiles, {Button.Icon(tileset.canvas, quad), action})
         end
 
         self.tilebar:init {
             size = self.project.layers.surface.tileset.dimensions,
             buttons = tiles,
         }
+
+        self.toolbox:set_tiles(tiles)
 
         self.tilebar:move_to { x = love.window.getWidth() - self.tilebar.shape.w, y = 1 }
 
@@ -491,13 +491,19 @@ function Editor:keypressed(key, isrepeat)
     if self.focus then self.focus:keypressed(key, isrepeat) return true end
 
     if self.project then
+        local sx, sy = love.mouse.getPosition()
+        local wx, wy = self.view.camera:mousepos()
+
+        if key == " " and not isrepeat then
+            self.toolbox:move_to { x = sx, y = sy, anchor = { 0.5, 0.5 } }
+            self.toolbox.active = true
+            return true
+        end
+
         if key == "q" then self.active = self.tools.draw   return true end
         if key == "w" then self.active = self.tools.tile   return true end
         if key == "e" then self.active = self.tools.wall   return true end
         if key == "r" then self.active = self.tools.marker return true end
-
-        local sx, sy = love.mouse.getPosition()
-        local wx, wy = self.view.camera:mousepos()
 
         self:input("keypressed", key, isrepeat, sx, sy, wx, wy)
     end
@@ -507,6 +513,12 @@ function Editor:keyreleased(key)
     if self.project then
         local sx, sy = love.mouse.getPosition()
         local wx, wy = self.view.camera:mousepos()
+
+        if key == " " then
+            self.toolbox:move_to { x = sx, y = sy }
+            self.toolbox.active = false
+            return true
+        end
 
         self:input("keyreleased", key, sx, sy, wx, wy)
     end

@@ -9,12 +9,21 @@ local Button = Class {
     actions = {"press"},
 }
 
+function Button.Icon(image, quad)
+    local w, h = image:getDimensions()
+    
+    return {
+        image = image,
+        quad = quad or love.graphics.newQuad(0, 0, w, h, w, h),
+    }
+end
+
 function Button:init(params)
     if not params.shape then
         local _, _, w, h = params.icon.quad:getViewport()
         params.shape = shapes.Rectangle { x = 0, y = 0,
                                           w = w, h = h,
-                                          anchor = params.anchor}
+                                          anchor = params.anchor }
     end
     
     Panel.init(self, params)
@@ -26,7 +35,7 @@ end
 function Button:draw()
     love.graphics.setBlendMode("premultiplied")
     love.graphics.setColor(self.colour or {255, 255, 255, 255})
-    
+
     if self.icon and self.icon.image then
         love.graphics.draw(self.icon.image,
                            self.icon.quad,

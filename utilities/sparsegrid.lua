@@ -11,7 +11,7 @@ end
 
 function SparseGrid:SetCellSize(cell_width, cell_height)
     self.cell_width = cell_width
-    self.cell_height = cell_height
+    self.cell_height = cell_height or cell_width
 end
 
 function SparseGrid:clear()

@@ -7,8 +7,8 @@ function love.conf(t)
 	
     t.version = "0.9.1"
 
-	t.window.width = 512
-	t.window.height = 512
+	t.window.width = 768
+	t.window.height = 768
     t.window.resizable = true
 
     t.modules.joystick = false

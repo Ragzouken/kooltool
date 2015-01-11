@@ -15,7 +15,7 @@ local AnnotationLayer = Class {
     actions = { "mark", "note", },
     tags = { "editor", "annotation", },
 
-    BLOCK_SIZE = 256,
+    BLOCK_SIZE = 1024,
 }
 
 function AnnotationLayer:serialise(resources)
@@ -56,9 +56,12 @@ function AnnotationLayer:deserialise(resources, data)
                 local block = common.canvasFromImage(image)
 
                 self.blocks:set(block, tonumber(x), tonumber(y))
+                self.BLOCK_SIZE = image:getWidth()
             end
         end
     end
+
+    self.blocks:SetCellSize(self.BLOCK_SIZE)
 end
 
 function AnnotationLayer:init()
