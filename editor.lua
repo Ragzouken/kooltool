@@ -86,15 +86,6 @@ function Editor:init(camera)
     
     self.view = Frame { camera = camera, }
 
-    self.tilebar = Toolbar {
-        x=1, y=1, 
-        buttons={},
-        anchor={ 1, -1},
-        size={0, 0},
-    }
-
-    self.tilebar.active = false
-
     self.toolbar = Toolbar {
         x=1, y=1, 
         buttons={},
@@ -119,7 +110,6 @@ function Editor:init(camera)
     self:add(self.select, -math.huge)
     self:add(self.view)
     self:add(self.nocanvas, -math.huge)
-    self:add(self.tilebar,  -math.huge)
     
     self:add(self.toolbar,  -math.huge)
     self:add(self.thingbar, -math.huge)
@@ -138,9 +128,6 @@ function Editor:init(camera)
         font = Text.fonts.medium,
         text = "",
     }
-
-    self.toolbox = Toolbox { editor=self }
-    self:add(self.toolbox, -math.huge)
 
     self:add(self.tooltip, -math.huge)
 
@@ -161,29 +148,14 @@ function Editor:SetProject(project)
     projectedit.actions["drag"] = true
     project.layers.surface:add(projectedit)
 
-    self.tilebar.active = true
-
     local function icon(path)
         return Button.Icon(love.graphics.newImage(path))
     end
 
     local buttons = {
-    {icon("images/drag.png"), function()
-        self.active = self.tools.drag
-    end, "move objects"},
-    {icon("images/pencil.png"), function()
-        self.active = self.tools.draw
-    end, "draw tiles and characters"},
-    {icon("images/tiles.png"), function()
-        self.active = self.tools.tile
-    end, "place tiles"},
-    {icon("images/walls.png"), function()
-        self.active = self.tools.wall
-    end, "set walls"},
-    ---[[
-    {icon("images/marker.png"), function()
-        self.active = self.tools.marker
-    end, "draw notes"},--]]
+        {icon("images/drag.png"), function()
+            self.active = self.tools.drag
+        end, "move objects"},
     }
     
     local things = {
@@ -261,16 +233,15 @@ function Editor:SetProject(project)
         marker = tools.Marker(self),
     }
 
+    self.active = self.tools.drag
+
+    if self.toolbox then self:remove(self.toolbox) end
+    self.toolbox = Toolbox { editor=self }
+    self:add(self.toolbox, -math.huge)
+
     self.toolindex = {
         [self.tools.drag] = 1,
-        [self.tools.draw] = 2, 
-        [self.tools.tile] = 3,
-        [self.tools.wall] = 4,
-        [self.tools.marker] = 5,
     }
-
-    self.active = self.tools.drag
-    self.toolbox.tool = self.tools.tile
 
     self.global = {
         self.tools.pan,
@@ -287,9 +258,9 @@ function Editor:update(dt)
     end
 
     if self.project then
-        --self.toolbar:move_to { x = 1, y =   1 }
-        self.thingbar:move_to { x = 1, y = 176 }
-         self.filebar:move_to { x = 1, y = 252 }
+         self.toolbar:move_to { x = 1, y =   1 }
+        self.thingbar:move_to { x = 1, y = 176-132 }
+         self.filebar:move_to { x = 1, y = 252-132 }
 
         if self.toolindex[self.active] then self.toolbar.group:select(self.toolbar.buttons[self.toolindex[self.active]]) end
 
@@ -320,14 +291,7 @@ function Editor:update(dt)
             table.insert(tiles, {Button.Icon(tileset.canvas, quad), action})
         end
 
-        self.tilebar:init {
-            size = self.project.layers.surface.tileset.dimensions,
-            buttons = tiles,
-        }
-
         self.toolbox:set_tiles(tiles)
-
-        self.tilebar:move_to { x = love.window.getWidth() - self.tilebar.shape.w, y = 1 }
 
         if not self.focus then
             local scale = self.view.camera.scale
@@ -495,7 +459,7 @@ function Editor:keypressed(key, isrepeat)
         local wx, wy = self.view.camera:mousepos()
 
         if key == " " and not isrepeat then
-            self.toolbox:move_to { x = sx, y = sy, anchor = { 0.5, 0.5 } }
+            self.toolbox:move_to { x = math.floor(sx), y = math.floor(sy), anchor = { 0.5, 0.5 } }
             self.toolbox.active = true
             return true
         end
