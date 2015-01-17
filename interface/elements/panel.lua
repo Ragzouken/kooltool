@@ -115,6 +115,8 @@ function Panel:resort()
 end
 
 function Panel:update(dt)
+    if self.layout then self.layout:update(dt) end
+
     for child in self.sorted:downwards() do
         child:update(dt)
     end

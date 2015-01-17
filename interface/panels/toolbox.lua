@@ -5,6 +5,8 @@ local shapes = require "interface.elements.shapes"
 local colour = require "utilities.colour"
 local palette = require "generators.palette"
 
+local Grid = require "interface.elements.grid"
+
 local Palette = Class {
     __includes = Panel,
     name = "kooltool palette",
@@ -12,21 +14,26 @@ local Palette = Class {
 
 function Palette:init(params)
     Panel.init(self, params)
-    
+
+    local eraser = Button.Icon(love.graphics.newImage("images/eraser.png"))
+    local reset  = Button.Icon(love.graphics.newImage("images/reset.png"))
+
     local cols = 6
     local rows = 4
     local padding = 9
     local spacing = 9
 
-    self.palette = palette.generate(cols * rows).colours
+    self.layout = Grid { 
+        shape = shapes.Rectangle { w = 256, h = 256 },
+        padding = { left=padding, right=padding, top=padding, bottom=padding },
+        spacing = 9,
+    }
+
+    self.palette = palette.generate(cols * rows - 1).colours
 
     for i=0,cols-1 do
-        local x = padding + i * 32 + spacing * i
-        local y = padding
-
         local button = Panel {
-            x = x, y = y,
-            shape = shapes.Rectangle { x = 0, y = 0, w = 32, h = 32},
+            shape = shapes.Rectangle { w = 32, h = 32 },
             colours = { stroke = {255, 255, 255, 0}, fill = {0, 0, 0, 0}, },
             actions = {"press"},
         }
@@ -51,23 +58,23 @@ function Palette:init(params)
         end
 
         self:add(button)
+        self.layout:add(button)
     end
 
     for i, colour_ in ipairs(self.palette) do 
-        local gx = (i - 1) % cols
-        local gy = math.floor((i - 1) / cols) + 1
+        if i == 1 then colour_ = nil end
 
-        local x = padding + gx * 32 + spacing * gx
-        local y = padding + gy * 32 + spacing * gy    
+        local button
 
-        local button = Panel {
-            x = x, y = y,
-            shape = shapes.Rectangle { x = 0, y = 0, w = 32, h = 32},
-            colours = { stroke = {0, 0, 0, 0}, fill = colour_, },
-            actions = {"press"},
-        }
-
-        button.event = function() params.editor.tools.draw.colour = colour_ end
+        if i == 1 then
+            button = Button { icon = eraser }
+        else
+            button = Panel {
+                shape = shapes.Rectangle { w = 32, h = 32},
+                colours = { stroke = {0, 0, 0, 0}, fill = colour_, },
+                actions = {"press"},
+            }
+        end
 
         local draw = button.draw
         button.draw = function(self)
@@ -82,8 +89,19 @@ function Palette:init(params)
             end
         end
 
+        button.event = function() params.editor.tools.draw.colour = colour_ end
+
         self:add(button)
+        self.layout:add(button)
     end
+
+    local reset = Button {
+        icon = reset,
+        action = function() self:init(params) end,
+    }
+
+    self:add(reset)
+    self.layout:add(reset)
 end
 
 local Toolbox = Class {
@@ -125,9 +143,8 @@ function Toolbox:init(params)
             action = function() self.editor.active = tool end,
         }
 
-        local draw = button.draw
         button.draw = function(self)
-            draw(self)
+            Button.draw(self)
 
             if params.editor.active == tool then
                 love.graphics.setBlendMode("alpha")
@@ -153,6 +170,14 @@ function Toolbox:init(params)
         tiles = Panel { x = -128, y = -128 + 48, },
     }
 
+    local padding = 8
+
+    self.panels.tiles.layout = Grid { 
+        shape = shapes.Rectangle { w = 256, h = 256 },
+        padding = { left=padding, right=padding, top=padding, bottom=padding },
+        spacing = 9,
+    }
+
     self:add(self.panels.colours)
     self:add(self.panels.tiles)
 
@@ -174,33 +199,19 @@ function Toolbox:update(dt)
 end
 
 function Toolbox:set_tiles(tiles)
-    if self.tiles then self:remove(self.tiles) end
-
     self.panels.tiles:clear()
-
-    self.panels.tiles.buttons = {}
-
-    local cols = 6
-    local padding = 8
-    local spacing = 9
+    self.panels.tiles.layout:clear()
 
     for i, button in ipairs(tiles) do
-        local gx = (i - 1) % cols
-        local gy = math.floor((i - 1) / cols)
-
-        local x = padding + gx * 32 + spacing * gx
-        local y = padding + gy * 32 + spacing * gy      
-        local button = Button { x = x, y = y,
-                                icon = button[1], action = button[2], }
+        local button = Button { icon = button[1], action = button[2], }
 
         self.panels.tiles:add(button)
-        self.panels.tiles.buttons[i] = button
+        self.panels.tiles.layout:add(button)
 
         local tile = self.editor.tools.tile.tile
-        local draw = button.draw
 
         button.draw = function(self)
-            draw(self)
+            Button.draw(self)
 
             if tile == i then
                 love.graphics.setBlendMode("alpha")

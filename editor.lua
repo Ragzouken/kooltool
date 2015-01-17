@@ -292,6 +292,7 @@ function Editor:update(dt)
         end
 
         self.toolbox:set_tiles(tiles)
+        self.toolbox:update(dt)
 
         if not self.focus then
             local scale = self.view.camera.scale

@@ -64,7 +64,7 @@ function Draw:cursor(sx, sy, wx, wy)
         local x, y = math.floor(wx) - bo, math.floor(wy) - bo
 
         love.graphics.setBlendMode("alpha")
-        love.graphics.setColor(self.colour)
+        love.graphics.setColor(self.colour or {0, 0, 0, 0})
         love.graphics.rectangle("fill", x, y, self.size, self.size)
 
         return love.mouse.getSystemCursor("crosshair")
@@ -93,7 +93,7 @@ end
 
 function Draw:mousedragged(action, screen, world)
     if action == "draw" then
-        local colour = not love.keyboard.isDown("x", "e") and self.colour or nil
+        local colour = self.colour
         local lock
 
         local wx, wy, dx, dy = unpack(screen)
