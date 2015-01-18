@@ -122,6 +122,16 @@ function PixelPanel:init(params)
         spacing = 9,
     } self.palette.event = function() end
 
+    self:add(self.brushsize)
+    self:add(self.palette)
+
+    self:regenerate(params.editor)
+end
+
+function PixelPanel:regenerate(editor)
+    self.palette:clear()
+
+    local w, h = 32, 32
     local colours = 23
     local palette = palette.generate(colours).colours
 
@@ -129,13 +139,17 @@ function PixelPanel:init(params)
         if i == 1 then colour = nil end
 
         local shape = shapes.Rectangle { w = w, h = h }
-        local button = ColourButton(params.editor, shape, colour)
+        local button = ColourButton(editor, shape, colour)
 
         self.palette:add(button)
     end
 
-    self:add(self.brushsize)
-    self:add(self.palette)
+    local reset = Button {
+        image  = Button.Icon(self.icons.reset),
+        action = function() self:regenerate(editor) end,
+    }
+
+    self.palette:add(reset)
 end
 
 return PixelPanel
