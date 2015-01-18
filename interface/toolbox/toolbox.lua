@@ -8,6 +8,7 @@ local palette = require "generators.palette"
 local PixelTab = require "interface.toolbox.pixel"
 
 local Grid = require "interface.elements.grid"
+local TabBar = require "interface.elements.tabbar"
 
 local Toolbox = Class {
     __includes = Panel,
@@ -39,73 +40,48 @@ function Toolbox:init(params)
         entity = Button.Icon(love.graphics.newImage("images/entity.png")),
     }
 
-    self.toolbar = Panel { x = -128, y = -128-4.5 }
-
-    local function tooltab(x, y, icon, tool)
-        local button = Button {
-            x = x, y = y,
-            image = icon,
-            action = function() self.editor.active = tool end,
-        }
-
-        button.draw = function(self)
-            Button.draw(self)
-
-            if params.editor.active == tool then
-                love.graphics.setBlendMode("alpha")
-                love.graphics.setColor(colour.cursor(0))
-                love.graphics.setLineWidth(3)
-                love.graphics.rectangle("line", -1.5-6, -1.5-6, 34.5+12, 34.5+12)
-                love.graphics.setLineWidth(2)
-            end
-        end
-
-        return button
-    end
-
-    self.tabs = {
-        draw = tooltab(8, 8, self.icons.pencil, self.editor.tools.draw),
-        tile = tooltab(8 + 32 + 16, 8, self.icons.tiling, self.editor.tools.tile),
-        wall = tooltab(8 + (32 + 16) * 2, 8, self.icons.walls, self.editor.tools.wall),
-        marker = tooltab(8 + (32 + 16) * 3, 8, self.icons.marker, self.editor.tools.marker),
-    }
-
     self.panels = {}
 
     local padding = 8
 
     self.panels.tiles = Grid {
         name = "kooltool tile picker",
-        x = -128, y = -128 + 48,
-        shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h - 48 - 4.5 },
+        x = -128, y = -128 + 48 - 4.5,
+        shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h - 48 },
         padding = { default=padding },
-        spacing = 9,
+        spacing = 8,
     }
 
     self.panels.pixel = PixelTab {
-        x = -128, y = -128 + 48,
-        shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h - 48 - 4.5 },
+        x = -128, y = -128 + 48 - 4.5,
+        shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h - 48 },
         editor = params.editor,
     }
 
     self:add(self.panels.pixel)
     self:add(self.panels.tiles)
 
-    self.toolbar:add(self.tabs.draw)
-    self.toolbar:add(self.tabs.tile)
-    self.toolbar:add(self.tabs.wall)
-    self.toolbar:add(self.tabs.marker)
+    self.toolbar = TabBar {
+        x = -128, y = -128 - 4.5,
+
+        shape = shapes.Rectangle { w = self.shape.w, h = 48 },
+
+        colours = params.colours,
+
+        padding = { default = 8 },
+        spacing = 16,
+
+        tabs = {
+            { name = "pixel", icon = self.icons.pencil, panel = self.panels.pixel },
+            { name = "tiles", icon = self.icons.tiling, panel = self.panels.tiles },
+            { name = "walls", icon = self.icons.walls,  panel = {} },
+            { name = "mark",  icon = self.icons.marker, panel = {} },
+        },
+    }
+
+    self.toolbar:select("pixel")
 
     self:add(self.toolbar)
-end
-
-function Toolbox:update(dt)
-    Panel.update(self, dt)
-
-    if self.editor.tools then
-        self.panels.pixel.active = self.editor.active == self.editor.tools.draw
-        self.panels.tiles.active = self.editor.active == self.editor.tools.tile
-    end
 end
 
 function Toolbox:set_tiles(tiles)

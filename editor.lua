@@ -237,6 +237,16 @@ function Editor:SetProject(project)
 
     if self.toolbox then self:remove(self.toolbox) end
     self.toolbox = Toolbox { editor=self }
+
+    local tools = {
+        pixel = self.tools.draw,
+        tiles = self.tools.tile,
+        walls = self.tools.wall,
+        mark  = self.tools.marker,
+    }
+
+    self.toolbox.toolbar.selected:add(function(selected) self.active = tools[selected] end)
+    
     self:add(self.toolbox, -math.huge)
 
     self.toolindex = {
