@@ -7,39 +7,33 @@ local Button = Class {
     name = "Generic Button",
 
     actions = {"press"},
+
+    colours = { fill  = {  0,   0,   0,   0}, 
+                line  = {  0,   0,   0,   0},
+                image = {255, 255, 255, 255}},
 }
 
 function Button.Icon(image, quad)
     local w, h = image:getDimensions()
     
-    return {
+    local icon = {
         image = image,
         quad = quad or love.graphics.newQuad(0, 0, w, h, w, h),
     }
+
+    return icon
 end
 
 function Button:init(params)
-    if not params.shape then
-        local _, _, w, h = params.icon.quad:getViewport()
+    if not params.shape and params.image then
+        local _, _, w, h = params.image.quad:getViewport()
         params.shape = shapes.Rectangle { w = w, h = h,
                                           anchor = params.anchor }
     end
     
     Panel.init(self, params)
-    
-    self.icon = params.icon
+
     self.action = params.action or function() end
-end
-
-function Button:draw()
-    love.graphics.setBlendMode("premultiplied")
-    love.graphics.setColor(self.colour or {255, 255, 255, 255})
-
-    if self.icon and self.icon.image then
-        love.graphics.draw(self.icon.image,
-                           self.icon.quad,
-                           self.shape.x, self.shape.y)
-    end
 end
 
 function Button:event(event)

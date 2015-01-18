@@ -15,8 +15,8 @@ function ProjectPanel:init(project, params)
 
     local icon = elements.Button{
         x = 0, y = 0, w = 64, h = 64,
-        icon = {image = project.icon,
-                quad  = love.graphics.newQuad(0, 0, 64, 64, 64, 64)},
+        image = {image = project.icon,
+                 quad  = love.graphics.newQuad(0, 0, 64, 64, 64, 64)},
     }
 
     icon.actions["draw"] = true
@@ -35,7 +35,7 @@ function ProjectPanel:init(project, params)
 
         shape = elements.shapes.Rectangle { w = 384, h = 32 - 4 },
         colours = {
-            stroke = PALETTE.colours[1],
+            line = PALETTE.colours[1],
             fill = PALETTE.colours[1],
             text = {255, 255, 255, 255},
         },
@@ -49,7 +49,7 @@ function ProjectPanel:init(project, params)
 
         shape = elements.shapes.Rectangle { w = 384, h = 32 + 4 },
         colours = {
-            stroke = PALETTE.colours[2],
+            line = PALETTE.colours[2],
             fill = PALETTE.colours[2],
             text = {255, 255, 255, 255},
         },

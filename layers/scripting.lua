@@ -42,8 +42,8 @@ function ScriptingLayer:init()
     self.border = Panel {
         shape = shapes.Rectangle { },
 
-        colours = {stroke = {255, 255, 255, 255},
-                   fill   = {  0,   0,   0,  64}},
+        colours = {line = {255, 255, 255, 255},
+                   fill = {  0,   0,   0,  64}},
     }
 
     self:add(self.border, 5)

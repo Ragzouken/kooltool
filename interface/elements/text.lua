@@ -19,9 +19,9 @@ local Text = Class {
     typing_sound = love.audio.newSource("sounds/typing.wav"),
 
     colours = {
-        stroke = {  0,   0,   0, 255}, 
-        fill   = {  0,   0,   0, 255},
-        text   = {255, 255, 255, 255},
+        line = {  0,   0,   0, 255}, 
+        fill = {  0,   0,   0, 255},
+        text = {255, 255, 255, 255},
     },
 
     padding = 4,

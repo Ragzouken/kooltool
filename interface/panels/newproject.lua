@@ -20,7 +20,7 @@ function NewProjectPanel:init(project, params, new)
 
         shape = elements.shapes.Rectangle { w = 384, h = 32 - 4 },
         colours = {
-            stroke = PALETTE.colours[1],
+            line = PALETTE.colours[1],
             fill = PALETTE.colours[1],
             text = {255, 255, 255, 255},
         },
@@ -36,7 +36,7 @@ function NewProjectPanel:init(project, params, new)
 
         shape = elements.shapes.Rectangle { w = 384, h = 32 + 4 },
         colours = {
-            stroke = PALETTE.colours[2],
+            line = PALETTE.colours[2],
             fill = PALETTE.colours[2],
             text = {255, 255, 255, 255},
         },
@@ -56,7 +56,7 @@ function NewProjectPanel:init(project, params, new)
     local width = elements.Text{
         shape = elements.shapes.Rectangle { w = 40,  h = 24 },
         colours = {
-            stroke = {255, 255, 255, 255},
+            line = {255, 255, 255, 255},
             fill   = {  0,   0,   0, 255},
             text   = {255, 255, 255, 255},
         },
@@ -69,9 +69,9 @@ function NewProjectPanel:init(project, params, new)
         x = 48, y = 0,
         shape = elements.shapes.Rectangle { w = 40,  h = 24 },
         colours = {
-            stroke = {255, 255, 255, 255},
-            fill   = {  0,   0,   0, 255},
-            text   = {255, 255, 255, 255},
+            line = {255, 255, 255, 255},
+            fill = {  0,   0,   0, 255},
+            text = {255, 255, 255, 255},
         },
 
         font = elements.Text.fonts.medium,
@@ -95,7 +95,7 @@ function NewProjectPanel:init(project, params, new)
         x = 96, y = 0,
         shape = elements.shapes.Rectangle { w = 92,  h = 24 },
         colours = {
-            stroke = PALETTE.colours[1],
+            line = PALETTE.colours[1],
             fill = PALETTE.colours[1],
             text = {255, 255, 255, 255},
         },

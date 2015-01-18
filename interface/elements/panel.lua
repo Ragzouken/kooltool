@@ -1,14 +1,29 @@
 local Class = require "hump.class"
 local shapes = require "interface.elements.shapes"
 
+local function flattened(base, layer)
+    local flat = {}
+
+    for k, v in pairs(base) do
+        flat[k] = v
+    end
+
+    for k, v in pairs(layer or {}) do
+        flat[k] = v
+    end
+
+    return flat
+end
+
 local Panel = Class {
     DEBUG = false,
     name = "Generic Panel",
 
     actions = {},
 
-    colours = {stroke = {255, 0, 255, 255},
-               fill   = {255, 0, 255,  64}},
+    colours = {line  = {255,   0, 255, 255},
+               fill  = {255,   0, 255,  64},
+               image = {255, 255, 255, 255}},
 
     clip = false,
 }
@@ -22,11 +37,12 @@ function Panel:init(params)
     
     self.x = params.x or self.shape.x
     self.y = params.y or self.shape.y
-    self.depth = params.depth or 0
+    self.depth = params.depth
 
     self.actions = params.actions or self.actions
-    self.colours = params.colours or self.colours
-    
+    self.colours = flattened(self.colours, params.colours)
+    self.image = params.image
+
     self.clip = params.clip or self.clip
     self.tags = params.tags or self.tags or {}
 
@@ -40,24 +56,25 @@ function Panel:init(params)
     
     self.active = true
     self.children = {}
-    self.default_depth = 1
+    self.default_depth = 0
 
     self:resort()
 end
 
-function Panel:print(depth)
+function Panel:print(depth, suffix)
     depth = depth or 0
+    suffix = suffix and (" (" .. suffix ..  ")") or "" 
 
-    print(string.rep("  ", depth) .. self.name)
+    print(string.rep("  ", depth) .. self.name .. suffix)
 
     for child in self.sorted:upwards() do
-        child:print(depth + 1)
+        child:print(depth + 1, self.children[child])
     end
 end
 
 function Panel:add(panel, depth)
     local depth = depth or panel.depth or self.default_depth
-    self.default_depth = depth + 1
+    self.default_depth = self.default_depth - 1
 
     if panel.parent then panel.parent:remove(panel) end
     panel.parent = self
@@ -138,7 +155,16 @@ function Panel:draw(params)
     love.graphics.setBlendMode("alpha")
     love.graphics.setColor(self.colours.fill)
     self.shape:draw("fill")
-    love.graphics.setColor(self.colours.stroke)
+
+    if self.image then
+        love.graphics.setBlendMode("premultiplied")
+        love.graphics.setColor(self.colours.image)
+        love.graphics.draw(self.image.image, self.image.quad,
+                           self.shape.x, self.shape.y)
+    end
+
+    love.graphics.setBlendMode("alpha")
+    love.graphics.setColor(self.colours.line)
     self.shape:draw("line")
 end
 

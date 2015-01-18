@@ -18,7 +18,7 @@ local tools = require "tools"
 local Project = require "components.project"
 local ProjectSelect = require "interface.panels.projectselect"
 local ProjectPanel = require "interface.panels.project"
-local Toolbox = require "interface.panels.toolbox"
+local Toolbox = require "interface.toolbox.toolbox"
 local Button = require "interface.elements.button"
 
 local generators = require "generators"
@@ -70,9 +70,9 @@ function Editor:init(camera)
                                            w = 512-16,  h = 24,
                                            anchor = {0, 0}},
         colours = {
-            stroke = {255,   0,   0, 255},
-            fill =   {192,   0,   0, 255},
-            text =   {255, 255, 255, 255},
+            line = {255,   0,   0, 255},
+            fill = {192,   0,   0, 255},
+            text = {255, 255, 255, 255},
         },
         
         font = Text.fonts.small,
@@ -120,9 +120,9 @@ function Editor:init(camera)
 
         shape = elements.shapes.Rectangle { w = 512,  h = 24 },
         colours = {
-            stroke = {  0,   0,   0, 255},
-            fill =   {  0,   0,   0, 255},
-            text =   {255, 255, 255, 255},
+            line = {  0,   0,   0, 255},
+            fill = {  0,   0,   0, 255},
+            text = {255, 255, 255, 255},
         },
 
         font = Text.fonts.medium,

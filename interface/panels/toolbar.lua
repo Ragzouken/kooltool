@@ -32,7 +32,7 @@ function Toolbar:init(params)
         local x, y = 32 * col, (h + 1) * row + 1
         local tooltip = button[3]
         local button = Radio { x = x, y = y,
-                               icon = button[1],
+                               image = button[1],
                                action = button[2],
                                group = self.group,
                                actions = {"press", button[3] and "tooltip"}, }
