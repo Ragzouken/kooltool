@@ -14,9 +14,8 @@ function ProjectPanel:init(project, params)
     })
 
     local icon = elements.Button{
-        x = 0, y = 0, w = 64, h = 64,
-        image = {image = project.icon,
-                 quad  = love.graphics.newQuad(0, 0, 64, 64, 64, 64)},
+        x = 0, y = 0,
+        image = elements.Button.Icon(project.icon),
     }
 
     icon.actions["draw"] = true

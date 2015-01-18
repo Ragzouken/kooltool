@@ -85,9 +85,9 @@ function NewProjectPanel:init(project, params, new)
         new(project)
     end 
 
-    local icon = elements.Button{
-        x = 0, y = 0, w = 64, h = 64,
-        icon = {image = project.icon, quad = love.graphics.newQuad(0, 0, 64, 64, 64, 64)},
+    local icon = elements.Button {
+        x = 0, y = 0,
+        image = elements.Button.Icon(project.icon),
         action = create,
     }
 

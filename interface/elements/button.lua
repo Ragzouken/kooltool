@@ -37,6 +37,7 @@ function Button:init(params)
 end
 
 function Button:event(event)
+    print(self.name)
     if event.action == "press" then
         self:action(event)
     end

@@ -17,8 +17,9 @@ function ProjectSelect:init(editor)
 end
 
 function ProjectSelect:SetProjects(projects)
-    local function button(action)
+    local function button(action, name)
         return elements.Button {
+            name = name,
             x = 64, y = 0,
             shape = elements.shapes.Rectangle { w = 384, h = 64 },
             action = action,
@@ -38,7 +39,7 @@ function ProjectSelect:SetProjects(projects)
         end
 
         local panel = ProjectPanel(project, { x = 0, y = (i - 1) * 64 })
-        panel:add(button(project_clicked))
+        panel:add(button(project_clicked, project.name))
         self:add(panel)
     end
 
@@ -54,7 +55,6 @@ function ProjectSelect:SetProjects(projects)
     end
 
     local panel = NewProjectPanel(project, { x = 0, y = #projects * 64 }, clicked)
-    --panel:add(button(new))
     self:add(panel)
 end
 
