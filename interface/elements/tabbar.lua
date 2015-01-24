@@ -31,7 +31,10 @@ function TabBar:select(selected)
     for name, tab in pairs(self.tabs) do
         local button, panel = unpack(tab)
 
-        panel.active = name == selected
+        local active = name == selected
+
+        panel.active = active
+        button.highlight = active
     end
 
     self.selected:fire(selected)

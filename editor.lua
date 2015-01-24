@@ -20,6 +20,7 @@ local ProjectSelect = require "interface.panels.projectselect"
 local ProjectPanel = require "interface.panels.project"
 local Toolbox = require "interface.toolbox.toolbox"
 local Button = require "interface.elements.button"
+local ScrollPanel = require "interface.elements.scroll"
 
 local generators = require "generators"
 local colour = require "utilities.colour"
@@ -83,7 +84,8 @@ function Editor:init(camera)
     self.nocanvas.active = NOCANVAS
 
     self.select = ProjectSelect(self)
-    
+    self.selectscroller = ScrollPanel { shape = shapes.Rectangle{ w=448, h=490 }, content = self.select, highlight = true, }
+
     self.view = Frame { camera = camera, }
 
     self.toolbar = Toolbar {
@@ -107,7 +109,8 @@ function Editor:init(camera)
         size={0, 0},
     }
 
-    self:add(self.select, -math.huge)
+    --self:add(self.select, -math.huge)
+    self:add(self.selectscroller, -math.huge)
     self:add(self.view)
     self:add(self.nocanvas, -math.huge)
     
@@ -137,7 +140,7 @@ end
 function Editor:SetProject(project)
     self.project = project
 
-    self.select.active = false
+    self.selectscroller.active = false
 
     self.view:clear()
     self.view:add(project, -1)
@@ -261,10 +264,25 @@ end
 function Editor:update(dt)
     Panel.update(self, dt)
 
-    self.select:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
+    local sx, sy = love.mouse.getPosition()
+    local wx, wy = self.view.camera:mousepos()
+
+    self.selectscroller:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
 
     if self.export_thread and not self.export_thread:isRunning() then
         self.export_thread = nil
+    end
+
+    local scroller = self:target("scroll", sx, sy)
+
+    if scroller then
+        if love.keyboard.isDown("t") then
+            scroller:scroll(0, -256 * dt)
+        end
+
+        if love.keyboard.isDown("g") then
+            scroller:scroll(0, 256 * dt)
+        end
     end
 
     if self.project then
@@ -273,9 +291,6 @@ function Editor:update(dt)
          self.filebar:move_to { x = 1, y = 252-132 }
 
         if self.toolindex[self.active] then self.toolbar.group:select(self.toolbar.buttons[self.toolindex[self.active]]) end
-
-        local sx, sy = love.mouse.getPosition()
-        local wx, wy = self.view.camera:mousepos()
 
         for name, tool in pairs(self.tools) do
             tool:update(dt, sx, sy, wx, wy)
@@ -303,6 +318,8 @@ function Editor:update(dt)
 
         self.toolbox:set_tiles(tiles)
         self.toolbox:update(dt)
+        local x, y = love.mouse.getPosition()
+        self.toolbox.source = {x=x, y=y}
 
         if not self.focus then
             local scale = self.view.camera.scale
@@ -408,6 +425,18 @@ function Editor:mousepressed(sx, sy, button)
 
     local wx, wy = self.view.camera:worldCoords(sx, sy)
 
+    local scroller = self:target("scroll", sx, sy)
+
+    if scroller then
+        if button == "wd" then
+            scroller:scroll(0, 35) return
+        end
+
+        if button == "wu" then
+            scroller:scroll(0, -35) return 
+        end
+    end
+
     local target = self:target("press", sx, sy)
 
     if target and button == "l" then
@@ -458,7 +487,7 @@ function Editor:keypressed(key, isrepeat)
     end
 
     if key == "escape" and self.project then
-        self.select.active = not self.select.active
+        self.selectscroller.active = not self.selectscroller.active
         self.select:SetProjects(project_list())
         return
     end

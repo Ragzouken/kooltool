@@ -6,7 +6,8 @@ local Grid = Class {
 
     padding = {left=2, right=2, top=2, bottom=2},
     spacing = 2,
-    slack = "spacing" -- / "padding" / "cells" / "ignore"
+    slack = "spacing", -- / "padding" / "cells" / "ignore"
+    grow = false,
 }
 
 function Grid:init(params)
@@ -15,12 +16,15 @@ function Grid:init(params)
     self.padding = params.padding or self.padding
     self.spacing = params.spacing or self.spacing
     self.slack   = params.slack   or self.slack
+    self.grow    = params.grow    or self.grow
 end
 
 function Grid:update(dt)
     local cw, ch = 0, 0
+    local cells = 0
 
     for element in self.sorted:upwards() do
+        cells = cells + 1
         cw = math.max(cw, element.shape.w)
         ch = math.max(ch, element.shape.h)
     end
@@ -39,6 +43,12 @@ function Grid:update(dt)
     -- distribute the left-over space into the spaces
     slack = math.max(0, slack - (cols * cw + (cols - 1) * spacing))       
     spacing = spacing + slack / (cols - 1) 
+
+    local rows = math.ceil(cells / cols)
+    
+    if self.grow then
+        self.shape.h = top + rows * ch + (rows - 1) * spacing + bottom
+    end
 
     local i = 1
     for element in self.sorted:upwards() do

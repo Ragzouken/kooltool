@@ -44,15 +44,15 @@ function Rectangle:init(params)
     self:move_to { x = params.x or 0, y = params.y or 0 }
 end
 
-function Rectangle:draw(mode, padding)
-    local x, y = self.x, self.y
-    local w, h = self.w, self.h
-    
+function Rectangle:draw(mode, padding, debug)
     padding = padding or self.padding or 0
+
+    local x, y = self.x - padding,     self.y - padding
+    local w, h = self.w + padding * 2, self.h + padding * 2
     
     love.graphics.rectangle(mode,
-                            x - padding, y - padding,
-                            w + padding * 2, h + padding * 2)
+                            math.floor(x)+0.5, math.floor(y)+0.5,
+                            math.floor(w), math.floor(h))
 end
 
 function Rectangle:contains(x, y)
@@ -88,6 +88,15 @@ function Rectangle:include(rectangle)
     self.y = math.min(oy, rectangle.y)
     self.w = math.max(ox + self.w, rectangle.x + rectangle.w) - self.x
     self.h = math.max(oy + self.h, rectangle.y + rectangle.h) - self.y
+end
+
+function Rectangle:intersect(rectangle)
+    local ox, oy, ow, oh = self:get()
+
+    self.x = math.max(ox, rectangle.x)
+    self.y = math.max(oy, rectangle.y)
+    self.w = math.min(ox + self.w, rectangle.x + rectangle.w) - self.x
+    self.h = math.min(oy + self.h, rectangle.y + rectangle.h) - self.y
 end
 
 function Rectangle:grow(params)

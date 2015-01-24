@@ -35,7 +35,7 @@ function ProjectSelect:SetProjects(projects)
     for i, project in ipairs(projects) do
         local function project_clicked(event)
             self.editor:SetProject(project:load())
-            self.active = false
+            self.parent.active = false
         end
 
         local panel = ProjectPanel(project, { x = 0, y = (i - 1) * 64 })
@@ -51,7 +51,7 @@ function ProjectSelect:SetProjects(projects)
 
     local function clicked(project)
         self.editor:SetProject(project)
-        self.active = false
+        self.parent.active = false
     end
 
     local panel = NewProjectPanel(project, { x = 0, y = #projects * 64 }, clicked)

@@ -1,5 +1,6 @@
 local Class = require "hump.class"
 local shapes = require "interface.elements.shapes"
+local colour = require "utilities.colour"
 
 local function flattened(base, layer)
     local flat = {}
@@ -25,6 +26,22 @@ local Panel = Class {
                fill  = {255,   0, 255,  64},
                image = {255, 255, 255, 255}},
 
+    COLOURS = {
+        black = {
+            fill  = {  0,   0,   0, 255},
+            line  = {  0,   0,   0,   0},
+            image = {255, 255, 255, 255},
+        },
+
+        transparent = {
+            fill  = {  0,   0,   0,   0},
+            line  = {  0,   0,   0,   0},
+            image = {255, 255, 255, 255},
+        },
+    },
+
+    pointer = love.graphics.newImage("images/pointer.png"),
+
     clip = false,
 }
 
@@ -43,7 +60,6 @@ function Panel:init(params)
     self.colours = flattened(self.colours, params.colours)
     self.image = params.image
 
-    self.clip = params.clip or self.clip
     self.tags = params.tags or self.tags or {}
 
     for i, action in ipairs(self.actions) do
@@ -57,6 +73,8 @@ function Panel:init(params)
     self.active = true
     self.children = {}
     self.default_depth = 0
+
+    self.highlight = params.highlight or self.highlight
 
     self:resort()
 end
@@ -132,6 +150,9 @@ function Panel:resort()
 end
 
 function Panel:update(dt)
+    self.t = self.t or 0
+    self.t = self.t + dt
+
     if self.layout then self.layout:update(dt) end
 
     for child in self.sorted:downwards() do
@@ -162,31 +183,64 @@ function Panel:draw(params)
         love.graphics.draw(self.image.image, self.image.quad,
                            self.shape.x, self.shape.y)
     end
+end
+
+function Panel:draw_above(params)
+    local width = love.graphics.getLineWidth()
+    love.graphics.setLineWidth(3)
 
     love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(self.colours.line)
+    if self.highlight then
+        love.graphics.setColor(colour.cursor(0, 255))
+    else
+        love.graphics.setColor(self.colours.line)
+    end
     self.shape:draw("line")
+
+    if self.source then
+        local dx = self.source.x - self.x
+        local dy = self.source.y - self.y
+        local angle = math.atan2(dy, dx)
+        local quart = math.pi * 0.5
+        angle = math.floor(angle / quart + 0.5) * quart 
+
+        local dx, dy = math.cos(angle), math.sin(angle)
+
+        local cx = self.shape.x + self.shape.w / 2
+        local cy = self.shape.y + self.shape.h / 2
+        local x = cx + dx * self.shape.w / 2
+        local y = cy + dy * self.shape.h / 2
+
+        local ox, oy = dx < 0.5 and 1 or 0, dy < 0.5 and 1 or 0
+
+        love.graphics.setBlendMode("premultiplied")
+        love.graphics.draw(self.pointer, x+ox, y+oy, angle, 1, 1, 1, 15.5)
+    end
+
+    love.graphics.setLineWidth(width)
 end
 
 function Panel:draw_tree(params)
     if not self:check_filters(params.filters or {}) then return end
 
     love.graphics.push()
-    love.graphics.translate(self.x, self.y)
-    
-    if self.clip and self.shape then
-        love.graphics.setStencil(function() self.shape:draw("fill") end)
-    end
+    love.graphics.translate(math.floor(self.x), math.floor(self.y))
 
     self:draw(params)
+
+    if self.clip then
+        love.graphics.setStencil(function() self.shape:draw("fill") end)
+    end
 
     for child in self.sorted:upwards() do
         if child.active then child:draw_tree(params) end
     end
 
-    if self.draw_above then self:draw_above(params) end
+    if self.clip then
+        love.graphics.setStencil()
+    end
 
-    love.graphics.setStencil()
+    self:draw_above(params)
 
     love.graphics.pop()
 end
@@ -199,6 +253,8 @@ TODO: maybe track the whole transform chain ffs
 --]]
 function Panel:target(action, x, y, debug)
     local lx, ly = x - self.x, y - self.y
+
+    if self.clip and not self.shape:contains(lx, ly) then return end
 
     for child in self.sorted:downwards() do
         if child.active then

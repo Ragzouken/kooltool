@@ -19,6 +19,14 @@ local PixelPanel = Class {
     colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
 }
 
+local function highlight_shiv(draw, predicate)
+    return function(self)
+        draw(self)
+
+        self.highlight = predicate()
+    end
+end
+
 local function SizeButton(editor, shape, size)
     local button = Panel {
         shape = shape,
@@ -38,13 +46,7 @@ local function SizeButton(editor, shape, size)
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.rectangle("fill", x + 0.5 - size/2, y - size/2, size, size)
 
-        if editor.tools and editor.tools.draw.size == size then
-            love.graphics.setBlendMode("alpha")
-            love.graphics.setColor(colour_.cursor(0))
-            love.graphics.setLineWidth(3)
-            love.graphics.rectangle("line", -1.5, -1.5, w+2.5, h+2.5)
-            love.graphics.setLineWidth(2)
-        end
+        self.highlight = editor.tools and editor.tools.draw.size == size
     end
 
     return button
@@ -59,22 +61,9 @@ local function ColourButton(editor, shape, colour)
 
     button.event = function() editor.tools.draw.colour = colour end
 
-    local w, h = shape.w, shape.h
-    local x, y = w / 2, h / 2
-
     if not colour then button.image = Button.Icon(PixelPanel.icons.eraser) end
 
-    button.draw = function(self)
-        Panel.draw(self)
-
-        if editor.tools and editor.tools.draw.colour == colour then
-            love.graphics.setBlendMode("alpha")
-            love.graphics.setColor(colour_.cursor(0))
-            love.graphics.setLineWidth(3)
-            love.graphics.rectangle("line", -1.5, -1.5, w+2.5, h+2.5)
-            love.graphics.setLineWidth(2)
-        end
-    end
+    button.draw = highlight_shiv(button.draw, function() return editor.tools and editor.tools.draw.colour == colour end)
 
     return button
 end
