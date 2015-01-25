@@ -42,7 +42,7 @@ function Grid:update(dt)
 
     -- distribute the left-over space into the spaces
     slack = math.max(0, slack - (cols * cw + (cols - 1) * spacing))       
-    spacing = spacing + slack / (cols - 1) 
+    spacing = cols > 1 and spacing + slack / (cols - 1) or 0
 
     local rows = math.ceil(cells / cols)
     

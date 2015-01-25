@@ -21,6 +21,7 @@ local ProjectPanel = require "interface.panels.project"
 local Toolbox = require "interface.toolbox.toolbox"
 local Button = require "interface.elements.button"
 local ScrollPanel = require "interface.elements.scroll"
+local Grid = require "interface.elements.grid"
 
 local generators = require "generators"
 local colour = require "utilities.colour"
@@ -34,6 +35,10 @@ PALETTE = nil
 local Editor = Class {
     __includes = Panel,
     name = "kooltool editor",
+
+    icons = {
+        menu = Button.Icon(love.graphics.newImage("images/menu.png")),
+    }
 }
 
 local function project_list()
@@ -109,9 +114,30 @@ function Editor:init(camera)
         size={0, 0},
     }
 
+    self.options = Grid {
+        shape = shapes.Rectangle { w = 32, h = 32 },
+
+        spacing = 0,
+        padding = { default = 0, },
+
+        colours = Panel.COLOURS.black,
+        highlight = true,
+    }
+
+    local menu = Button { 
+        image = self.icons.menu,
+        action = function()
+            self.selectscroller.active = not self.selectscroller.active
+        end,
+        colours = Panel.COLOURS.black,
+    }
+
+    self.options:add(menu)
+    self:add(self.options, -math.huge)
+
     --self:add(self.select, -math.huge)
     self:add(self.selectscroller, -math.huge)
-    self:add(self.view)
+    self:add(self.view, 0)
     self:add(self.nocanvas, -math.huge)
     
     self:add(self.toolbar,  -math.huge)
@@ -250,6 +276,8 @@ function Editor:SetProject(project)
 
     self.toolbox.toolbar.selected:add(function(selected) self.active = tools[selected] end)
     
+    self.toolbox.panels.tiles:set_tileset(self.project.layers.surface.tileset)
+
     self:add(self.toolbox, -math.huge)
 
     self.toolindex = {
@@ -268,6 +296,7 @@ function Editor:update(dt)
     local wx, wy = self.view.camera:mousepos()
 
     self.selectscroller:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
+    self.options:move_to { x = love.window.getWidth() / 2, y = 0, anchor = {0.5, 0}  }
 
     if self.export_thread and not self.export_thread:isRunning() then
         self.export_thread = nil
@@ -303,20 +332,6 @@ function Editor:update(dt)
         self.project:update(dt)
         colour.walls(dt, 0)
 
-        -- tilebar
-        local tiles = {}
-        local tileset = self.project.layers.surface.tileset
-        
-        for i, quad in ipairs(tileset.quads) do
-            local function action()
-                self.active = self.tools.tile
-                self.tools.tile.tile = i
-            end
-            
-            table.insert(tiles, {Button.Icon(tileset.canvas, quad), action})
-        end
-
-        self.toolbox:set_tiles(tiles)
         self.toolbox:update(dt)
         local x, y = love.mouse.getPosition()
         self.toolbox.source = {x=x, y=y}

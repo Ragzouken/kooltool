@@ -4,6 +4,7 @@ local elements = require "interface.elements"
 local ProjectPanel = Class {
     __includes = elements.Panel,
     name = "kooltool project panel",
+    colours = elements.Panel.COLOURS.black,
 }
 
 function ProjectPanel:init(project, params)
@@ -34,7 +35,7 @@ function ProjectPanel:init(project, params)
 
         shape = elements.shapes.Rectangle { w = 384, h = 32 - 4 },
         colours = {
-            line = PALETTE.colours[1],
+            line = { 0, 0, 0, 0},
             fill = PALETTE.colours[1],
             text = {255, 255, 255, 255},
         },
@@ -48,7 +49,7 @@ function ProjectPanel:init(project, params)
 
         shape = elements.shapes.Rectangle { w = 384, h = 32 + 4 },
         colours = {
-            line = PALETTE.colours[2],
+            line = { 0, 0, 0, 0},
             fill = PALETTE.colours[2],
             text = {255, 255, 255, 255},
         },

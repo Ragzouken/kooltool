@@ -73,6 +73,14 @@ function tileset.wall(apply, tilesize, palette)
     end
 end
 
+function tileset.blank(apply, tilesize, palette)
+    local w, h = unpack(tilesize)
+    local s = math.max(w, h)
+
+    local brush, x, y = Brush.line(w / 2, h / 2, w / 2, h / 2, s, palette.colours[4])
+    apply(brush, false, x, y)
+end
+
 function tileset.flat(project, tilesize)
     local generators = require "generators"
 

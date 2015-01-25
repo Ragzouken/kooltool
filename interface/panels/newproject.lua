@@ -6,6 +6,7 @@ local generators = require "generators"
 local NewProjectPanel = Class {
     __includes = elements.Panel,
     name = "kooltool new project panel",
+    colours = elements.Panel.COLOURS.black,
 }
 
 function NewProjectPanel:init(project, params, new)

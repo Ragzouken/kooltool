@@ -45,6 +45,10 @@ local Panel = Class {
     clip = false,
 }
 
+function Panel.bound(bounds, panel)
+    
+end
+
 function Panel:init(params)
     params = params or {}
     

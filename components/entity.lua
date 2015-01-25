@@ -16,6 +16,7 @@ local Entity = Class {
 
     actions = {"drag", "draw", "remove", "tooltip", "script"},
     tooltip = "character",
+    colours = Panel.COLOURS.transparent,
 }
 
 function Entity:deserialise(resources, data)

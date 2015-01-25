@@ -1,8 +1,9 @@
 local Class = require "hump.class"
 local Brush = require "tools.brush"
+local Event = require "utilities.event"
 
 local common = require "utilities.common"
-local colour = require "utilities.colour"
+local colour = require "utilities.colour" 
 
 local Tileset = Class {
     type = "Tileset",
@@ -40,6 +41,8 @@ function Tileset:init(tilesize)
     self.tiles = 0
 
     self.snapshots = {}
+
+    self.changed = Event()
 end
 
 function Tileset:finalise()
@@ -83,6 +86,8 @@ function Tileset:refresh()
                                               tw, th,
                                               w, h)
     end
+
+    self.changed:fire(self)
 end
 
 function Tileset:add_tile(count)
@@ -108,6 +113,8 @@ function Tileset:clone(tile)
             self:applyBrush(clone, brush)
         end
     end
+
+    self:refresh()
 
     return clone
 end

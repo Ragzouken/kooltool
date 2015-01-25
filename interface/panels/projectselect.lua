@@ -8,6 +8,8 @@ local ProjectSelect = Class {
     __includes = elements.Panel,
     name = "kooltool project select",
     new_image = love.graphics.newImage("images/new_project.png"),
+
+    colours = elements.Panel.COLOURS.black,
 }
 
 function ProjectSelect:init(editor)

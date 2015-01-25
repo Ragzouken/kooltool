@@ -97,6 +97,8 @@ function SurfaceLayer:init(project)
     self.sprites = {}
     self.sprites_index = {id = 0}
     self.entities = {}
+
+    self._refresh = function() self:refresh() end
 end
 
 function SurfaceLayer:finalise()
@@ -117,11 +119,15 @@ function SurfaceLayer:draw(params)
     love.graphics.draw(self.tilebatch, 0, 0)
 end
 
+
+
 function SurfaceLayer:SetTileset(tileset)
     self.tileset = tileset
     
     self.tilemap:SetCellSize(unpack(self.tileset.dimensions))
     self.wallmap:SetCellSize(unpack(self.tileset.dimensions))
+
+    self.tileset.changed:add(self._refresh)
 end
 
 function SurfaceLayer:getTile(gx, gy)
@@ -264,13 +270,11 @@ function SurfaceLayer:applyBrush(bx, by, brush, lock, cloning)
 
             if index and not locked then
                 self.tileset:applyBrush(index, brush, quad)
-                self.tileset:refresh()
             end
         end
     end
 
     if cloned then
-        self:refresh()
         self.clone_sound:stop()
         self.clone_sound:play()
     end

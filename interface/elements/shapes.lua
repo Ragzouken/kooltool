@@ -99,6 +99,14 @@ function Rectangle:intersect(rectangle)
     self.h = math.min(oy + self.h, rectangle.y + rectangle.h) - self.y
 end
 
+function Rectangle:bound(bounds)
+    self.x = math.min(self.x + self.w, bounds.x + bounds.w) - self.w
+    self.y = math.min(self.y + self.h, bounds.y + bounds.h) - self.h
+
+    self.x = math.max(self.x, bounds.x)
+    self.y = math.max(self.y, bounds.y)
+end
+
 function Rectangle:grow(params)
     self.w = self.w + (params.left or 0) + (params.right or 0)
     self.h = self.h + (params.up   or 0) + (params.down  or 0)

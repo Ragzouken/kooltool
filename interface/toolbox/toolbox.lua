@@ -6,6 +6,7 @@ local colour = require "utilities.colour"
 local palette = require "generators.palette"
 
 local PixelTab = require "interface.toolbox.pixel"
+local TilesTab = require "interface.toolbox.tiles"
 
 local Grid = require "interface.elements.grid"
 local TabBar = require "interface.elements.tabbar"
@@ -45,36 +46,21 @@ function Toolbox:init(params)
 
     self.panels = {}
 
-    local padding = 8
+    local function tab()
+        return {
+            x = -128, y = -128 + 48 - 4.5,
+            shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h - 48 },
+            editor = params.editor,
 
-    self.panels.tiles = Grid {
-        name = "kooltool tile picker",
-        --x = -128, y = -128 + 48 - 4.5,
-        shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h },
-        padding = { default=padding },
-        spacing = 8,
+            colours = Panel.COLOURS.black,
+        }
+    end
 
-        colours = Panel.COLOURS.black,
-
-        grow = true,
-    }
-
-    local scroller = ScrollPanel {
-        x = -128, y = -128 + 48 - 4.5,
-        shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h - 48 },
-        content = self.panels.tiles,
-    }
-
-    self.panels.pixel = PixelTab {
-        x = -128, y = -128 + 48 - 4.5,
-        shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h - 48 },
-        editor = params.editor,
-
-        colours = Panel.COLOURS.black,
-    }
+    self.panels.pixel = PixelTab(tab())
+    self.panels.tiles = TilesTab(tab())
 
     self:add(self.panels.pixel)
-    self:add(scroller)--self.panels.tiles)
+    self:add(self.panels.tiles)
 
     self.toolbar = TabBar {
         x = -128, y = -128 - 4.5,
@@ -96,27 +82,16 @@ function Toolbox:init(params)
 
     self.toolbar:select("pixel")
 
-    self:add(self.toolbar)
-end
-
-function Toolbox:set_tiles(tiles)
-    self.panels.tiles:clear()
-
-    for i=1,10 do
-        for i, button in ipairs(tiles) do
-            local button = Button { image = button[1], action = button[2], }
-
-            self.panels.tiles:add(button)
-
-            local tile = self.editor.tools.tile.tile
-
-            button.draw = function(self)
-                self.highlight = tile == i
-
-                Panel.draw(self)
-            end
+    local menu = Button { 
+        image = self.editor.icons.menu,
+        action = function()
+            self.editor.selectscroller.active = not self.editor.selectscroller.active
         end
-    end
+    }
+
+    self.toolbar:add(menu)
+
+    self:add(self.toolbar)
 end
 
 return Toolbox
