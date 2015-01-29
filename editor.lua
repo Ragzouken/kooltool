@@ -136,9 +136,25 @@ function Editor:init(camera)
         highlight = true,
     }
 
+    self.savesplash = Text {
+        shape = elements.shapes.Rectangle { w = 512,  h = 64 },
+        colours = {
+            line = {  0,   0,   0, 255},
+            fill = {  0,   0,   0, 255},
+            text = {255, 255, 255, 255},
+        },
+
+        font = Text.fonts.large,
+        text = "saving",
+        highlight = true,
+    }
+
     self:add(self.tooltip, -math.huge)
 
     self.select:SetProjects(project_list())
+
+    self:add(self.savesplash, -math.huge)
+    self.savesplash.active = false
 end
 
 function Editor:playtest()
@@ -152,10 +168,18 @@ function Editor:playtest()
     end
 end
 
+function Editor:splash()
+    self.savesplash.active = true
+    love.draw()
+    love.graphics.present()
+    self.savesplash.active = false
+end
+
 function Editor:save()
     if self.project then
         if not self.export_thread then
             savesound:play()
+            self:splash()
             self.project:save("projects/" .. self.project.name)
             love.system.openURL("file://"..love.filesystem.getSaveDirectory())
         else
@@ -169,6 +193,7 @@ end
 function Editor:export()
     if self.project and not self.export_thread then
         savesound:play()
+        self:splash()
         self.project:save("projects/" ..self.project.name)
 
         self.export_thread = love.thread.newThread("utilities/export.lua")
@@ -272,9 +297,12 @@ function Editor:update(dt)
     local sx, sy = love.mouse.getPosition()
     local wx, wy = self.view.camera:mousepos()
 
-    self.selectscroller:move_to { x = love.window.getWidth() / 2, y = 64, anchor = {0.5, 0} }
-    self.options:move_to { x = love.window.getWidth() / 2, y = -2, anchor = {0.5, 0}  }
-    self.tooltip:move_to { x = love.window.getWidth() / 2, y = love.window.getHeight()+1, anchor = {0.5, 1}}
+    local cx, cy = love.window.getWidth() / 2, love.window.getHeight() / 2
+
+    self.selectscroller:move_to { x = cx, y = 64, anchor = {0.5, 0} }
+    self.options:move_to { x = cx, y = -2, anchor = {0.5, 0}  }
+    self.tooltip:move_to { x = cx, y = love.window.getHeight()+1, anchor = {0.5, 1}}
+    self.savesplash:move_to { x = cx, y = cy, anchor = {0.5, 0.5}}
 
     if self.export_thread and not self.export_thread:isRunning() then
         self.export_thread = nil
