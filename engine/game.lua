@@ -200,7 +200,11 @@ function Game:process()
     self.queue, self.active = {}, self.queue
 end
 
+local colour = require "utilities.colour"
+
 function Game:update(dt)
+    colour.cursor(dt)
+
     if not self.TEXT then
         for actor in pairs(self.actors) do
             if actor.active then

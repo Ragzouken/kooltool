@@ -32,6 +32,7 @@ local function SizeButton(editor, shape, size)
         shape = shape,
         colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
         actions = {"press"},
+        tooltip = "change brush size",
     }
 
     button.event = function() editor.tools.draw.size = size end
@@ -57,6 +58,7 @@ local function ColourButton(editor, shape, colour)
         shape = shape,
         colours = { line = {255, 255, 255, 0}, fill = colour or {0, 0, 0, 0} },
         actions = {"press"},
+        tooltip = "choose colour",
     }
 
     button.event = function() editor.tools.draw.colour = colour end
@@ -88,9 +90,10 @@ function PixelPanel:init(params)
         actions = {"press"}, -- TODO: replace with blocking
         padding = { default = 9 },
         spacing = 9,
+        tooltip = "change brush size",
     } self.brushsize.event = function() end
 
-    local cols = self.brushsize:columns(w)
+    local cols = self.brushsize:fit_cells(w, self.brushsize.shape.w)
 
     for i=1,cols do
         local shape = shapes.Rectangle { w = w, h = h }
@@ -109,6 +112,7 @@ function PixelPanel:init(params)
 
         padding = { default = 9, top = 0 },
         spacing = 9,
+        tooltip = "choose colour",
     } self.palette.event = function() end
 
     self:add(self.brushsize)
@@ -136,6 +140,7 @@ function PixelPanel:regenerate(editor)
     local reset = Button {
         image  = Button.Icon(self.icons.reset),
         action = function() self:regenerate(editor) end,
+        tooltip = "randomise colours",
     }
 
     self.palette:add(reset)

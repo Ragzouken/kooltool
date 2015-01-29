@@ -18,6 +18,7 @@ function TabBar:init(params)
         local button = Button {
             image = tab.icon,
             action = function() self:select(tab.name) end,
+            tooltip = tab.tooltip,
         }
 
         self.tabs[tab.name] = {button, tab.panel}

@@ -19,6 +19,8 @@ local Project = require "components.project"
 local ProjectSelect = require "interface.panels.projectselect"
 local ProjectPanel = require "interface.panels.project"
 local Toolbox = require "interface.toolbox.toolbox"
+local MenuBar = require "interface.panels.menubar"
+
 local Button = require "interface.elements.button"
 local ScrollPanel = require "interface.elements.scroll"
 local Grid = require "interface.elements.grid"
@@ -41,7 +43,7 @@ local Editor = Class {
     }
 }
 
-local function project_list()
+function project_list()
     local projects = {}
     local proj_path = "projects"
 
@@ -89,16 +91,14 @@ function Editor:init(camera)
     self.nocanvas.active = NOCANVAS
 
     self.select = ProjectSelect(self)
-    self.selectscroller = ScrollPanel { shape = shapes.Rectangle{ w=448, h=490 }, content = self.select, highlight = true, }
+    self.selectscroller = ScrollPanel { 
+        shape = shapes.Rectangle{ w=448, h=490 },
+        content = self.select,
+        highlight = true,
+        actions = { "scroll", "dismiss" },
+    }
 
     self.view = Frame { camera = camera, }
-
-    self.toolbar = Toolbar {
-        x=1, y=1, 
-        buttons={},
-        anchor={ 1, -1},
-        size={0, 0},
-    }
 
     self.thingbar = Toolbar {
         x=1, y=1, 
@@ -107,32 +107,11 @@ function Editor:init(camera)
         size={0, 0},
     }
 
-    self.filebar = Toolbar {
-        x=1, y=1, 
-        buttons={},
-        anchor={ 1, -1},
-        size={0, 0},
+    self.options = MenuBar {
+        shape = shapes.Rectangle { w = 40, h = 40 },
+        editor = self,
     }
 
-    self.options = Grid {
-        shape = shapes.Rectangle { w = 32, h = 32 },
-
-        spacing = 0,
-        padding = { default = 0, },
-
-        colours = Panel.COLOURS.black,
-        highlight = true,
-    }
-
-    local menu = Button { 
-        image = self.icons.menu,
-        action = function()
-            self.selectscroller.active = not self.selectscroller.active
-        end,
-        colours = Panel.COLOURS.black,
-    }
-
-    self.options:add(menu)
     self:add(self.options, -math.huge)
 
     --self:add(self.select, -math.huge)
@@ -140,9 +119,7 @@ function Editor:init(camera)
     self:add(self.view, 0)
     self:add(self.nocanvas, -math.huge)
     
-    self:add(self.toolbar,  -math.huge)
     self:add(self.thingbar, -math.huge)
-    self:add(self.filebar,  -math.huge)
 
     self.tooltip = Text {
         x = 48, y = 0,
@@ -156,11 +133,49 @@ function Editor:init(camera)
 
         font = Text.fonts.medium,
         text = "",
+        highlight = true,
     }
 
     self:add(self.tooltip, -math.huge)
 
     self.select:SetProjects(project_list())
+end
+
+function Editor:playtest()
+    if self.project then
+        savesound:play()
+        self.project:save("projects/" ..self.project.name)
+        
+        MODE = Game(self.project, true)
+    else
+        nopesound:play()
+    end
+end
+
+function Editor:save()
+    if self.project then
+        if not self.export_thread then
+            savesound:play()
+            self.project:save("projects/" .. self.project.name)
+            love.system.openURL("file://"..love.filesystem.getSaveDirectory())
+        else
+            nopesound:play()
+        end
+    else
+        nopesound:play()
+    end
+end
+
+function Editor:export()
+    if self.project and not self.export_thread then
+        savesound:play()
+        self.project:save("projects/" ..self.project.name)
+
+        self.export_thread = love.thread.newThread("utilities/export.lua")
+        self.export_thread:start(self.project.name)
+    else
+        nopesound:play()
+    end
 end
 
 function Editor:SetProject(project)
@@ -180,12 +195,6 @@ function Editor:SetProject(project)
     local function icon(path)
         return Button.Icon(love.graphics.newImage(path))
     end
-
-    local buttons = {
-        {icon("images/drag.png"), function()
-            self.active = self.tools.drag
-        end, "move objects"},
-    }
     
     local things = {
     {icon("images/entity.png"), function(button, event)
@@ -214,40 +223,7 @@ function Editor:SetProject(project)
     end, "drag to create a new note"},
     }
 
-    local files = {
-    {icon("images/play.png"), function()
-        savesound:play()
-        self.project:save("projects/" ..self.project.name)
-        
-        MODE = Game(self.project, true)
-    end, "playtest"},
-    ---[[
-    {icon("images/save.png"), function()
-        if not self.export_thread then
-            savesound:play()
-            self.project:save("projects/" .. self.project.name)
-            love.system.openURL("file://"..love.filesystem.getSaveDirectory())
-        else
-            nopesound:play()
-        end
-    end, "save"},
-    {icon("images/export.png"), function()
-        if not self.export_thread then
-            savesound:play()
-            self.project:save("projects/" ..self.project.name)
-
-            self.export_thread = love.thread.newThread("utilities/export.lua")
-            self.export_thread:start(self.project.name)
-        else
-            nopesound:play()
-        end
-    end, "export"},
-    --]]
-    }
-
-    self.toolbar:init  { x=1, y=1, buttons = buttons, anchor = {0, 0}, size = {32, 32} }
     self.thingbar:init { x=1, y=love.window.getHeight(), buttons = things, anchor = {0, 0}, size = {32, 32} }
-    self.filebar:init  { x=0, y=0, buttons = files, anchor = {0, 0}, size = {32, 32} }
 
     self.action = nil
     self.active = nil
@@ -266,8 +242,10 @@ function Editor:SetProject(project)
 
     if self.toolbox then self:remove(self.toolbox) end
     self.toolbox = Toolbox { editor=self }
+    self.toolbox.active = false
 
     local tools = {
+        drag  = self.tools.drag,
         pixel = self.tools.draw,
         tiles = self.tools.tile,
         walls = self.tools.wall,
@@ -275,7 +253,6 @@ function Editor:SetProject(project)
     }
 
     self.toolbox.toolbar.selected:add(function(selected) self.active = tools[selected] end)
-    
     self.toolbox.panels.tiles:set_tileset(self.project.layers.surface.tileset)
 
     self:add(self.toolbox, -math.huge)
@@ -295,8 +272,9 @@ function Editor:update(dt)
     local sx, sy = love.mouse.getPosition()
     local wx, wy = self.view.camera:mousepos()
 
-    self.selectscroller:move_to { x = love.window.getWidth() / 2, y = 32, anchor = {0.5, 0} }
-    self.options:move_to { x = love.window.getWidth() / 2, y = 0, anchor = {0.5, 0}  }
+    self.selectscroller:move_to { x = love.window.getWidth() / 2, y = 64, anchor = {0.5, 0} }
+    self.options:move_to { x = love.window.getWidth() / 2, y = -2, anchor = {0.5, 0}  }
+    self.tooltip:move_to { x = love.window.getWidth() / 2, y = love.window.getHeight()+1, anchor = {0.5, 1}}
 
     if self.export_thread and not self.export_thread:isRunning() then
         self.export_thread = nil
@@ -315,11 +293,7 @@ function Editor:update(dt)
     end
 
     if self.project then
-         self.toolbar:move_to { x = 1, y =   1 }
         self.thingbar:move_to { x = 1, y = 176-132 }
-         self.filebar:move_to { x = 1, y = 252-132 }
-
-        if self.toolindex[self.active] then self.toolbar.group:select(self.toolbar.buttons[self.toolindex[self.active]]) end
 
         for name, tool in pairs(self.tools) do
             tool:update(dt, sx, sy, wx, wy)
@@ -366,6 +340,11 @@ function Editor:cursor(sx, sy, wx, wy)
 
     self.tooltip.text = tooltip and tooltip.tooltip or ""
     self.tooltip.active = tooltip
+
+    if self.tooltip.text == "" and not self.toolbox.active then
+        self.tooltip.text = "hold space to open the toolbox"
+    end
+
     self.tooltip:refresh()
 
     if self:target("press", sx, sy) then
@@ -501,10 +480,12 @@ function Editor:keypressed(key, isrepeat)
         return
     end
 
-    if key == "escape" and self.project then
-        self.selectscroller.active = not self.selectscroller.active
-        self.select:SetProjects(project_list())
-        return
+    if key == "escape" then
+        local sx, sy = love.mouse.getPosition()
+        local wx, wy = self.view.camera:mousepos()
+        local target, x, y = self:target("dismiss", sx, sy)
+
+        if target then target.active = false end
     end
 
     if self.focus then self.focus:keypressed(key, isrepeat) return true end

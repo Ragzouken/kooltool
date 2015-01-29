@@ -1,7 +1,7 @@
 {
   "type":"AnnotationLayer",
   "data":{
-    "notes":[[1.3599722431181,24.699904673466,"start:\ntrigger player"]],
+    "notes":[[44.32319837616,23.538720841362,"!start:\nset spin=1"]],
     "blocks":{
       "0":{
         "0":""

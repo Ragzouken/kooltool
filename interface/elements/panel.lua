@@ -20,7 +20,7 @@ local Panel = Class {
     DEBUG = false,
     name = "Generic Panel",
 
-    actions = {},
+    actions = {"tooltip"},
 
     colours = {line  = {255,   0, 255, 255},
                fill  = {255,   0, 255,  64},
@@ -41,12 +41,51 @@ local Panel = Class {
     },
 
     pointer = love.graphics.newImage("images/pointer.png"),
+    tooltip = "",
 
     clip = false,
 }
 
-function Panel.bound(bounds, panel)
-    
+function Panel.common_ancestor(a, b)
+    local found = {}
+    local ancestor
+
+    local chain_a = {a}
+    local chain_b = {b}
+
+    while a or b do
+        if a then
+            if found[a] then
+                ancestor = a
+                break
+            else
+                found[a] = true
+                a = a.parent
+            end
+        end
+
+        if b then
+            if found[b] then
+                ancestor = b
+                break
+            else
+                found[b] = true
+                b = b.parent
+            end
+        end
+    end
+
+    if ancestor then
+        while chain_a[#chain_a] ~= ancestor do
+            table.insert(chain_a, chain_a[#chain_a].parent)
+        end
+
+        while chain_b[#chain_b] ~= ancestor do
+            table.insert(chain_b, chain_b[#chain_b].parent)
+        end
+    end
+
+    return ancestor, chain_a, chain_b
 end
 
 function Panel:init(params)
@@ -63,6 +102,7 @@ function Panel:init(params)
     self.actions = params.actions or self.actions
     self.colours = flattened(self.colours, params.colours)
     self.image = params.image
+    self.tooltip = params.tooltip or self.tooltip
 
     self.tags = params.tags or self.tags or {}
 
@@ -269,7 +309,7 @@ function Panel:target(action, x, y, debug)
     end
 
     if self.shape:contains(lx, ly) then
-        if self.actions[action] then
+        if self.actions[action] or action == "tooltip" then
             return self, lx, ly
         elseif self.actions["block"] then
             --return false, lx, ly

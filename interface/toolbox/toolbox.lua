@@ -7,6 +7,7 @@ local palette = require "generators.palette"
 
 local PixelTab = require "interface.toolbox.pixel"
 local TilesTab = require "interface.toolbox.tiles"
+local SoundsTab = require "interface.toolbox.sounds"
 
 local Grid = require "interface.elements.grid"
 local TabBar = require "interface.elements.tabbar"
@@ -30,18 +31,21 @@ function Toolbox:init(params)
                                       anchor = { 0.5, 0.5 } }
 
     params.colours = {
-        line = {255, 255, 255, 255},
+        line = {255, 255, 255, 255},     
         fill = {  0,   0,   0, 255},
     }
 
     Panel.init(self, params)
 
     self.icons = {
+        drag   = Button.Icon(love.graphics.newImage("images/drag.png")),
         pencil = Button.Icon(love.graphics.newImage("images/pencil.png")),
         tiling = Button.Icon(love.graphics.newImage("images/tiles.png")),
         walls  = Button.Icon(love.graphics.newImage("images/walls.png")),
         marker = Button.Icon(love.graphics.newImage("images/marker.png")),
         entity = Button.Icon(love.graphics.newImage("images/entity.png")),
+        sound  = Button.Icon(love.graphics.newImage("images/sound.png")),
+        music  = Button.Icon(love.graphics.newImage("images/music.png")),
     }
 
     self.panels = {}
@@ -56,13 +60,16 @@ function Toolbox:init(params)
         }
     end
 
-    self.panels.pixel = PixelTab(tab())
-    self.panels.tiles = TilesTab(tab())
+    self.panels.pixel  = PixelTab(tab())
+    self.panels.tiles  = TilesTab(tab())
+    self.panels.sounds = SoundsTab(tab())
 
     self:add(self.panels.pixel)
     self:add(self.panels.tiles)
+    self:add(self.panels.sounds)
 
     self.toolbar = TabBar {
+        name = "kooltool toolbox toolbar",
         x = -128, y = -128 - 4.5,
 
         shape = shapes.Rectangle { w = self.shape.w, h = 48 },
@@ -70,26 +77,22 @@ function Toolbox:init(params)
         colours = params.colours,
 
         padding = { default = 8 },
-        spacing = 16,
+        spacing = 8,
 
         tabs = {
-            { name = "pixel", icon = self.icons.pencil, panel = self.panels.pixel },
-            { name = "tiles", icon = self.icons.tiling, panel = self.panels.tiles },
-            { name = "walls", icon = self.icons.walls,  panel = {} },
-            { name = "mark",  icon = self.icons.marker, panel = {} },
+            { name = "drag",  icon = self.icons.drag,   panel = {}, tooltip = "move objects", },
+            { name = "pixel", icon = self.icons.pencil, panel = self.panels.pixel,  tooltip = "draw", },
+            { name = "tiles", icon = self.icons.tiling, panel = self.panels.tiles,  tooltip = "lay tiles", },
+            { name = "walls", icon = self.icons.walls,  panel = {}, tooltip = "set walls", },
+            { name = "mark",  icon = self.icons.marker, panel = {}, tooltip = "make annotations", },
+            { name = "sound", icon = self.icons.sound,  panel = self.panels.sounds, tooltip = "sound unavailable at this time", },
+            --{ name = "music", icon = self.icons.music,  panel = {}, tooltip = "music unavailable at this time", },
         },
+
+        tooltip = "select a tool",
     }
 
     self.toolbar:select("pixel")
-
-    local menu = Button { 
-        image = self.editor.icons.menu,
-        action = function()
-            self.editor.selectscroller.active = not self.editor.selectscroller.active
-        end
-    }
-
-    self.toolbar:add(menu)
 
     self:add(self.toolbar)
 end

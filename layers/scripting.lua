@@ -15,6 +15,7 @@ local ScriptingLayer = Class {
     padding = 8,
     brain = common.loadCanvas("images/brain.png"),
 
+    actions = { "dismiss", },
     tags = { "editor", },
 }
 
@@ -73,6 +74,8 @@ function ScriptingLayer:update(dt)
     self.border.colours.fill = {colour.cursor(0, 64)}
 
     self.annotation.clip = true
+
+    self.shape = self.border.shape
 end
 
 return ScriptingLayer

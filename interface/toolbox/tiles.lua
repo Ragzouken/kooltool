@@ -35,7 +35,7 @@ function TilesPanel:init(params)
     }
 
     local function create() self:create_tile() end
-    local button = Button { image = self.icons.create, action = create, }
+    local button = Button { image = self.icons.create, action = create, tooltip = "add new tile", }
 
     self.options:add(button)
 
@@ -49,6 +49,7 @@ function TilesPanel:init(params)
         colours = Panel.COLOURS.black,
 
         grow = true,
+        tooltip = "choose tile",
     }
 
     self.scroll = ScrollPanel {
@@ -92,6 +93,7 @@ function TilesPanel:refresh()
         local button = Button { 
             image  = Button.Icon(self.tileset.canvas, quad),
             action = action,
+            tooltip = "choose tile",
         }
 
         button.draw = function()
