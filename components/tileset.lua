@@ -139,8 +139,6 @@ function Tileset:clone(tile)
         end
     end
 
-    self:refresh()
-
     return clone
 end
 
@@ -160,7 +158,7 @@ function Tileset:applyBrush(index, brush, quad, ox, oy)
 end
 
 function Tileset:sample(tile, tx, ty)
-    local sx, sy = self.quads[index]:getViewport()
+    local sx, sy = self.quads[tile]:getViewport()
 
     return {self.canvas:getPixel(tx + sx, ty + sy)}
 end
