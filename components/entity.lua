@@ -85,11 +85,24 @@ function Entity:remove()
     if self.layer then self.layer:removeEntity(self) end
 end
 
-function Entity:applyBrush(ox, oy, ...)
+function Entity:applyBrush(ox, oy, brush, lock, cloning)
     ox = ox - self.shape.x
     oy = oy - self.shape.y
 
-    return self.sprite:applyBrush(ox, oy, ...)
+    if cloning and not cloning[self] then
+        local clone = Sprite()
+        clone.canvas = common.canvasFromImage(self.sprite.canvas)
+        clone.pivot = {unpack(self.sprite.pivot)}
+
+        self.layer.project:add_sprite(clone)
+        MODE.toolbox.panels.sprites:refresh()
+
+        self.sprite = clone
+
+        cloning[self] = true
+    end
+
+    return self.sprite:applyBrush(ox, oy, brush, lock)
 end
 
 function Entity:sample(...)
