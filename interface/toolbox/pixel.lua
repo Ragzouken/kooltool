@@ -12,6 +12,7 @@ local PixelPanel = Class {
     name = "kooltool pixel panel",
 
     icons = {
+        marker = love.graphics.newImage("images/marker.png"),
         eraser = love.graphics.newImage("images/eraser.png"),
         reset  = love.graphics.newImage("images/reset.png"),
     },
@@ -64,6 +65,10 @@ local function ColourButton(editor, shape, colour)
     button.event = function() editor.tools.draw.colour = colour end
 
     if not colour then button.image = Button.Icon(PixelPanel.icons.eraser) end
+    
+    if colour and colour.highlight then
+        button.image = Button.Icon(PixelPanel.icons.marker)
+    end
 
     button.draw = highlight_shiv(button.draw, function() return editor.tools and editor.tools.draw.colour == colour end)
 
@@ -125,10 +130,11 @@ function PixelPanel:regenerate(editor)
     self.palette:clear()
 
     local w, h = 32, 32
-    local colours = 23
+    local colours = 26 - 3
     local palette = palette.generate(colours).colours
 
-    for i, colour in ipairs(palette) do 
+    for i, colour in ipairs(palette) do
+        --if i == 1 then colour = {0, 0, 0, 0, highlight=true} end
         if i == 1 then colour = nil end
 
         local shape = shapes.Rectangle { w = w, h = h }

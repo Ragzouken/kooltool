@@ -63,6 +63,7 @@ function Entity:blank(x, y)
 
     self.script = ScriptLayer()
     self.script:blank()
+    self.script.active = false
     self:add(self.script)
 end
 

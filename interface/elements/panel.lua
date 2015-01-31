@@ -217,8 +217,10 @@ function Panel:check_filters(filters)
 end
 
 function Panel:draw(params)
+    local fill = self.colours.fill.highlight and {colour.cursor(0, 255, 0.5)}
+
     love.graphics.setBlendMode("alpha")
-    love.graphics.setColor(self.colours.fill)
+    love.graphics.setColor(fill or self.colours.fill)
     self.shape:draw("fill")
 
     if self.image then

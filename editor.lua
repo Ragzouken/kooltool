@@ -31,6 +31,7 @@ local colour = require "utilities.colour"
 local Game = require "engine.game"
 local savesound = love.audio.newSource("sounds/save.wav")
 local nopesound = love.audio.newSource("sounds/nope.wav")
+local savesplash = love.graphics.newImage("images/saving.png")
 
 PALETTE = nil
 
@@ -136,17 +137,9 @@ function Editor:init(camera)
         highlight = true,
     }
 
-    self.savesplash = Text {
-        shape = elements.shapes.Rectangle { w = 512,  h = 64 },
-        colours = {
-            line = {  0,   0,   0, 255},
-            fill = {  0,   0,   0, 255},
-            text = {255, 255, 255, 255},
-        },
-
-        font = Text.fonts.large,
-        text = "saving",
-        highlight = true,
+    self.savesplash = Button {
+        colours = Panel.COLOURS.transparent,
+        image = Button.Icon(savesplash),
     }
 
     self:add(self.tooltip, -math.huge)

@@ -22,9 +22,9 @@ local function hsv(h, s, v)
 end
 
 local t = 0
-local function cursor(dt, alpha)
+local function cursor(dt, alpha, shift)
     t = t + dt * 0.5
-    local u = t % 1
+    local u = (t + (shift or 0)) % 1
     local r, g, b = husl.huslp_to_rgb(u * 360, 100, 75)
 
     return r*255, g*255, b*255, alpha or 192
