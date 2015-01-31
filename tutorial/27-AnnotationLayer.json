@@ -1,7 +1,7 @@
 {
   "type":"AnnotationLayer",
   "data":{
-    "notes":[[44.32319837616,23.538720841362,"!start:\nset spin=1"]],
+    "notes":[[42.52009780949,9.5395454705089,"!start:\nset speed=5\ntrigger wander"],[-11.955826925594,32.833336863326,"wander:\nmove ? wander"]],
     "blocks":{
       "0":{
         "0":""

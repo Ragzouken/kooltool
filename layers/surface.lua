@@ -42,6 +42,7 @@ function SurfaceLayer:serialise(resources)
     end
 
     return {
+        project = resources:reference(self.project),
         tileset = resources:reference(self.tileset),
         tiles = tiles,
         walls = walls,
@@ -51,6 +52,7 @@ function SurfaceLayer:serialise(resources)
 end
 
 function SurfaceLayer:deserialise(resources, data)
+    self.project = resources:resource(data.project) or MODE.project -- TODO: remove this
     self.tileset = resources:resource(data.tileset)
     
     for y, row in pairs(data.tiles) do
@@ -102,6 +104,10 @@ function SurfaceLayer:init(project)
 end
 
 function SurfaceLayer:finalise()
+    for entity in pairs(self.entities) do
+        self.project:add_sprite(entity.sprite)
+    end
+
     self:SetTileset(self.tileset)
     self:refresh()
 end

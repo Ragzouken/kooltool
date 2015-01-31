@@ -1,6 +1,14 @@
 {
   "type":"SurfaceLayer",
   "data":{
+    "project":"1-Project",
+    "walls":{
+      "0":{
+        "0":""
+      }
+    },
+    "entities":["4-Entity","5-Entity","6-Entity","7-Entity","8-Entity"],
+    "tileset":"9-Tileset",
     "tiles":{
       "0":{
         "0":0
@@ -240,13 +248,6 @@
         "-1":2
       }
     },
-    "walls":{
-      "0":{
-        "0":""
-      }
-    },
-    "tileset":"9-Tileset",
-    "entities":["4-Entity","5-Entity","6-Entity","7-Entity","8-Entity"],
     "wall_index":{
       "0":false,
       "2":true

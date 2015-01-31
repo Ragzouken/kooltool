@@ -10,7 +10,6 @@ local shapes = require "interface.elements.shapes"
 local elements = require "interface.elements"
 local Toolbar = require "interface.panels.toolbar"
 
-local Entity = require "components.entity"
 local Notebox = require "components.notebox"
 
 local tools = require "tools"
@@ -215,17 +214,6 @@ function Editor:SetProject(project)
     end
     
     local things = {
-    {icon("images/entity.png"), function(button, event)
-        local sx, sy, wx, wy = unpack(event.coords)
-        local target, x, y = self:target("entity", sx, sy)
-
-        local entity = Entity()
-        target:addEntity(entity)
-        entity:blank(x, y)
-
-        self.action = self.tools.drag
-        self.action:grab(entity, sx, sy)
-    end, "drag to create a new character"},
     {icon("images/note.png"), function(button, event)
         local sx, sy, wx, wy = unpack(event.coords)
         local target, x, y = self:target("note", sx, sy)
@@ -261,11 +249,13 @@ function Editor:SetProject(project)
     if self.toolbox then self:remove(self.toolbox) end
     self.toolbox = Toolbox { editor=self }
     self.toolbox.active = false
+    self.toolbox.panels.sprites:refresh()
 
     local tools = {
         drag  = self.tools.drag,
         pixel = self.tools.draw,
         tiles = self.tools.tile,
+        sprites = self.tools.drag,
         walls = self.tools.wall,
         mark  = self.tools.marker,
     }

@@ -7,6 +7,7 @@ local palette = require "generators.palette"
 
 local PixelTab = require "interface.toolbox.pixel"
 local TilesTab = require "interface.toolbox.tiles"
+local SpritesTab = require "interface.toolbox.sprites"
 local SoundsTab = require "interface.toolbox.sounds"
 
 local Grid = require "interface.elements.grid"
@@ -60,12 +61,14 @@ function Toolbox:init(params)
         }
     end
 
-    self.panels.pixel  = PixelTab(tab())
-    self.panels.tiles  = TilesTab(tab())
-    self.panels.sounds = SoundsTab(tab())
+    self.panels.pixel   = PixelTab(tab())
+    self.panels.tiles   = TilesTab(tab())
+    self.panels.sprites = SpritesTab(tab())
+    self.panels.sounds  = SoundsTab(tab())
 
     self:add(self.panels.pixel)
     self:add(self.panels.tiles)
+    self:add(self.panels.sprites)
     self:add(self.panels.sounds)
 
     self.toolbar = TabBar {
@@ -80,11 +83,12 @@ function Toolbox:init(params)
         spacing = 8,
 
         tabs = {
-            { name = "drag",  icon = self.icons.drag,   panel = {}, tooltip = "move objects", },
-            { name = "pixel", icon = self.icons.pencil, panel = self.panels.pixel,  tooltip = "draw", },
-            { name = "tiles", icon = self.icons.tiling, panel = self.panels.tiles,  tooltip = "lay tiles", },
-            { name = "walls", icon = self.icons.walls,  panel = {}, tooltip = "set walls", },
-            { name = "mark",  icon = self.icons.marker, panel = {}, tooltip = "make annotations", },
+            --{ name = "drag",    icon = self.icons.drag,   panel = {}, tooltip = "move objects" },
+            { name = "pixel",   icon = self.icons.pencil, panel = self.panels.pixel,   tooltip = "draw" },
+            { name = "tiles",   icon = self.icons.tiling, panel = self.panels.tiles,   tooltip = "lay tiles" },
+            { name = "sprites", icon = self.icons.entity, panel = self.panels.sprites, tooltip = "sprites" },
+            { name = "walls",   icon = self.icons.walls,  panel = {}, tooltip = "set walls", },
+            { name = "mark",    icon = self.icons.marker, panel = {}, tooltip = "make annotations", },
             { name = "sound", icon = self.icons.sound,  panel = self.panels.sounds, tooltip = "sound unavailable at this time", },
             --{ name = "music", icon = self.icons.music,  panel = {}, tooltip = "music unavailable at this time", },
         },

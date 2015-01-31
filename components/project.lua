@@ -49,6 +49,7 @@ function Project:init(path)
     self.description = "[NO DESCRIPTION]"
 
     self.layers = {}
+    self.sprites = {}
 end
 
 function Project:finalise()
@@ -105,6 +106,10 @@ end
 
 function Project:export()
     export.export(self.name)
+end
+
+function Project:add_sprite(sprite)
+    self.sprites[sprite] = true
 end
 
 return Project

@@ -1,7 +1,7 @@
 {
   "type":"AnnotationLayer",
   "data":{
-    "notes":[[1.3599722431181,24.699904673466,"start:\ntrigger player"]],
+    "notes":[[101.78838303499,53.481780892719,"bump: all asked=no\nsay \"are you ready to discover the secrets of scripting?\"\n\"yes, i must know more!!\" more\n\"no, i am not prepared\" no\nset asked=yes"],[142.6101739392,24.734866272793,"!start:\nset asked=no"],[87.738593652473,-1.1808684318512,"more:\nsay \"it's all about triggers\""],[154.3428306288,-44.691325662652,"bump: all asked=yes\nsay \"there is nothing more to say\"\nmove v>>^^^?"],[47.365100007235,26.119853269386,"no:\nsay \"you'll get there one day\""]],
     "blocks":{
       "0":{
         "0":""

@@ -50,8 +50,8 @@ function Entity:finalise(resources, data)
     self.sprite.resized:add(function(...) self:resized(...) end)
 end
 
-function Entity:blank(x, y)
-    self.sprite = generators.sprite.mess(self.layer.tileset.dimensions, PALETTE)
+function Entity:blank(x, y, sprite)
+    self.sprite = sprite or generators.sprite.mess(self.layer.tileset.dimensions, PALETTE)
     
     local px, py = unpack(self.sprite.pivot)
 
