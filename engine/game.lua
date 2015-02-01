@@ -41,19 +41,21 @@ function Game:init(project, playtest)
 
     local layers = self.project.layers
 
-    for notebox in pairs(layers.annotation.noteboxes) do
-        local action = parse.test(notebox.text)
+    for notebox in pairs(layers.annotation.children) do
+        if notebox.type == "Notebox" then
+            local action = parse.test(notebox.text)
 
-        if action then
-            action.locals = self.globals
+            if action then
+                action.locals = self.globals
 
-            local label, global = unpack(action.trigger)
-            local events = self.events
+                local label, global = unpack(action.trigger)
+                local events = self.events
 
-            events[label] = events[label] or {}
-            table.insert(events[label], action)
-        else
-            print("invalid action") print(notebox.text)
+                events[label] = events[label] or {}
+                table.insert(events[label], action)
+            else
+                print("invalid action") print(notebox.text)
+            end
         end
     end
 

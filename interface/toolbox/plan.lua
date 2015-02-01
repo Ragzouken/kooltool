@@ -115,7 +115,7 @@ function PlanPanel:init(params)
 
         local notebox = Notebox(target)
         notebox:blank(x, y, "[note]")
-        target:addNotebox(notebox)
+        target:add(notebox)
 
         self.editor.action = self.editor.tools.drag
         self.editor.action:grab(notebox, sx, sy)

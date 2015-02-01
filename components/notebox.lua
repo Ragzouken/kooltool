@@ -158,7 +158,7 @@ function Notebox:typed(string)
 end
 
 function Notebox:remove()
-    self.layer:removeNotebox(self)
+    self.layer:remove(self)
 end
 
 return Notebox

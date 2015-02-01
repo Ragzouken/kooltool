@@ -17,6 +17,14 @@ function Drag:grab(object, sx, sy)
 
     local px, py = unpack(self.editor:transform(object, sx, sy))
     self.drag.pivot = {math.floor(px), math.floor(py)}
+
+    if object.type == "Notebox" then
+        if love.keyboard.isDown("lshift", "rshift") then
+            self.drag.detached = true
+            self.editor.mouse:add(object)
+            object:move_to { x = px, y = py }
+        end
+    end
 end
 
 function Drag:drop(object, sx, sy)
@@ -25,10 +33,10 @@ function Drag:drop(object, sx, sy)
 
         if target then
             self.editor.focus = object
-            object.layer:removeNotebox(object)
-            target:addNotebox(object)
+            --object.layer:remove(object)
             local dx, dy = unpack(self.drag.pivot)
             object:move_to { x = x - dx, y = y - dy}
+            target:add(object)
         end
     end
 
@@ -78,6 +86,7 @@ function Drag:mousedragged(action, screen, world)
         local wx, wy = unpack(coords)
 
         local dx, dy = unpack(self.drag.pivot)
+        
         self.drag.object:move_to { x = wx - dx, y = wy - dy }
     end
 end

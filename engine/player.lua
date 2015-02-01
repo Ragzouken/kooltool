@@ -75,8 +75,10 @@ function Player:init(game, entity)
     end
 
     if self.entity.script then
-        for notebox in pairs(self.entity.script.annotation.noteboxes) do
-            process_notebox(notebox.text)
+        for notebox in pairs(self.entity.script.annotation.children) do
+            if notebox.type == "Notebox" then
+                process_notebox(notebox.text)
+            end
         end
     end
 

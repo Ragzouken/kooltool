@@ -66,7 +66,7 @@ end
 
 function Editor:init(camera)
     Panel.init(self, { shape = shapes.Plane{} })
-    
+
     PALETTE = generators.Palette.generate(9)
     
     self.nocanvas = Text{
@@ -95,6 +95,9 @@ function Editor:init(camera)
     }
 
     self.view = Frame { camera = camera, }
+
+    self.mouse = Panel {}
+    self.view:add(self.mouse, -math.huge)
 
     self.options = MenuBar {
         shape = shapes.Rectangle { w = 40, h = 40 },
@@ -188,6 +191,7 @@ function Editor:SetProject(project)
     self.selectscroller.active = false
 
     self.view:clear()
+    self.view:add(self.mouse, -math.huge)
     self.view:add(project, -1)
 
     self.view.camera:lookAt(128, 128)
@@ -207,7 +211,7 @@ function Editor:SetProject(project)
 
         local notebox = Notebox(target)
         notebox:blank(x, y, "[note]")
-        target:addNotebox(notebox)
+        target:add(notebox)
 
         self.action = self.tools.drag
         self.action:grab(notebox, sx, sy)
@@ -264,6 +268,8 @@ function Editor:update(dt)
 
     local sx, sy = love.mouse.getPosition()
     local wx, wy = self.view.camera:mousepos()
+
+    self.mouse:move_to { x = wx, y = wy }
 
     local cx, cy = love.window.getWidth() / 2, love.window.getHeight() / 2
 

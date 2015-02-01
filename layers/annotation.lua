@@ -21,8 +21,10 @@ local AnnotationLayer = Class {
 function AnnotationLayer:serialise(resources)
     local noteboxes = {}
 
-    for notebox in pairs(self.noteboxes) do
-        table.insert(noteboxes, notebox:serialise())
+    for notebox in pairs(self.children) do
+        if notebox.type == "Notebox" then
+            table.insert(noteboxes, notebox:serialise())
+        end
     end
 
     local blocks = {[0]={[0]=""}}
@@ -46,7 +48,7 @@ function AnnotationLayer:deserialise(resources, data)
     for i, data in pairs(data.notes) do
         local notebox = Notebox(self)
         notebox:deserialise(resources, data)
-        self:addNotebox(notebox)
+        self:add(notebox)
     end
 
     for y, row in pairs(data.blocks) do
@@ -87,16 +89,6 @@ function AnnotationLayer:draw(params)
     end
 
     love.graphics.setColor(255, 255, 255, 255)
-end
-
-function AnnotationLayer:addNotebox(notebox)
-    self.noteboxes[notebox] = true
-    self:add(notebox)
-end
-
-function AnnotationLayer:removeNotebox(notebox)
-    self.noteboxes[notebox] = nil
-    self:remove(notebox)
 end
 
 function AnnotationLayer:applyBrush(bx, by, brush)

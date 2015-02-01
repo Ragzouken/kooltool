@@ -61,7 +61,7 @@ function ScriptingLayer:update(dt)
 
     local rect = shapes.Rectangle { }
     
-    for notebox in pairs(self.annotation.noteboxes) do
+    for notebox in pairs(self.annotation.children) do
         local x, y, w, h = notebox.shape:get()
         rect:set(x + notebox.x, y + notebox.y, w, h)
 
