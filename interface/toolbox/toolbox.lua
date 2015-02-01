@@ -8,6 +8,7 @@ local palette = require "generators.palette"
 local PixelTab = require "interface.toolbox.pixel"
 local TilesTab = require "interface.toolbox.tiles"
 local SpritesTab = require "interface.toolbox.sprites"
+local PlanTab = require "interface.toolbox.plan"
 local SoundsTab = require "interface.toolbox.sounds"
 
 local Grid = require "interface.elements.grid"
@@ -42,8 +43,8 @@ function Toolbox:init(params)
         drag   = Button.Icon(love.graphics.newImage("images/icons/drag.png")),
         pencil = Button.Icon(love.graphics.newImage("images/icons/pencil.png")),
         tiling = Button.Icon(love.graphics.newImage("images/icons/tiles.png")),
+        plan   = Button.Icon(love.graphics.newImage("images/icons/plan.png")),
         walls  = Button.Icon(love.graphics.newImage("images/icons/walls.png")),
-        marker = Button.Icon(love.graphics.newImage("images/icons/marker.png")),
         entity = Button.Icon(love.graphics.newImage("images/icons/entity.png")),
         sound  = Button.Icon(love.graphics.newImage("images/icons/sound.png")),
         music  = Button.Icon(love.graphics.newImage("images/icons/music.png")),
@@ -64,11 +65,13 @@ function Toolbox:init(params)
     self.panels.pixel   = PixelTab(tab())
     self.panels.tiles   = TilesTab(tab())
     self.panels.sprites = SpritesTab(tab())
+    self.panels.plan    = PlanTab(tab())
     self.panels.sounds  = SoundsTab(tab())
 
     self:add(self.panels.pixel)
     self:add(self.panels.tiles)
     self:add(self.panels.sprites)
+    self:add(self.panels.plan)
     self:add(self.panels.sounds)
 
     self.toolbar = TabBar {
@@ -87,8 +90,8 @@ function Toolbox:init(params)
             { name = "pixel",   icon = self.icons.pencil, panel = self.panels.pixel,   tooltip = "draw" },
             { name = "tiles",   icon = self.icons.tiling, panel = self.panels.tiles,   tooltip = "lay tiles" },
             { name = "sprites", icon = self.icons.entity, panel = self.panels.sprites, tooltip = "sprites" },
+            { name = "mark",    icon = self.icons.plan,   panel = self.panels.plan,    tooltip = "make plans", },
             { name = "walls",   icon = self.icons.walls,  panel = {}, tooltip = "set walls", },
-            { name = "mark",    icon = self.icons.marker, panel = {}, tooltip = "make annotations", },
             { name = "sound", icon = self.icons.sound,  panel = self.panels.sounds, tooltip = "sound unavailable at this time", },
             --{ name = "music", icon = self.icons.music,  panel = {}, tooltip = "music unavailable at this time", },
         },

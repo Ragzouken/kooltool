@@ -86,7 +86,6 @@ function Entity:move_to(params)
         local tw, th = unpack(self.layer.tileset.dimensions)
         params.x = (math.floor(params.x / tw) + 0.5) * tw
         params.y = (math.floor(params.y / th) + 0.5) * th
-        print(tw, th)
     end
 
     Panel.move_to(self, params)

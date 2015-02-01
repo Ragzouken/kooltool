@@ -49,7 +49,6 @@ function Marker:mousedragged(action, screen, world)
         local erase = love.keyboard.isDown("x", "e")
 
         local colour = not erase and {255, 255, 255, 255} or nil
-        local size = not erase and self.size or self.size * 3
         
         local wx, wy, dx, dy = unpack(screen)
 
@@ -59,7 +58,7 @@ function Marker:mousedragged(action, screen, world)
         x1, y1 = unpack(self.editor:transform(self.drag.subject, x1, y1))
         x2, y2 = unpack(self.editor:transform(self.drag.subject, x2, y2))
 
-        local brush, ox, oy = Brush.line(x1, y1, x2, y2, size, colour)
+        local brush, ox, oy = Brush.line(x1, y1, x2, y2, self.size, colour)
         self.drag.subject:applyBrush(ox, oy, brush)
     end
 end

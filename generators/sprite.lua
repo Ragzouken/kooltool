@@ -37,7 +37,7 @@ function sprite.mess(dimensions, palette)
     end
 
     sprite.canvas = canvas
-    sprite.pivot = {w/2, w/2}
+    sprite.pivot = {math.floor(w/2), math.floor(h/2)}
 
     return sprite
 end

@@ -24,6 +24,7 @@ function Drag:drop(object, sx, sy)
         local target, x, y = self.editor:target("note", sx, sy)
 
         if target then
+            self.editor.focus = object
             object.layer:removeNotebox(object)
             target:addNotebox(object)
             local dx, dy = unpack(self.drag.pivot)

@@ -3,17 +3,18 @@ local Panel = require "interface.elements.panel"
 local Grid = require "interface.elements.grid"
 local Button = require "interface.elements.button"
 
-local shapes = require "interface.elements.shapes"
-local colour_ = require "utilities.colour"
-local palette = require "generators.palette"
+local Notebox = require "components.notebox"
 
-local PixelPanel = Class {
+local shapes = require "interface.elements.shapes"
+
+local PlanPanel = Class {
     __includes = Panel,
-    name = "kooltool pixel panel",
+    name = "kooltool plan panel",
 
     icons = {
+        marker = love.graphics.newImage("images/icons/marker.png"),
         eraser = love.graphics.newImage("images/icons/eraser.png"),
-        reset  = love.graphics.newImage("images/icons/reset.png"),
+        note   = love.graphics.newImage("images/icons/note.png"),
     },
 
     colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
@@ -35,7 +36,7 @@ local function SizeButton(editor, shape, size)
         tooltip = "change brush size",
     }
 
-    button.event = function() editor.tools.draw.size = size end
+    button.event = function() editor.tools.marker.size = size end
 
     local w, h = shape.w, shape.h
     local x, y = w / 2, h / 2
@@ -47,35 +48,16 @@ local function SizeButton(editor, shape, size)
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.rectangle("fill", x + 0.5 - size/2, y - size/2, size, size)
 
-        self.highlight = editor.tools and editor.tools.draw.size == size
+        self.highlight = editor.tools and editor.tools.marker.size == size
     end
 
     return button
 end
 
-local function ColourButton(editor, shape, colour)
-    local button = Panel {
-        shape = shape,
-        colours = { line = {255, 255, 255, 0}, fill = colour or {0, 0, 0, 0} },
-        actions = {"press"},
-        tooltip = "choose colour",
-    }
-
-    button.event = function() editor.tools.draw.colour = colour end
-
-    if not colour then button.image = Button.Icon(PixelPanel.icons.eraser) end
-    
-    if colour and colour.highlight then
-        button.image = Button.Icon(PixelPanel.icons.marker)
-    end
-
-    button.draw = highlight_shiv(button.draw, function() return editor.tools and editor.tools.draw.colour == colour end)
-
-    return button
-end
-
-function PixelPanel:init(params)
+function PlanPanel:init(params)
     Panel.init(self, params)
+
+    self.editor = params.editor
 
     self.layout = Grid { 
         shape   = params.shape,
@@ -106,9 +88,8 @@ function PixelPanel:init(params)
         self.brushsize:add(button)
     end
     
-    -- palette
-    self.palette = Grid {
-        name = "kooltool palette",
+    self.whatever = Grid {
+        name = "kooltool thing",
         x = 0, y = 50,
         shape = shapes.Rectangle { w = params.shape.w, h = params.shape.h },
         colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
@@ -116,39 +97,37 @@ function PixelPanel:init(params)
 
         padding = { default = 9, top = 0 },
         spacing = 9,
-        tooltip = "choose colour",
-    } self.palette.event = function() end
+        tooltip = "dunno sorry",
+    } self.whatever.event = function() end
 
-    self:add(self.brushsize)
-    self:add(self.palette)
-
-    self:regenerate(params.editor)
-end
-
-function PixelPanel:regenerate(editor)
-    self.palette:clear()
-
-    local w, h = 32, 32
-    local colours = 26 - 3
-    local palette = palette.generate(colours).colours
-
-    for i, colour in ipairs(palette) do
-        --if i == 1 then colour = {0, 0, 0, 0, highlight=true} end
-        if i == 1 then colour = nil end
-
-        local shape = shapes.Rectangle { w = w, h = h }
-        local button = ColourButton(editor, shape, colour)
-
-        self.palette:add(button)
+    local function action()
     end
-
-    local reset = Button {
-        image  = Button.Icon(self.icons.reset),
-        action = function() self:regenerate(editor) end,
-        tooltip = "randomise colours",
+    
+    local button = Button { 
+        image  = Button.Icon(self.icons.note),
+        action = action,
+        tooltip = "marker",
     }
 
-    self.palette:add(reset)
+    function button.event(button, event)
+        local sx, sy, wx, wy = unpack(event.coords)
+        local target, x, y = self.editor:target("note", sx, sy)
+
+        local notebox = Notebox(target)
+        notebox:blank(x, y, "[note]")
+        target:addNotebox(notebox)
+
+        self.editor.action = self.editor.tools.drag
+        self.editor.action:grab(notebox, sx, sy)
+
+        --self.editor.focus = notebox
+        self.editor.toolbox.active = false
+    end
+
+    self.whatever:add(button)
+
+    self:add(self.brushsize)
+    self:add(self.whatever)
 end
 
-return PixelPanel
+return PlanPanel

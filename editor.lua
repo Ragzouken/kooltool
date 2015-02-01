@@ -96,13 +96,6 @@ function Editor:init(camera)
 
     self.view = Frame { camera = camera, }
 
-    self.thingbar = Toolbar {
-        x=1, y=1, 
-        buttons={},
-        anchor={ 1, -1},
-        size={0, 0},
-    }
-
     self.options = MenuBar {
         shape = shapes.Rectangle { w = 40, h = 40 },
         editor = self,
@@ -114,8 +107,6 @@ function Editor:init(camera)
     self:add(self.selectscroller, -math.huge)
     self:add(self.view, 0)
     self:add(self.nocanvas, -math.huge)
-    
-    self:add(self.thingbar, -math.huge)
 
     self.tooltip = Text {
         x = 48, y = 0,
@@ -225,8 +216,6 @@ function Editor:SetProject(project)
     end, "drag to create a new note"},
     }
 
-    self.thingbar:init { x=1, y=love.window.getHeight(), buttons = things, anchor = {0, 0}, size = {32, 32} }
-
     self.action = nil
     self.active = nil
     self.focus = nil
@@ -300,8 +289,6 @@ function Editor:update(dt)
     end
 
     if self.project then
-        self.thingbar:move_to { x = 1, y = 176-132 }
-
         for name, tool in pairs(self.tools) do
             tool:update(dt, sx, sy, wx, wy)
         end
