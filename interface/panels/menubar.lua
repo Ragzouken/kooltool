@@ -19,10 +19,10 @@ local MenuBar = Class {
     highlight = true,
 
     icons = {
-        menu = Button.Icon(love.graphics.newImage("images/menu.png")),
-        play = Button.Icon(love.graphics.newImage("images/play.png")),
-        save = Button.Icon(love.graphics.newImage("images/save.png")),
-        export = Button.Icon(love.graphics.newImage("images/export.png")),
+        menu = Button.Icon(love.graphics.newImage("images/icons/menu.png")),
+        play = Button.Icon(love.graphics.newImage("images/icons/play.png")),
+        save = Button.Icon(love.graphics.newImage("images/icons/save.png")),
+        export = Button.Icon(love.graphics.newImage("images/icons/export.png")),
     },
 }
 

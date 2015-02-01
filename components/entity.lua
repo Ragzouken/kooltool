@@ -51,7 +51,7 @@ function Entity:finalise(resources, data)
 end
 
 function Entity:blank(x, y, sprite)
-    self.sprite = sprite or generators.sprite.mess(self.layer.tileset.dimensions, PALETTE)
+    self.sprite = sprite or generators.sprite.mess(self.layer.tileset.dimensions, self.layer.project.palette)
     
     local px, py = unpack(self.sprite.pivot)
 
@@ -79,6 +79,17 @@ function Entity:draw(params)
 
         --print(self.shape.x, self.shape.y, self.shape.w, self.shape.h)
     end
+end
+
+function Entity:move_to(params)
+    if self.layer then
+        local tw, th = unpack(self.layer.tileset.dimensions)
+        params.x = (math.floor(params.x / tw) + 0.5) * tw
+        params.y = (math.floor(params.y / th) + 0.5) * th
+        print(tw, th)
+    end
+
+    Panel.move_to(self, params)
 end
 
 function Entity:remove()

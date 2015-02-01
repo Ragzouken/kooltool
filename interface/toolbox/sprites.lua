@@ -16,7 +16,7 @@ local SpritesPanel = Class {
     name = "kooltool sprites panel",
 
     icons = {
-        create = Button.Icon(love.graphics.newImage("images/create.png")),
+        create = Button.Icon(love.graphics.newImage("images/icons/create.png")),
     },
 
     colours = Panel.COLOURS.black,

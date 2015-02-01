@@ -15,7 +15,7 @@ local TilesPanel = Class {
     name = "kooltool tiles panel",
 
     icons = {
-        create = Button.Icon(love.graphics.newImage("images/create.png")),
+        create = Button.Icon(love.graphics.newImage("images/icons/create.png")),
     },
 
     colours = Panel.COLOURS.black,

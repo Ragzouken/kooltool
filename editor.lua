@@ -37,10 +37,6 @@ PALETTE = nil
 local Editor = Class {
     __includes = Panel,
     name = "kooltool editor",
-
-    icons = {
-        menu = Button.Icon(love.graphics.newImage("images/menu.png")),
-    }
 }
 
 function project_list()
@@ -214,7 +210,7 @@ function Editor:SetProject(project)
     end
     
     local things = {
-    {icon("images/note.png"), function(button, event)
+    {icon("images/icons/note.png"), function(button, event)
         local sx, sy, wx, wy = unpack(event.coords)
         local target, x, y = self:target("note", sx, sy)
 

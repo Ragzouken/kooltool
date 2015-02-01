@@ -26,7 +26,7 @@ function Tileset:deserialise(resources, data)
             local x, y = unpack(coords)
 
             self.tiles = self.tiles + 1
-            self.quads[tile] = love.graphics.newQuad(x, y, th, tw, image:getDimensions())
+            self.quads[tile] = love.graphics.newQuad(x, y, tw, th, image:getDimensions())
         end
     else
         local tpr = math.floor(image:getWidth() / tw)
@@ -37,7 +37,7 @@ function Tileset:deserialise(resources, data)
             for x=0,tpr-1 do
                 local tile= y * tpr + x + 1
                 self.tiles = self.tiles + 1
-                self.quads[tile] = love.graphics.newQuad(x * tw, y * th, th, tw, image:getDimensions())
+                self.quads[tile] = love.graphics.newQuad(x * tw, y * th, tw, th, image:getDimensions())
             end
         --end
     end

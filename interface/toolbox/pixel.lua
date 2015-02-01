@@ -12,9 +12,9 @@ local PixelPanel = Class {
     name = "kooltool pixel panel",
 
     icons = {
-        marker = love.graphics.newImage("images/marker.png"),
-        eraser = love.graphics.newImage("images/eraser.png"),
-        reset  = love.graphics.newImage("images/reset.png"),
+        marker = love.graphics.newImage("images/icons/marker.png"),
+        eraser = love.graphics.newImage("images/icons/eraser.png"),
+        reset  = love.graphics.newImage("images/icons/reset.png"),
     },
 
     colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },

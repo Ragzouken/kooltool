@@ -39,14 +39,14 @@ function Toolbox:init(params)
     Panel.init(self, params)
 
     self.icons = {
-        drag   = Button.Icon(love.graphics.newImage("images/drag.png")),
-        pencil = Button.Icon(love.graphics.newImage("images/pencil.png")),
-        tiling = Button.Icon(love.graphics.newImage("images/tiles.png")),
-        walls  = Button.Icon(love.graphics.newImage("images/walls.png")),
-        marker = Button.Icon(love.graphics.newImage("images/marker.png")),
-        entity = Button.Icon(love.graphics.newImage("images/entity.png")),
-        sound  = Button.Icon(love.graphics.newImage("images/sound.png")),
-        music  = Button.Icon(love.graphics.newImage("images/music.png")),
+        drag   = Button.Icon(love.graphics.newImage("images/icons/drag.png")),
+        pencil = Button.Icon(love.graphics.newImage("images/icons/pencil.png")),
+        tiling = Button.Icon(love.graphics.newImage("images/icons/tiles.png")),
+        walls  = Button.Icon(love.graphics.newImage("images/icons/walls.png")),
+        marker = Button.Icon(love.graphics.newImage("images/icons/marker.png")),
+        entity = Button.Icon(love.graphics.newImage("images/icons/entity.png")),
+        sound  = Button.Icon(love.graphics.newImage("images/icons/sound.png")),
+        music  = Button.Icon(love.graphics.newImage("images/icons/music.png")),
     }
 
     self.panels = {}
