@@ -29,22 +29,26 @@ end
 
 function ScriptingLayer:deserialise(resources, data)
     self.annotation = resources:resource(data.annotation)
+    self.annotation.colours = Panel.COLOURS.transparent
     self:add(self.annotation)
 end
 
 function ScriptingLayer:blank()
     self.annotation = AnnotationLayer()
+    self.annotation.colours = Panel.COLOURS.transparent
     self:add(self.annotation)
 end
 
 function ScriptingLayer:init()
     Panel.init(self)
 
+    self.highlight = true
+
     self.border = Panel {
         shape = shapes.Rectangle { },
 
         colours = {line = {255, 255, 255, 255},
-                   fill = {  0,   0,   0,  64}},
+                   fill = {  0,   0,   0, 128}},
     }
 
     self:add(self.border, 5)
@@ -71,7 +75,6 @@ function ScriptingLayer:update(dt)
     self.annotation.shape = self.border.shape
 
     self.border.shape.padding = 2.5
-    self.border.colours.fill = {colour.cursor(0, 64)}
 
     self.annotation.clip = true
 
