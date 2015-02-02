@@ -82,7 +82,7 @@ function Entity:draw(params)
 end
 
 function Entity:move_to(params)
-    if self.layer then
+    if self.layer and MODE == EDITOR then
         local tw, th = unpack(self.layer.tileset.dimensions)
         params.x = (math.floor(params.x / tw) + 0.5) * tw
         params.y = (math.floor(params.y / th) + 0.5) * th

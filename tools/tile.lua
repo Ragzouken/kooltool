@@ -4,6 +4,8 @@ local Tool = require "tools.tool"
 local bresenham = require "utilities.bresenham"
 local colour = require "utilities.colour"
 
+local eraser = love.graphics.newImage("images/icons/eraser.png")
+
 local Tile = Class {
     __includes = Tool,
     name = "tile",
@@ -26,8 +28,15 @@ function Tile:cursor(sx, sy, wx, wy)
         local tw, th = unpack(target.tileset.dimensions)
         local quad = target.tileset.quads[self.tile]
 
+        love.graphics.setBlendMode("premultiplied")
         love.graphics.setColor(255, 255, 255, 128)
-        love.graphics.draw(target.tileset.canvas, quad, gx * tw, gy * th)
+        
+        if self.tile then
+            love.graphics.draw(target.tileset.canvas, quad, gx * tw, gy * th)
+        else
+            love.graphics.draw(eraser, gx * tw, gy * th)
+        end
+
         love.graphics.setColor(colour.cursor(0))
         love.graphics.rectangle("line", gx*tw, gy*th, tw, th)
     end
@@ -59,7 +68,7 @@ function Tile:mousedragged(action, screen, world)
         local x2, y2 = layer.tilemap:gridCoords(wx, wy)
 
         local change = false
-        local index = not love.keyboard.isDown("x", "e") and self.tile or nil
+        local index = self.tile
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
             change = layer:setTile(index, lx, ly) or change

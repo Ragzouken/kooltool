@@ -15,6 +15,7 @@ local TilesPanel = Class {
     name = "kooltool tiles panel",
 
     icons = {
+        eraser = love.graphics.newImage("images/icons/eraser.png"),
         create = Button.Icon(love.graphics.newImage("images/icons/create.png")),
     },
 
@@ -38,6 +39,25 @@ function TilesPanel:init(params)
     local button = Button { image = self.icons.create, action = create, tooltip = "add new tile", }
 
     self.options:add(button)
+
+    local eraser = Button {
+        image = Button.Icon(self.icons.eraser),
+        action = function()
+            self.editor.active = self.editor.tools.tile
+            self.editor.tools.tile.tile = nil
+        end,
+        tooltip = "erase tiles",
+    }
+
+    eraser.draw = function()
+        local tile = self.editor.tools.tile.tile
+        eraser.highlight = tile == nil
+
+        Panel.draw(eraser)
+    end
+
+    self.options:add(eraser)
+
 
     self.tiles = Grid {
         name = "kooltool tile picker",
