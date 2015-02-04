@@ -27,8 +27,8 @@ function tileset.floor(apply, tilesize, colours)
     apply(brush, false, x, y)
 
     local function line(x1, y1, x2, y2, size, colour)
-        for xo=-1,0,1 do
-            for yo=-1,0,1 do
+        for xo=-1,1 do
+            for yo=-1,1 do
                 local brush, x, y = Brush.line((x1 + xo) * w,
                                                (y1 + yo) * h,
                                                (x2 + xo) * w,
