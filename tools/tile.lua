@@ -29,14 +29,18 @@ function Tile:cursor(sx, sy, wx, wy)
         local quad = target.tileset.quads[self.tile]
 
         love.graphics.setBlendMode("premultiplied")
-        love.graphics.setColor(255, 255, 255, 128)
         
         if self.tile then
+            love.graphics.setColor(255, 255, 255, 128)
             love.graphics.draw(target.tileset.canvas, quad, gx * tw, gy * th)
         else
-            love.graphics.draw(eraser, gx * tw, gy * th)
+            local scale = math.min(tw, th) / 32
+
+            love.graphics.setColor(255, 255, 255, 255)
+            love.graphics.draw(eraser, (gx + 0.5) * tw, (gy + 0.5) * th, 0, scale, scale, 16, 16)
         end
 
+        love.graphics.setBlendMode("alpha")
         love.graphics.setColor(colour.cursor(0))
         love.graphics.rectangle("line", gx*tw, gy*th, tw, th)
     end

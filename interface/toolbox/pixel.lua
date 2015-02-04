@@ -77,12 +77,6 @@ end
 function PixelPanel:init(params)
     Panel.init(self, params)
 
-    self.layout = Grid { 
-        shape   = params.shape,
-        padding = { default = 9 },
-        spacing = 9,
-    }
-
     -- brush size
     local w, h = 32, 32
 

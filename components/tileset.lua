@@ -148,13 +148,19 @@ function Tileset:applyBrush(index, brush, quad, ox, oy)
 
     local x, y, w, h = self.quads[index]:getViewport()
 
-    love.graphics.setStencil(function()
+    local function stencil()
         love.graphics.rectangle("fill", x, y, w, h)
+    end
+
+    self.canvas:renderTo(function()
+        love.graphics.setStencil(stencil)
     end)
-    
+
     brush:apply(self.canvas, quad, x + ox, y + oy)
-    
-    love.graphics.setStencil()
+
+    self.canvas:renderTo(function()
+        love.graphics.setStencil()
+    end)
 end
 
 function Tileset:sample(tile, tx, ty)
