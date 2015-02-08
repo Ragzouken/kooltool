@@ -137,6 +137,9 @@ function Editor:init(camera)
 
     self:add(self.savesplash, -math.huge)
     self.savesplash.active = false
+
+    self.clicks = 0
+    self.clicktime = 0
 end
 
 function Editor:playtest()
@@ -265,6 +268,9 @@ end
 
 function Editor:update(dt)
     Panel.update(self, dt)
+
+    self.clicktime = math.max(0, self.clicktime - dt)
+    if self.clicktime == 0 then self.clicks = 0 end
 
     local sx, sy = love.mouse.getPosition()
     local wx, wy = self.view.camera:mousepos()
@@ -412,6 +418,9 @@ function Editor:draw_above(params)
 end
 
 function Editor:mousepressed(sx, sy, button)
+    self.clicks = self.clicks + 1
+    self.clicktime = 0.25
+
     if self.focus then
         self.focus:defocus()
         self.focus = nil
@@ -431,16 +440,16 @@ function Editor:mousepressed(sx, sy, button)
         end
     end
 
+    local target = self:target("script", sx, sy)
+    if target and button == "l" and self.clicks >= 2 then
+        target.script.active = not target.script.active
+        return
+    end
+
     local target = self:target("press", sx, sy)
 
     if target and button == "l" then
         target:event{ action = "press", coords = {sx, sy, wx, wy} }
-        return
-    end
-
-    local target = self:target("script", sx, sy)
-    if target and button == "l" and love.keyboard.isDown("s") then
-        target.script.active = not target.script.active
         return
     end
 
