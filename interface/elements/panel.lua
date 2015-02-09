@@ -46,6 +46,18 @@ local Panel = Class {
     clip = false,
 }
 
+-- x,y from a to b
+function Panel.localise(x, y, a, b)
+    local base, chain_a, chain_b = Panel.common_ancestor(a, b)
+
+    for i, panel in ipairs(chain_a) do
+        x = x - panel.x
+        y = y - panel.y
+    end
+
+    return x, y
+end
+
 function Panel.common_ancestor(a, b)
     local found = {}
     local ancestor

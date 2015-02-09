@@ -91,7 +91,7 @@ function SurfaceLayer:init(project)
 
     self.tileset = nil
     self.tilemap = SparseGrid()
-    self.tilebatch = love.graphics.newSpriteBatch(common.BROKEN, 7500)
+    self.tilebatch = love.graphics.newSpriteBatch(common.BROKEN, 1024 * 1024)
 
     self.wall_index = {}
     self.wallmap = SparseGrid()

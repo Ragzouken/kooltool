@@ -504,7 +504,18 @@ function Editor:keypressed(key, isrepeat)
         local wx, wy = self.view.camera:mousepos()
 
         if key == " " and not isrepeat then
-            self.toolbox:move_to { x = math.floor(sx), y = math.floor(sy), anchor = { 0.5, 0.5 } }
+            local l, r = 0, love.window.getWidth()
+            local t, b = 0, love.window.getHeight()
+            local w, h = self.toolbox.shape.w, self.toolbox.shape.h
+
+            local left   = math.max(0, l - math.floor(sx - w/2))
+            local right  = math.min(0, r - math.floor(sx + w/2))
+            local top    = math.max(0, t - math.floor(sy - h/2))
+            local bottom = math.min(0, b - math.floor(sy + h/2))
+
+            self.toolbox:move_to { x = math.floor(sx) + left + right,
+                                   y = math.floor(sy) + top + bottom,
+                                   anchor = { 0.5, 0.5 } }
             self.toolbox.active = true
             return true
         end
