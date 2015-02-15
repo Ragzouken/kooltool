@@ -9,8 +9,6 @@ local shapes = require "interface.elements.shapes"
 
 local elements = require "interface.elements"
 
-local Notebox = require "components.notebox"
-
 local tools = require "tools"
 
 local Project = require "components.project"
@@ -205,22 +203,6 @@ function Editor:SetProject(project)
     local function icon(path)
         return Button.Icon(love.graphics.newImage(path))
     end
-    
-    local things = {
-    {icon("images/icons/note.png"), function(button, event)
-        local sx, sy, wx, wy = unpack(event.coords)
-        local target, x, y = self:target("note", sx, sy)
-
-        local notebox = Notebox(target)
-        notebox:blank(x, y, "[note]")
-        target:add(notebox)
-
-        self.action = self.tools.drag
-        self.action:grab(notebox, sx, sy)
-
-        self.focus = notebox
-    end, "drag to create a new note"},
-    }
 
     self.action = nil
     self.active = nil
