@@ -8,7 +8,6 @@ local Text = require "interface.elements.text"
 local shapes = require "interface.elements.shapes"
 
 local elements = require "interface.elements"
-local Toolbar = require "interface.panels.toolbar"
 
 local Notebox = require "components.notebox"
 
