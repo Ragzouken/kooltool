@@ -1,13 +1,10 @@
 local Class = require "hump.class"
-local Timer = require "hump.timer"
 
 local Panel = require "interface.elements.panel"
 local Frame = require "interface.elements.frame"
 local Text = require "interface.elements.text"
 
 local shapes = require "interface.elements.shapes"
-
-local elements = require "interface.elements"
 
 local tools = require "tools"
 
@@ -67,9 +64,9 @@ function Editor:init(camera)
     PALETTE = generators.Palette.generate(9)
     
     self.nocanvas = Text{
-        shape = elements.shapes.Rectangle {x = 32+4, y = 0,
-                                           w = 512-16,  h = 24,
-                                           anchor = {0, 0}},
+        shape = shapes.Rectangle {x = 32+4, y = 0,
+                                  w = 512-16,  h = 24,
+                                  anchor = {0, 0}},
         colours = {
             line = {255,   0,   0, 255},
             fill = {192,   0,   0, 255},
@@ -111,7 +108,7 @@ function Editor:init(camera)
     self.tooltip = Text {
         x = 48, y = 0,
 
-        shape = elements.shapes.Rectangle { w = 512,  h = 24 },
+        shape = shapes.Rectangle { w = 512,  h = 24 },
         colours = {
             line = {  0,   0,   0, 255},
             fill = {  0,   0,   0, 255},
