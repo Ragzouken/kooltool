@@ -1,14 +1,8 @@
 local Class = require "hump.class"
 local Layer = require "layers.layer"
 
-local Tileset = require "components.tileset"
-local Sprite = require "components.sprite"
-local Entity = require "components.entity"
-
 local SparseGrid = require "utilities.sparsegrid"
 local common = require "utilities.common"
-
-local json = require "utilities.dkjson"
 
 local SurfaceLayer = Class {
     __includes = Layer,
@@ -95,7 +89,6 @@ function SurfaceLayer:init(project)
 
     self.wall_index = {}
     self.wallmap = SparseGrid()
-    
     self.sprites = {}
     self.sprites_index = {id = 0}
     self.entities = {}
@@ -124,8 +117,6 @@ function SurfaceLayer:draw(params)
 
     love.graphics.draw(self.tilebatch, 0, 0)
 end
-
-
 
 function SurfaceLayer:SetTileset(tileset)
     self.tileset = tileset
