@@ -108,20 +108,28 @@ end
 function ResourceManager:save()
     love.filesystem.createDirectory(self.root)
 
+    local bundle = {}
+
     for resource in self.resources:consume() do
         local data = {
             type = resource.type,
             data = resource:serialise(self)
         }
 
-        local name = string.format("%s.json", self.resource_to_id[resource])
+        local id = self.resource_to_id[resource]
+        local name = string.format("%s.json", id)
 
-        local file = love.filesystem.newFile(self.root .. "/" .. name, "w")
-        file:write(json.encode(data, { indent = true, }))
-        file:close()
+        --local file = love.filesystem.newFile(self.root .. "/" .. name, "w")
+        --file:write(json.encode(data, { indent = true, }))
+        --file:close()
+
+        bundle[self.resource_to_id[resource]] = data
 
         print("saving", resource.name, "to", name)
     end
+
+    local file = love.filesystem.newFile(self.root .. "/bundle.json", "w")
+    file:write(json.encode(bundle, { indent = true }))
 
     local project = self.id_to_resource[self.labels.project]
     local full, file = self:file(project, "icon.png")
@@ -153,9 +161,14 @@ function ResourceManager:load()
 
     local data = {}
 
+    local content = love.filesystem.read(self.root .. "/bundle.json")
+    local bundle = json.decode(content)
+
     for id, path in pairs(index.files) do
-        local content = love.filesystem.read(self.root .. "/" .. path)
-        local wrapped = json.decode(content)
+        --local content = love.filesystem.read(self.root .. "/" .. path)
+        --local wrapped = json.decode(content)
+
+        local wrapped = bundle[id]
 
         local type = wrapped.type and self.types[wrapped.type]
 
