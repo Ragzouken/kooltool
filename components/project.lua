@@ -1,6 +1,6 @@
 local Class = require "hump.class"
 local Panel = require "interface.elements.panel"
-local ResourceManager = require "components.resourcemanager"
+local ResourceManager = require "saving.resourcemanager"
 
 local generators = require "generators"
 local common = require "utilities.common"
@@ -10,6 +10,9 @@ local Project = Class {
     __includes = Panel,
     name = "Generic Project",
     type = "Project",
+
+    gridsize = {32, 32},
+    description = "[NO DESCRIPTION]",
 }
 
 function Project:serialise(resources)
@@ -17,11 +20,24 @@ function Project:serialise(resources)
 
     data.name = self.name
     data.description = self.description
+    data.gridsize = self.gridsize
 
-    data.layers = {
-        surface    = resources:reference(self.layers.surface),
-        annotation = resources:reference(self.layers.annotation),
-    }
+    data.annotation = resources:reference(self.annotation)
+    data.layers = {}
+    data.sprites = {}
+    data.regions = {}
+
+    for i, layer in ipairs(self.layers) do
+        data.layers[i] = resources:reference(layer)
+    end
+
+    for sprite in pairs(self.sprites) do
+        table.insert(data.sprites, resources:reference(sprite))
+    end
+
+    for i, region in ipairs(self.regions) do
+        table.insert(data.regions, resources:reference(region))
+    end
 
     return data
 end
@@ -29,16 +45,24 @@ end
 function Project:deserialise(resources, data)
     self.name = data.name
     self.description = data.description
+    self.gridsize = data.gridsize or {32, 32}
 
-    self.layers = {
-        surface    = resources:resource(data.layers.surface),
-        annotation = resources:resource(data.layers.annotation),
-    }
+    self.annotation = resources:resource(data.annotation)
+    self:add(self.annotation, -math.huge)
 
-    self:add(self.layers.surface, -1)
-    self.layers.surface:add(self.layers.annotation, 1)
+    for i, layer in ipairs(data.layers) do
+        self:add_layer(resources:resource(layer))
+    end
 
-    self.palette = generators.Palette.generate(9)
+    for i, sprite in ipairs(data.sprites) do
+        self:add_sprite(resources:resource(sprite))
+    end
+
+    for i, region in ipairs(data.regions) do
+        self.regions[i] = resources:resource(region)
+    end
+
+    self.palette = generators.Palette.generate(9, 9)
 end
 
 function Project:init(path)
@@ -47,9 +71,11 @@ function Project:init(path)
     self.path = path
     self.name = "unnamed"
     self.description = "[NO DESCRIPTION]"
+    self.gridsize = {32, 32}
 
     self.layers = {}
     self.sprites = {}
+    self.regions = {}
 end
 
 function Project:finalise()
@@ -61,9 +87,12 @@ function Project:load()
                                       require "components.tileset",
                                       require "components.sprite",
                                       require "components.entity",
-                                      require "layers.surface",
                                       require "layers.annotation",
-                                      require "layers.scripting")
+                                      require "layers.scripting",
+                                      require "components.infinite-canvas",
+                                      require "components.tilemap",
+                                      require "layers.world",
+                                      require "components.region")
 
     resources:load()
 
@@ -97,8 +126,11 @@ function Project:preview()
 end
 
 function Project:update(dt)
-    self.layers.surface:update(dt)
-    self.layers.annotation:update(dt)
+    self.annotation:update(dt)
+
+    for i, layer in ipairs(self.layers) do
+        layer:update(dt)
+    end
 
     colour.cursor(dt)
     colour.walls(dt, 0)
@@ -110,6 +142,12 @@ end
 
 function Project:add_sprite(sprite)
     self.sprites[sprite] = true
+end
+
+function Project:add_layer(layer)
+    table.insert(self.layers, layer)
+
+    self:add(layer)
 end
 
 return Project

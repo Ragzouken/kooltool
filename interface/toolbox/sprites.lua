@@ -65,7 +65,7 @@ end
 
 function SpritesPanel:create_sprite()
     local project = self.editor.project
-    local sprite = generators.sprite.mess(project.layers.surface.tileset.dimensions, project.palette)
+    local sprite = generators.sprite.mess(project.gridsize, project.palette)
 
     project:add_sprite(sprite)
 
@@ -92,7 +92,7 @@ function SpritesPanel:refresh()
             local target, x, y = self.editor:target("entity", sx, sy)
 
             local entity = Entity()
-            target:addEntity(entity)
+            target:entity():add(entity)
             entity:blank(x, y, sprite)
 
             self.editor.action = self.editor.tools.drag

@@ -124,8 +124,6 @@ function ResourceManager:save()
         --file:close()
 
         bundle[self.resource_to_id[resource]] = data
-
-        print("saving", resource.name, "to", name)
     end
 
     local file = love.filesystem.newFile(self.root .. "/bundle.json", "w")

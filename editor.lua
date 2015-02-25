@@ -61,7 +61,7 @@ end
 function Editor:init(camera)
     Panel.init(self, { shape = shapes.Plane{} })
 
-    PALETTE = generators.Palette.generate(9)
+    PALETTE = generators.Palette.generate(9, 9)
     
     self.nocanvas = Text{
         shape = shapes.Rectangle {x = 32+4, y = 0,
@@ -86,6 +86,7 @@ function Editor:init(camera)
         content = self.select,
         highlight = true,
         actions = { "scroll", "dismiss" },
+        block = true, 
     }
 
     self.view = Frame { camera = camera, }
@@ -159,7 +160,10 @@ function Editor:save()
         if not self.export_thread then
             savesound:play()
             self:splash()
+            local stime = love.timer.getTime()
             self.project:save("projects/" .. self.project.name)
+            local etime = love.timer.getTime()
+            print(string.format("It took %.3f milliseconds to save", 1000 * (etime - stime)))
             love.system.openURL("file://"..love.filesystem.getSaveDirectory())
         else
             nopesound:play()
@@ -195,7 +199,7 @@ function Editor:SetProject(project)
 
     local projectedit = ProjectPanel(project, { x = 128, y = -256 })
     projectedit.actions["drag"] = true
-    project.layers.surface:add(projectedit)
+    project:add(projectedit)
 
     local function icon(path)
         return Button.Icon(love.graphics.newImage(path))
@@ -211,6 +215,7 @@ function Editor:SetProject(project)
         draw = tools.Draw(self, PALETTE.colours[3]),
         tile = tools.Tile(self, project, 1),
         wall = tools.Wall(self, project),
+        region = tools.Region(self, project, project.regions[1]),
         marker = tools.Marker(self),
     }
 
@@ -226,12 +231,12 @@ function Editor:SetProject(project)
         pixel = self.tools.draw,
         tiles = self.tools.tile,
         sprites = self.tools.drag,
-        walls = self.tools.wall,
+        walls = self.tools.region,
         mark  = self.tools.marker,
     }
 
     self.toolbox.toolbar.selected:add(function(selected) self.active = tools[selected] end)
-    self.toolbox.panels.tiles:set_tileset(self.project.layers.surface.tileset)
+    self.toolbox.panels.tiles:set_tileset(self.project.layers[1].tilemap.tileset)
 
     self:add(self.toolbox, -math.huge)
 

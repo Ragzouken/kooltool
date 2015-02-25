@@ -18,6 +18,10 @@ function ProjectSelect:init(editor)
     self.editor = editor
 end
 
+function ProjectSelect:set_summaries(summaries)
+    
+end
+
 function ProjectSelect:SetProjects(projects)
     local function button(action, name)
         return elements.Button {

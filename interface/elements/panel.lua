@@ -129,6 +129,7 @@ function Panel:init(params)
     self.active = true
     self.children = {}
     self.default_depth = 0
+    self.block = params.block or self.block
 
     self.highlight = params.highlight or self.highlight
 
@@ -229,6 +230,14 @@ function Panel:check_filters(filters)
 end
 
 function Panel:draw(params)
+    if self.block then
+        love.graphics.push()
+        love.graphics.origin()
+        love.graphics.setColor(0, 0, 0, 128)
+        love.graphics.rectangle("fill", 0, 0, love.window.getDimensions())
+        love.graphics.pop()
+    end
+
     local fill = self.colours.fill.highlight and {colour.cursor(0, 255, 0.5)}
 
     love.graphics.setBlendMode("alpha")

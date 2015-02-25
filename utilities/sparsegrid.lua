@@ -2,16 +2,43 @@ local Class = require "hump.class"
 
 local SparseGrid = Class {}
 
-function SparseGrid:init(cell_width, cell_height)
-    self.cell_width = cell_width or 0
-    self.cell_height = cell_height or cell_width or 0
+function SparseGrid:serialise(process)
+    local data = {cell_dimensions = self.cell_dimensions}
 
-    self:clear()
+    process = process or function(x) return x end
+
+    for item, x, y in self:items() do
+        data[y] = data[y] or {__dummy={}}
+        data[y][x] = process(item, x, y)
+    end
+
+    return data
 end
 
-function SparseGrid:SetCellSize(cell_width, cell_height)
-    self.cell_width = cell_width
-    self.cell_height = cell_height or cell_width
+function SparseGrid:deserialise(process, data)
+    self.cell_dimensions = data.cell_dimensions
+
+    process = process or function(x) return x end
+
+    for y, row in pairs(data) do
+        for x, item in pairs(row) do
+            local gx = tonumber(x)
+            local gy = tonumber(y)
+
+            if gx and gy then
+                local item = process(item, gx, gy)
+
+                if item ~= nil then self:set(item, gx, gy) end
+            end
+        end
+    end
+end
+
+function SparseGrid:init(cell_width, cell_height)
+    self.cell_dimensions = {cell_width or 0, 
+                            cell_height or cell_width or 0}
+
+    self:clear()
 end
 
 function SparseGrid:clear()
@@ -23,6 +50,8 @@ function SparseGrid:set(item, x, y, z)
     local layer = self.grid[z or 1] or {}
     local row = layer[y] or {}
 
+    local change = row[x] ~= item
+
     self.grid[z or 1] = layer
     layer[y] = row
     row[x] = item
@@ -31,6 +60,8 @@ function SparseGrid:set(item, x, y, z)
     self.bounds.y1 = self.bounds.y1 and math.min(self.bounds.y1, y) or y
     self.bounds.x2 = self.bounds.x2 and math.max(self.bounds.x2, x) or x
     self.bounds.y2 = self.bounds.y2 and math.max(self.bounds.y2, y) or y
+
+    return change
 end
 
 function SparseGrid:get(x, y, z)
@@ -70,9 +101,15 @@ function SparseGrid:rectangle()
     end)
 end
 
+function SparseGrid:grid_coords(x, y)
+    return self:gridCoords(x, y)
+end
+
 function SparseGrid:gridCoords(x, y)
-    local gx, gy = math.floor(x / self.cell_width), math.floor(y / self.cell_height)
-    local ox, oy = math.floor(x % self.cell_width), math.floor(y % self.cell_height)
+    local cell_width, cell_height = unpack(self.cell_dimensions)
+
+    local gx, gy = math.floor(x / cell_width), math.floor(y / cell_height)
+    local ox, oy = math.floor(x % cell_width), math.floor(y % cell_height)
 
     return gx, gy, ox, oy
 end

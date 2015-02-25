@@ -22,6 +22,7 @@ local Toolbox = Class {
     event = function() end,
 
     highlight = true,
+    block = true,
 }
 
 function Toolbox:init(params)
@@ -29,7 +30,7 @@ function Toolbox:init(params)
     self.tool = self.editor.active
 
     params.shape = shapes.Rectangle { x =   0, y =   0,
-                                      w = 256, h = 256+9,
+                                      w = 350, h = 350+9,
                                       anchor = { 0.5, 0.5 } }
 
     params.colours = {
@@ -41,7 +42,7 @@ function Toolbox:init(params)
 
     self.icons = {
         drag   = Button.Icon(love.graphics.newImage("images/icons/drag.png")),
-        pencil = Button.Icon(love.graphics.newImage("images/icons/pencil.png")),
+        pencil = Button.Icon(love.graphics.newImage("images/icons/drawing.png")),
         tiling = Button.Icon(love.graphics.newImage("images/icons/tiles.png")),
         plan   = Button.Icon(love.graphics.newImage("images/icons/plan.png")),
         walls  = Button.Icon(love.graphics.newImage("images/icons/walls.png")),
@@ -52,9 +53,11 @@ function Toolbox:init(params)
 
     self.panels = {}
 
+    local tlx, tly = -params.shape.w / 2, -params.shape.h / 2
+
     local function tab()
         return {
-            x = -128, y = -128 + 48 - 4.5,
+            x = tlx, y = tly + 48,
             shape = shapes.Rectangle { w = self.shape.w, h = self.shape.h - 48 },
             editor = params.editor,
 
@@ -76,7 +79,7 @@ function Toolbox:init(params)
 
     self.toolbar = TabBar {
         name = "kooltool toolbox toolbar",
-        x = -128, y = -128 - 4.5,
+        x = tlx, y = tly,
 
         shape = shapes.Rectangle { w = self.shape.w, h = 48 },
 

@@ -3,6 +3,7 @@ local Camera = require "hump.camera"
 local Panel = require "interface.elements.panel"
 local Sprite = require "components.sprite"
 local ScriptLayer = require "layers.scripting"
+local EditHandle = require "tools.edit-handle"
 
 local common = require "utilities.common"
 local shapes = require "interface.elements.shapes"
@@ -51,7 +52,7 @@ function Entity:finalise(resources, data)
 end
 
 function Entity:blank(x, y, sprite)
-    self.sprite = sprite or generators.sprite.mess(self.layer.tileset.dimensions, self.layer.project.palette)
+    self.sprite = sprite or generators.sprite.mess(self.layer.project.gridsize, self.layer.project.palette)
     
     local px, py = unpack(self.sprite.pivot)
 
@@ -83,7 +84,7 @@ end
 
 function Entity:move_to(params)
     if self.layer and MODE == EDITOR then
-        local tw, th = unpack(self.layer.tileset.dimensions)
+        local tw, th = unpack(self.layer.project.gridsize)
         params.x = (math.floor(params.x / tw) + 0.5) * tw
         params.y = (math.floor(params.y / th) + 0.5) * th
     end
@@ -95,24 +96,32 @@ function Entity:remove()
     if self.layer then self.layer:removeEntity(self) end
 end
 
-function Entity:applyBrush(ox, oy, brush, lock, cloning)
-    ox = ox - self.shape.x
-    oy = oy - self.shape.y
+function Entity:pixel()
+    local handle = EditHandle()
 
-    if cloning and not cloning[self] then
-        local clone = Sprite()
-        clone.canvas = common.canvasFromImage(self.sprite.canvas)
-        clone.pivot = {unpack(self.sprite.pivot)}
+    local entity = self
 
-        self.layer.project:add_sprite(clone)
-        MODE.toolbox.panels.sprites:refresh()
+    function handle:brush(brush, ox, oy)
+        ox = ox - entity.shape.x
+        oy = oy - entity.shape.y
 
-        self.sprite = clone
+        if self.options.cloning and not self.options.cloning[entity] then
+            local clone = Sprite()
+            clone.canvas = common.canvasFromImage(entity.sprite.canvas)
+            clone.pivot = {unpack(entity.sprite.pivot)}
 
-        cloning[self] = true
+            entity.layer.project:add_sprite(clone)
+            MODE.toolbox.panels.sprites:refresh()
+
+            entity.sprite = clone
+
+            self.options.cloning[entity] = true
+        end
+
+        return entity.sprite:applyBrush(ox, oy, brush, self.options.lock)
     end
 
-    return self.sprite:applyBrush(ox, oy, brush, lock)
+    return handle
 end
 
 function Entity:sample(...)

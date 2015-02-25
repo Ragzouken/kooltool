@@ -28,7 +28,7 @@ function Draw:cursor(sx, sy, wx, wy)
             entity = self.state.lock
         else
             local gx, gy = unpack(self.state.lock)
-            local tw, th = unpack(self.editor.project.layers.surface.tileset.dimensions)
+            local tw, th = unpack(self.editor.project.gridsize)
 
             draw = true
 
@@ -63,9 +63,10 @@ function Draw:cursor(sx, sy, wx, wy)
         local bo = math.floor(self.size / 2)
         local x, y = math.floor(wx) - bo, math.floor(wy) - bo
 
+        love.graphics.setLineWidth(0.25)
         love.graphics.setBlendMode("alpha")
-        love.graphics.setColor(self.colour or {0, 0, 0, 0})
-        love.graphics.rectangle("fill", x, y, self.size, self.size)
+        love.graphics.setColor(self.colour or {colour.cursor(0)})
+        love.graphics.rectangle(self.colour and "fill" or "line", x, y, self.size, self.size)
 
         return love.mouse.getSystemCursor("crosshair")
     end
@@ -77,14 +78,17 @@ function Draw:mousepressed(button, sx, sy)
     local target, x, y = self.editor:target("draw", sx, sy)
 
     if button == "l" and target then
+        local handle = target:pixel(x, y)
+
         if love.keyboard.isDown("lalt") then
-            self.colour = target:sample(x, y)
+            self.colour = handle:sample(x, y)
 
             return true
         else
             self:startdrag("draw")
 
             self.drag.subject = target
+            self.drag.handle = handle
 
             return true, "begin"
         end
@@ -105,7 +109,8 @@ function Draw:mousedragged(action, screen, world)
         x2, y2 = unpack(self.editor:transform(self.drag.subject, x2, y2))
 
         local brush, ox, oy = Brush.line(x1, y1, x2, y2, self.size, colour)
-        self.drag.subject:applyBrush(ox, oy, brush, self.state.lock, self.state.cloning)
+        self.drag.handle.options = {lock=self.state.lock, cloning=self.state.cloning}
+        self.drag.handle:brush(brush, ox, oy)
     end
 end
 

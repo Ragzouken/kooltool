@@ -9,6 +9,8 @@ local Tileset = Class {
     type = "Tileset",
 
     BLOCK_SIZE = 1024,
+
+    clone_sound = love.audio.newSource("sounds/clone.wav"),
 }
 
 function Tileset:deserialise(resources, data)
@@ -72,6 +74,7 @@ function Tileset:init(tilesize)
     self.snapshots = {}
 
     self.changed = Event()
+    self.cloned = Event()
 end
 
 function Tileset:finalise()
@@ -138,6 +141,9 @@ function Tileset:clone(tile)
             self:applyBrush(clone, brush)
         end
     end
+
+    self.clone_sound:play()
+    self.clone_sound:stop()
 
     return clone
 end

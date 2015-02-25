@@ -28,7 +28,7 @@ end
 function Wall:cursor(sx, sy, wx, wy)
     local target = self.editor:target("tile", sx, sy)
 
-    local tw, th = unpack(target.tileset.dimensions)
+    local tw, th = unpack(target.project.gridsize)
 
     love.graphics.setBlendMode("alpha")
     for tile, gx, gy in target.tilemap:items() do

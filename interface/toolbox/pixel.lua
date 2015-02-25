@@ -12,8 +12,10 @@ local PixelPanel = Class {
     name = "kooltool pixel panel",
 
     icons = {
-        eraser = love.graphics.newImage("images/icons/eraser.png"),
-        reset  = love.graphics.newImage("images/icons/reset.png"),
+        freehand = love.graphics.newImage("images/icons/freehand.png"),
+        eraser   = love.graphics.newImage("images/icons/eraser.png"),
+        fill     = love.graphics.newImage("images/icons/fill.png"),
+        reset    = love.graphics.newImage("images/icons/reset.png"),
     },
 
     colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
@@ -80,9 +82,31 @@ function PixelPanel:init(params)
     -- brush size
     local w, h = 32, 32
 
+    self.tools = Grid {
+        name = "kooltool pixel tools",
+        shape = shapes.Rectangle { w = params.shape.w, h = params.shape.h },
+        colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
+        actions = {"press"}, -- TODO: replace with blocking
+        padding = { default = 9 },
+        spacing = 9,
+        tooltip = "choose drawing tool",
+    } self.tools.event = function() end
+
+    local reset = Button {
+        image  = Button.Icon(self.icons.reset),
+        action = function() self:regenerate(params.editor) end,
+        tooltip = "randomise colours",
+    }
+
+    local shape = shapes.Rectangle { w = 32, h = 32 }
+    local eraser = ColourButton(params.editor, shape, nil)
+
+    self.tools:add(eraser)
+    self.tools:add(reset)
+
     self.brushsize = Grid {
         name = "kooltool brush size",
-        x = 0, y = 0,
+        x = 0, y = 46,
         shape = shapes.Rectangle { w = params.shape.w, h = params.shape.h },
         colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
         actions = {"press"}, -- TODO: replace with blocking
@@ -103,7 +127,7 @@ function PixelPanel:init(params)
     -- palette
     self.palette = Grid {
         name = "kooltool palette",
-        x = 0, y = 50,
+        x = 0, y = 96,
         shape = shapes.Rectangle { w = params.shape.w, h = params.shape.h },
         colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
         actions = {"press"}, -- TODO: replace with blocking
@@ -113,6 +137,7 @@ function PixelPanel:init(params)
         tooltip = "choose colour",
     } self.palette.event = function() end
 
+    self:add(self.tools)
     self:add(self.brushsize)
     self:add(self.palette)
 
@@ -123,26 +148,15 @@ function PixelPanel:regenerate(editor)
     self.palette:clear()
 
     local w, h = 32, 32
-    local colours = 26 - 3
-    local palette = palette.generate(colours).colours
+    local colours = 8 * 5
+    local palette = palette.generate(colours, 8).colours
 
     for i, colour in ipairs(palette) do
-        --if i == 1 then colour = {0, 0, 0, 0, highlight=true} end
-        if i == 1 then colour = nil end
-
         local shape = shapes.Rectangle { w = w, h = h }
         local button = ColourButton(editor, shape, colour)
 
         self.palette:add(button)
     end
-
-    local reset = Button {
-        image  = Button.Icon(self.icons.reset),
-        action = function() self:regenerate(editor) end,
-        tooltip = "randomise colours",
-    }
-
-    self.palette:add(reset)
 end
 
 return PixelPanel

@@ -39,9 +39,7 @@ function Game:init(project, playtest)
     self.globals = {}
     self.anchors = {}
 
-    local layers = self.project.layers
-
-    for notebox in pairs(layers.annotation.children) do
+    for notebox in pairs(self.project.annotation.children) do
         if notebox.type == "Notebox" then
             local action = parse.test(notebox.text)
 
@@ -59,7 +57,7 @@ function Game:init(project, playtest)
         end
     end
 
-    local tw, th = unpack(layers.surface.tileset.dimensions)
+    local tw, th = unpack(project.gridsize)
 
     self.actors = {}
     self.occupied = SparseGrid(tw, th)
@@ -70,7 +68,7 @@ function Game:init(project, playtest)
 
     local choice = {}
 
-    for entity in pairs(layers.surface.entities) do
+    for entity in pairs(project.layers[1].entities) do
         local actor = Player(self, entity)
         self.actors[actor] = true
 

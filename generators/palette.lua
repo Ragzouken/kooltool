@@ -55,17 +55,18 @@ function Palette.random_ramp(count)
     return ramp(count, thing(), thing() * sign() * 0.75, thing() * sign())
 end
 
-function Palette.generate(colour_count)
+function Palette.generate(colour_count, length)
     local colours = {}
     local s = 1
 
     local shift = love.math.random()
+    local ramps = colour_count / length
 
     while colour_count > 0 do
-        local count = math.min(colour_count, 6)
+        local count = math.min(colour_count, length)
         colour_count = colour_count - count
         
-        local cols = ramp(count, (shift + s * 0.25) % 1, thing() * sign() * 0.75, thing() * sign())
+        local cols = ramp(count, (shift + s * (1 / ramps)) % 1, thing() * sign() * 0.75, thing() * sign())
 
         for i, colour in ipairs(cols) do
             table.insert(colours, colour)

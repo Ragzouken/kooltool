@@ -6,21 +6,21 @@ local colour = require "utilities.colour"
 
 local eraser = love.graphics.newImage("images/icons/eraser.png")
 
-local Tile = Class {
+local Region = Class {
     __includes = Tool,
     name = "tile",
     sound = love.audio.newSource("sounds/marker pen.wav"),
 }
 
-function Tile:init(editor, project, tile)
+function Region:init(editor, project, region)
     Tool.init(self)
     
     self.editor = editor
     self.project = project
-    self.tile = 1
+    self.region = region
 end
 
-function Tile:cursor(sx, sy, wx, wy)
+function Region:cursor(sx, sy, wx, wy)
     local target = self.editor:target("tile", sx, sy)
     
     if target then
@@ -32,46 +32,36 @@ function Tile:cursor(sx, sy, wx, wy)
         local tw, th = unpack(target.project.gridsize)
         local quad = tileset.quads[self.tile]
 
-        love.graphics.setBlendMode("premultiplied")
+        love.graphics.setBlendMode("alpha")
         
-        if self.tile then
-            love.graphics.setColor(255, 255, 255, 128)
-            love.graphics.draw(tileset.canvas, quad, gx * tw, gy * th)
-        else
-            local scale = math.min(tw, th) / 32
-
-            love.graphics.setColor(255, 255, 255, 255)
-            love.graphics.draw(eraser, (gx + 0.5) * tw, (gy + 0.5) * th, 0, scale, scale, 16, 16)
+        love.graphics.setColor(self.region.colour)
+        for contained, x, y in self.region:items(target) do
+            love.graphics.rectangle("fill", x*tw, y*th, tw, th)
         end
 
-        love.graphics.setBlendMode("alpha")
         love.graphics.setColor(colour.cursor(0))
         love.graphics.rectangle("line", gx*tw, gy*th, tw, th)
     end
 end
 
-function Tile:mousepressed(button, sx, sy, wx, wy)
+function Region:mousepressed(button, sx, sy, wx, wy)
     local target = self.editor:target("tile", sx, sy)
 
     if button == "l" and target then
         local handle = target:tile(sx, sy)
 
-        if love.keyboard.isDown("lalt") then
-            local gx, gy = handle:grid_coords(wx, wy)
-            self.tile = handle:get(gx, gy)
+        self:startdrag("draw")
+        self.drag.subject = target
+        self.drag.handle = handle
 
-            return true
-        else
-            self:startdrag("draw")
-            self.drag.subject = target
-            self.drag.handle = handle
+        local x, y = self.drag.handle:grid_coords(wx, wy)
+        self.drag.erase = self.region:includes(target, x, y)
 
-            return true, "begin"
-        end
+        return true, "begin"
     end
 end
 
-function Tile:mousedragged(action, screen, world)
+function Region:mousedragged(action, screen, world)
     if action == "draw" then
         local wx, wy, dx, dy = unpack(world)
 
@@ -82,7 +72,11 @@ function Tile:mousedragged(action, screen, world)
         local index = self.tile
 
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
-            change = self.drag.handle:set(index, lx, ly) or change
+            if self.drag.erase then
+                change = change or self.region:exclude(self.drag.subject, lx, ly)
+            else
+                change = change or self.region:include(self.drag.subject, lx, ly)
+            end
         end
 
         if change then
@@ -92,7 +86,7 @@ function Tile:mousedragged(action, screen, world)
     end
 end
 
-function Tile:mousereleased(button, sx, sy, wx, wy)
+function Region:mousereleased(button, sx, sy, wx, wy)
     if button == "l" then
         self:enddrag()
 
@@ -100,4 +94,4 @@ function Tile:mousereleased(button, sx, sy, wx, wy)
     end
 end
 
-return Tile
+return Region

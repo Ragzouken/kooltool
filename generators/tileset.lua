@@ -104,19 +104,19 @@ function tileset.blank(apply, tilesize, palette)
     apply(brush, false, x, y)
 end
 
-function tileset.flat(project, tilesize)
+function tileset.flat(project)
     local generators = require "generators"
 
-    local tileset_ = Tileset(tilesize)
+    local tileset_ = Tileset(project.gridsize)
 
     local tile = tileset_:add_tile()
     tileset.floor(function(brush, ...) tileset_:applyBrush(tile, brush, ...) end,
-                  tilesize,
+                  project.gridsize,
                   Palette.random_ramp(8))
 
     local tile = tileset_:add_tile()
     tileset.wall(function(brush, ...) tileset_:applyBrush(tile, brush, ...) end,
-                 tilesize,
+                 project.gridsize,
                  Palette.random_ramp(8))
 
     return tileset_

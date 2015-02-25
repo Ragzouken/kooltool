@@ -32,15 +32,11 @@ function Player:init(game, entity)
     self.timer = Timer()
     self.entity = entity
 
-    local layers = self.game.project.layers
-
     self.va = 0
     self.a = 0
 
     self.ox, self.oy = entity.x, entity.y
-    self.tx, self.ty = layers.surface.tilemap:gridCoords(entity.x, entity.y)
-
-    local annotations = layers.annotation
+    self.tx, self.ty = entity.layer.tilemap.tiledata:grid_coords(entity.x, entity.y)
 
     self.notes = {}
 
@@ -161,12 +157,12 @@ end
 
 function Player:move(vector, input)
     local cx, cy = self.entity.x, self.entity.y
-    local gx, gy = self.game.project.layers.surface.tilemap:gridCoords(cx, cy)
+    local gx, gy = self.entity.layer.tilemap.tiledata:grid_coords(cx, cy)
 
     local vx, vy = unpack(vector)
     local dx, dy = gx+vx, gy+vy
 
-    local wall = self.game.project.layers.surface:getWall(dx, dy)
+    local wall = self.game.project.regions[1]:includes(self.entity.layer, dx, dy)
     local occupied = self.game.occupied:get(dx, dy) or {}
 
     local blocked = false
@@ -186,7 +182,7 @@ function Player:move(vector, input)
 
     if blocked then return end
 
-    local tw, th = unpack(self.game.project.layers.surface.tileset.dimensions)
+    local tw, th = unpack(self.game.project.gridsize)
 
     if not wall and not self.movement then
         local period = 1 / (tonumber(self.locals.speed) or 2)
@@ -207,7 +203,7 @@ function Player:move(vector, input)
 end
 
 function Player:warp(target)
-    local tw, th = unpack(self.game.project.layers.surface.tileset.dimensions)
+    local tw, th = unpack(self.game.project.gridsize)
     self.tx, self.ty = target.tx, target.ty
     self.entity:move_to { x = (self.tx + 0.5) * tw, 
                           y = (self.ty + 0.5) * th }
