@@ -1,6 +1,8 @@
 local Class = require "hump.class"
 local elements = require "interface.elements"
 
+local EditHandle = require "tools.edit-handle"
+
 local ProjectPanel = Class {
     __includes = elements.Panel,
     name = "kooltool project panel",
@@ -19,15 +21,22 @@ function ProjectPanel:init(project, params)
         image = elements.Button.Icon(project.icon),
     }
 
+    icon.name = "Project Icon"
+    icon.actions = {"draw"}
     icon.actions["draw"] = true
-    icon.actions["press"] = nil
 
-    function icon:applyBrush(bx, by, brush, lock)
-        brush:apply(project.icon, nil, bx, by)
-    end
+    function icon:pixel(x, y)
+        local handle = EditHandle()
 
-    function icon:sample(x, y)
-        return {project.icon:getPixel(x, y)}
+        function handle:brush(brush, bx, by)
+            brush:apply(project.icon, nil, bx, by)
+        end
+
+        function handle:sample(x, y)
+            return {project.icon:getPixel(x, y)}
+        end
+
+        return handle
     end
 
     local title = elements.Text{

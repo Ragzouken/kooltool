@@ -1,7 +1,11 @@
 local Class = require "hump.class"
 local Tool = require "tools.tool"
 
-local Pan = Class { __includes = Tool, name = "pan", }
+local Pan = Class { 
+    __includes = Tool,
+    name = "pan", 
+    pan_cursor = love.mouse.getSystemCursor("sizeall"),
+}
 
 function Pan:init(camera)
     Tool.init(self)
@@ -83,6 +87,7 @@ function Pan:mousepressed(button, sx, sy, wx, wy)
         if button == "r" then self:zoomout(wx, wy) return true end
     elseif button == "r" then
         self:startdrag("pan")
+        love.mouse.setCursor(self.pan_cursor)
         self.drag.camera = {self.camera.x, self.camera.y}
         self.drag.dx, self.drag.dy = 0, 0
 
@@ -122,8 +127,6 @@ function Pan:mousedragged(action, screen, world)
         self.drag.dy = self.drag.dy + swy / self.camera.scale
 
         self.camera:lookAt(cx - self.drag.dx, cy - self.drag.dy)
-
-        love.mouse.setCursor(love.mouse.getSystemCursor("sizeall"))
     end
 end
 

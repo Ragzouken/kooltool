@@ -33,8 +33,8 @@ function project.default(gridsize)
 
     project.palette = generators.Palette.generate(16, 16)
 
-    project.annotation = AnnotationLayer(project)
-    project:add(project.annotation, -math.huge)
+    --project.annotation = AnnotationLayer(project)
+    --project:add(project.annotation, -math.huge)
 
     project:add_layer(generators.world.default(project))
 

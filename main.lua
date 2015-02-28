@@ -96,8 +96,8 @@ function love.keypressed(...)
             return true
         elseif key == "f12" then
             local project = Project()
-            project.name = "tutorial"
-            EDITOR:SetProject(project)
+            project.path = "tutorial"
+            EDITOR:SetProject(project:load())
             MODE = EDITOR
             return true
         end

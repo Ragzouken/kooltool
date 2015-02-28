@@ -34,14 +34,15 @@ function Draw:cursor(sx, sy, wx, wy)
 
             local target, x, y = self.editor:target("draw", sx, sy)
             if target.tilemap then
-                local tx, ty = target.tilemap:gridCoords(x, y)
+                local tx, ty = target.tilemap.tiledata:grid_coords(x, y)
                 if tx ~= gx or ty ~= gy then
                     draw = false
                 end
             end
 
             love.graphics.setColor(colour.cursor(0))
-            love.graphics.rectangle("line", gx*tw-0.5, gy*th-0.5, tw+1, th+1)
+            love.graphics.setLineWidth(3)
+            love.graphics.rectangle("line", gx*tw-1.5, gy*th-1.5, tw+3, th+3)
         end
     else
         local target = self.editor:target("draw", sx, sy)
@@ -143,7 +144,7 @@ function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
             if target.sprite then
                 self.state.lock = target
             else
-                self.state.lock = {target.tilemap:gridCoords(wx, wy)}
+                self.state.lock = {target.tilemap.tiledata:grid_coords(wx, wy)}
             end
 
             return true

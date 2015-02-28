@@ -35,8 +35,16 @@ function Region:cursor(sx, sy, wx, wy)
         love.graphics.setBlendMode("alpha")
         
         love.graphics.setColor(self.region.colour)
-        for contained, x, y in self.region:items(target) do
-            love.graphics.rectangle("fill", x*tw, y*th, tw, th)
+        --for contained, x, y in self.region:items(target) do
+        --    love.graphics.rectangle("fill", x*tw, y*th, tw, th)
+        --end
+
+        local layer = self.project.layers[1]
+
+        for tile, x, y in layer.tilemap.tiledata:items() do
+            if self.region:includes(layer, x, y) then
+                love.graphics.rectangle("fill", x*tw, y*th, tw, th)
+            end
         end
 
         love.graphics.setColor(colour.cursor(0))
@@ -71,11 +79,21 @@ function Region:mousedragged(action, screen, world)
         local change = false
         local index = self.tile
 
+        local default = love.keyboard.isDown("lctrl", "rctrl")
+
         for lx, ly in bresenham.line(x1, y1, x2, y2) do
             if self.drag.erase then
-                change = change or self.region:exclude(self.drag.subject, lx, ly)
+                if default then
+                    change = change or self.region:default_exclude(self.drag.subject, lx, ly)
+                else
+                    change = change or self.region:exclude(self.drag.subject, lx, ly)
+                end
             else
-                change = change or self.region:include(self.drag.subject, lx, ly)
+                if default then
+                    change = change or self.region:default_include(self.drag.subject, lx, ly)
+                else
+                    change = change or self.region:include(self.drag.subject, lx, ly)
+                end
             end
         end
 

@@ -2,33 +2,17 @@
   "meta":{
     "icon":"1-Project_icon.png",
     "name":"kooltoolrial",
-    "description":"this project will help to familiarise you with the different parts in kooltool :)"
+    "description":"this project will help you to familiarise yourslf with the different parts of kooltool "
   },
   "files":{
     "1-Project":"1-Project.json",
-    "6-Entity":"6-Entity.json",
-    "16-Sprite":"16-Sprite.json",
-    "4-Entity":"4-Entity.json",
-    "20-AnnotationLayer":"20-AnnotationLayer.json",
-    "12-Sprite":"12-Sprite.json",
-    "8-Entity":"8-Entity.json",
-    "2-SurfaceLayer":"2-SurfaceLayer.json",
-    "21-AnnotationLayer":"21-AnnotationLayer.json",
-    "15-ScriptingLayer":"15-ScriptingLayer.json",
-    "22-AnnotationLayer":"22-AnnotationLayer.json",
-    "9-Tileset":"9-Tileset.json",
-    "3-AnnotationLayer":"3-AnnotationLayer.json",
-    "11-ScriptingLayer":"11-ScriptingLayer.json",
-    "10-Sprite":"10-Sprite.json",
-    "13-ScriptingLayer":"13-ScriptingLayer.json",
-    "18-Sprite":"18-Sprite.json",
-    "23-AnnotationLayer":"23-AnnotationLayer.json",
-    "5-Entity":"5-Entity.json",
-    "17-ScriptingLayer":"17-ScriptingLayer.json",
-    "14-Sprite":"14-Sprite.json",
-    "24-AnnotationLayer":"24-AnnotationLayer.json",
-    "7-Entity":"7-Entity.json",
-    "19-ScriptingLayer":"19-ScriptingLayer.json"
+    "7-Tileset":"7-Tileset.json",
+    "3-Region":"3-Region.json",
+    "4-InfiniteCanvas":"4-InfiniteCanvas.json",
+    "2-WorldLayer":"2-WorldLayer.json",
+    "6-AnnotationLayer":"6-AnnotationLayer.json",
+    "5-TileMap":"5-TileMap.json",
+    "8-InfiniteCanvas":"8-InfiniteCanvas.json"
   },
   "labels":{
     "project":"1-Project"

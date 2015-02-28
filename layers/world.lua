@@ -5,6 +5,7 @@ local EditHandle = require "tools.edit-handle"
 local SparseGrid = require "utilities.sparsegrid"
 local InfiniteCanvas = require "components.infinite-canvas"
 local TileMap = require "components.tilemap"
+local AnnotationLayer = require "layers.annotation"
 
 local WorldLayer = Class {
     __includes = Layer,
@@ -22,6 +23,7 @@ function WorldLayer:serialise(resources)
     data.project = resources:reference(self.project)
     data.drawing = resources:reference(self.drawing)
     data.tilemap = resources:reference(self.tilemap)
+    data.annotation = resources:reference(self.annotation)
 
     data.entities = {}
 
@@ -36,6 +38,9 @@ function WorldLayer:deserialise(resources, data)
     self.project = resources:resource(data.project)
     self.drawing = resources:resource(data.drawing)
     self.tilemap = resources:resource(data.tilemap)
+    self:remove(self.annotation)
+    self.annotation = resources:resource(data.annotation)
+    self:add(self.annotation)
 
     local handle = self:entity()
 
@@ -53,6 +58,8 @@ function WorldLayer:init(project)
     self.project = project
     self.drawing = InfiniteCanvas()
     self.tilemap = TileMap()
+    self.annotation = AnnotationLayer(project)
+    self:add(self.annotation)
     self.entities = {}
 end
 
@@ -127,6 +134,11 @@ function WorldLayer:entity(x, y)
         entity.layer = layer
         layer.entities[entity] = true
         layer:add(entity)
+    end
+
+    function handle:remove(entity)
+        layer.entities[entity] = nil
+        layer:remove(entity)
     end
 
     return handle

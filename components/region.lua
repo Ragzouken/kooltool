@@ -17,6 +17,7 @@ function Region:serialise(resources)
 
     data.defaults = self.defaults
     data.colour = self.colour
+    data.project = resources:reference(self.project)
 
     return data
 end
@@ -33,6 +34,7 @@ function Region:deserialise(resources, data)
 
     self.defaults = data.defaults
     self.colour = data.colour
+    self.project = resources:resource(data.project)
 end
 
 function Region:finalise(resources, data)
@@ -63,11 +65,27 @@ function Region:exclude(layer, x, y)
 end
 
 function Region:includes(layer, x, y)
-    return self:layer(layer):get(x, y) --or self.defaults[self.tilemap:get(x, y)]
+    local tile = layer:tile():get(x, y)
+
+    return self:layer(layer):get(x, y) or self.defaults[tile]
 end
 
-function Region:default(tile, state)
-    self.defaults[tile] = state
+function Region:default_include(layer, x, y)
+    local tile = layer:tile():get(x, y)
+    local change = not self.defaults[tile]
+
+    self.defaults[tile] = true
+
+    return change
+end
+
+function Region:default_exclude(layer, x, y)
+    local tile = layer:tile():get(x, y)
+    local change = self.defaults[tile]
+
+    self.defaults[tile] = nil
+
+    return change
 end
 
 function Region:items(layer)

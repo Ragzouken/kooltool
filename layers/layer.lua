@@ -20,7 +20,4 @@ function Layer:draw(params)
     love.graphics.circle("fill", 0, 0, 16, 32)
 end
 
-function Layer:objectAt(x, y)
-end
-
 return Layer

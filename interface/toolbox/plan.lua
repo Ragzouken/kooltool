@@ -54,6 +54,23 @@ local function SizeButton(editor, shape, size)
     return button
 end
 
+local function EraserButton(editor, shape)
+    local button = Panel {
+        shape = shape,
+        colours = { line = {255, 255, 255, 0}, {0, 0, 0, 0} },
+        actions = {"press"},
+        tooltip = "erase notes",
+    }
+
+    button.event = function() editor.tools.marker.erase = not editor.tools.marker.erase end
+
+    button.image = Button.Icon(PlanPanel.icons.eraser)
+
+    button.draw = highlight_shiv(button.draw, function() return editor.tools and editor.tools.marker.erase end)
+
+    return button
+end
+
 function PlanPanel:init(params)
     Panel.init(self, params)
 
@@ -68,9 +85,24 @@ function PlanPanel:init(params)
     -- brush size
     local w, h = 32, 32
 
+    self.tools = Grid {
+        name = "kooltool planning tools",
+        shape = shapes.Rectangle { w = params.shape.w, h = params.shape.h },
+        colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
+        actions = {"press"}, -- TODO: replace with blocking
+        padding = { default = 9 },
+        spacing = 9,
+        tooltip = "choose planning tool",
+    } self.tools.event = function() end
+
+    local shape = shapes.Rectangle { w = 32, h = 32 }
+    local eraser = EraserButton(params.editor, shape, nil)
+
+    self.tools:add(eraser)
+
     self.brushsize = Grid {
         name = "kooltool brush size",
-        x = 0, y = 0,
+        x = 0, y = 46,
         shape = shapes.Rectangle { w = params.shape.w, h = params.shape.h },
         colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
         actions = {"press"}, -- TODO: replace with blocking
@@ -90,7 +122,7 @@ function PlanPanel:init(params)
     
     self.whatever = Grid {
         name = "kooltool thing",
-        x = 0, y = 50,
+        x = 0, y = 96,
         shape = shapes.Rectangle { w = params.shape.w, h = params.shape.h },
         colours = { line = {255, 255, 255, 0}, fill = {0, 0, 0, 0} },
         actions = {"press"}, -- TODO: replace with blocking
@@ -126,6 +158,7 @@ function PlanPanel:init(params)
 
     self.whatever:add(button)
 
+    self:add(self.tools)
     self:add(self.brushsize)
     self:add(self.whatever)
 end

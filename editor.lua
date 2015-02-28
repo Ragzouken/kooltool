@@ -214,12 +214,11 @@ function Editor:SetProject(project)
         drag = tools.Drag(self),
         draw = tools.Draw(self, PALETTE.colours[3]),
         tile = tools.Tile(self, project, 1),
-        wall = tools.Wall(self, project),
         region = tools.Region(self, project, project.regions[1]),
         marker = tools.Marker(self),
     }
 
-    self.active = self.tools.drag
+    self.active = self.tools.draw
 
     if self.toolbox then self:remove(self.toolbox) end
     self.toolbox = Toolbox { editor=self }

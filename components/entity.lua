@@ -93,7 +93,7 @@ function Entity:move_to(params)
 end
 
 function Entity:remove()
-    if self.layer then self.layer:removeEntity(self) end
+    if self.layer then self.layer:entity():remove(self) end
 end
 
 function Entity:pixel()

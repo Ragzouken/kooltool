@@ -22,7 +22,7 @@ function Project:serialise(resources)
     data.description = self.description
     data.gridsize = self.gridsize
 
-    data.annotation = resources:reference(self.annotation)
+    --data.annotation = resources:reference(self.annotation)
     data.layers = {}
     data.sprites = {}
     data.regions = {}
@@ -47,8 +47,8 @@ function Project:deserialise(resources, data)
     self.description = data.description
     self.gridsize = data.gridsize or {32, 32}
 
-    self.annotation = resources:resource(data.annotation)
-    self:add(self.annotation, -math.huge)
+    --self.annotation = resources:resource(data.annotation)
+    --self:add(self.annotation, -math.huge)
 
     for i, layer in ipairs(data.layers) do
         self:add_layer(resources:resource(layer))
@@ -126,7 +126,7 @@ function Project:preview()
 end
 
 function Project:update(dt)
-    self.annotation:update(dt)
+    --self.annotation:update(dt)
 
     for i, layer in ipairs(self.layers) do
         layer:update(dt)

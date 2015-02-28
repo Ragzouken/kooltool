@@ -46,9 +46,7 @@ end
 
 function Marker:mousedragged(action, screen, world)
     if action == "draw" then
-        local erase = love.keyboard.isDown("x", "e")
-
-        local colour = not erase and {255, 255, 255, 255} or nil
+        local colour = not self.erase and {255, 255, 255, 255} or nil
         
         local wx, wy, dx, dy = unpack(screen)
 

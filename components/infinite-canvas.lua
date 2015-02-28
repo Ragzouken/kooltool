@@ -15,10 +15,14 @@ function InfiniteCanvas:serialise(resources)
     data.blocks = self.blocks:serialise(function(block, x, y)
         local full, file = resources:file(self, x .. "," .. y .. ".png")
 
-        block:getImageData():encode(full)
+        if self.dirty:get(x, y) then
+            block:getImageData():encode(full)
+        end
 
         return file
     end)
+
+    self.dirty:clear()
 
     return data
 end
@@ -30,6 +34,8 @@ function InfiniteCanvas:deserialise(resources, data)
 
         return block
     end, data.blocks)
+
+    self.dirty:clear()
 end
 
 function InfiniteCanvas:finalise()
@@ -37,6 +43,7 @@ end
 
 function InfiniteCanvas:init(blocksize)
     self.blocks = SparseGrid(blocksize or self.blocksize)
+    self.dirty = SparseGrid()
 end
 
 function InfiniteCanvas:draw()
@@ -71,6 +78,8 @@ function InfiniteCanvas:brush(x, y, brush)
             end
 
             brush:apply(block, quad, 0, 0)
+
+            self.dirty:set(true, gx + x, gy + y)
         end
     end
 end

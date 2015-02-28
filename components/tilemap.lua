@@ -128,7 +128,7 @@ function TileMap:brush(brush, bx, by, options)
             local locked = options.lock and (options.lock[1] ~= x+gx or options.lock[2] ~= y+gy)
             local key = tostring(gx + x) .. "," .. tostring(gy + y)
 
-            if options.cloning and not options.cloning[key] and not locked then
+            if index and options.cloning and not options.cloning[key] and not locked then
                 index = self.tileset:clone(index)
                 self:set(index, gx + x, gy + y)
                 options.cloning[key] = true
