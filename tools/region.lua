@@ -41,6 +41,10 @@ function Region:cursor(sx, sy, wx, wy)
 
         local layer = self.project.layers[1]
 
+        for contained, x, y in self.region:items(target) do
+            love.graphics.rectangle("fill", x*tw, y*th, tw, th)
+        end
+
         for tile, x, y in layer.tilemap.tiledata:items() do
             if self.region:includes(layer, x, y) then
                 love.graphics.rectangle("fill", x*tw, y*th, tw, th)

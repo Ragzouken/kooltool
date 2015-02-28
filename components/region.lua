@@ -74,6 +74,8 @@ function Region:default_include(layer, x, y)
     local tile = layer:tile():get(x, y)
     local change = not self.defaults[tile]
 
+    if not tile then return false end
+
     self.defaults[tile] = true
 
     return change

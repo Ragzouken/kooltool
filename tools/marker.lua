@@ -37,8 +37,19 @@ function Marker:mousepressed(button, sx, sy, wx, wy)
     local target, x, y = self.editor:target("mark", sx, sy)
 
     if button == "l" and target then
-        self:startdrag("draw")
-        self.drag.subject = target
+        local handle = target:pixel(x, y)
+
+        if love.keyboard.isDown("lalt") then
+            self.erase = (handle:sample(x, y)[4] == 0)
+
+            return true
+        else
+            self:startdrag("draw")
+            self.drag.subject = target
+            self.drag.handle = handle
+
+            return true, "begin"
+        end
 
         return true, "begin"
     end

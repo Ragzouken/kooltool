@@ -57,7 +57,7 @@ function WorldLayer:init(project)
 
     self.project = project
     self.drawing = InfiniteCanvas()
-    self.tilemap = TileMap()
+    self.tilemap = TileMap(project and project.gridsize or {32, 32})
     self.annotation = AnnotationLayer(project)
     self:add(self.annotation)
     self.entities = {}

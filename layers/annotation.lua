@@ -5,6 +5,8 @@ local InfiniteCanvas = require "components.infinite-canvas"
 local Notebox = require "components.notebox"
 local Layer = require "layers.layer"
 
+local EditHandle = require "tools.edit-handle"
+
 local colour = require "utilities.colour"
 local common = require "utilities.common"
 
@@ -68,6 +70,22 @@ end
 
 function AnnotationLayer:applyBrush(bx, by, brush)
     self.canvas:brush(bx, by, brush)
+end
+
+function AnnotationLayer:pixel(x, y)
+    local handle = EditHandle()
+
+    local drawing = self.canvas
+
+    function handle:brush(brush, x, y)
+        drawing:brush(x, y, brush)
+    end
+
+    function handle:sample(x, y)
+        return drawing:sample(x, y)
+    end
+
+    return handle
 end
 
 return AnnotationLayer

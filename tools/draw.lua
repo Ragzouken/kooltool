@@ -84,6 +84,8 @@ function Draw:mousepressed(button, sx, sy)
         if love.keyboard.isDown("lalt") then
             self.colour = handle:sample(x, y)
 
+            if self.colour[4] == 0 then self.colour = nil end
+
             return true
         else
             self:startdrag("draw")
@@ -144,7 +146,11 @@ function Draw:keypressed(key, isrepeat, sx, sy, wx, wy)
             if target.sprite then
                 self.state.lock = target
             else
-                self.state.lock = {target.tilemap.tiledata:grid_coords(wx, wy)}
+                local gx, gy = target.tilemap.tiledata:grid_coords(wx, wy)
+
+                if target.tilemap:get(gx, gy) then
+                    self.state.lock = {gx, gy}
+                end
             end
 
             return true

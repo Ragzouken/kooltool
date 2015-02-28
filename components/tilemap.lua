@@ -33,10 +33,10 @@ function TileMap:finalise(resources, data)
     end, data.tiledata)
 end
 
-function TileMap:init()
+function TileMap:init(gridsize)
     self.tileset = nil
-    self.tiledata = SparseGrid(32)
-    self.tilebatch = love.graphics.newSpriteBatch(love.graphics.newCanvas(32, 32), 1024 * 1024)
+    self.tiledata = SparseGrid(unpack(gridsize or {32, 32}))
+    self.tilebatch = love.graphics.newSpriteBatch(love.graphics.newCanvas(unpack(gridsize or {32, 32})), 1024 * 1024)
 
     self.changed = Event()
 

@@ -142,8 +142,8 @@ function Tileset:clone(tile)
         end
     end
 
-    self.clone_sound:play()
     self.clone_sound:stop()
+    self.clone_sound:play()
 
     return clone
 end

@@ -74,7 +74,8 @@ function Entity:draw(params)
     if self.border then
         love.graphics.setBlendMode("alpha")
         love.graphics.setColor(colour.cursor(0))
-        self.shape:draw("line", 0.5)
+        love.graphics.setLineWidth(3)
+        self.shape:draw("line", 1.5)
 
         self.border = false
 
@@ -119,6 +120,10 @@ function Entity:pixel()
         end
 
         return entity.sprite:applyBrush(ox, oy, brush, self.options.lock)
+    end
+
+    function handle:sample(...)
+        return entity.sprite:sample(...)
     end
 
     return handle

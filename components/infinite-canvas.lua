@@ -15,9 +15,9 @@ function InfiniteCanvas:serialise(resources)
     data.blocks = self.blocks:serialise(function(block, x, y)
         local full, file = resources:file(self, x .. "," .. y .. ".png")
 
-        if self.dirty:get(x, y) then
+        --if self.dirty:get(x, y) then
             block:getImageData():encode(full)
-        end
+        --end
 
         return file
     end)
@@ -54,7 +54,7 @@ function InfiniteCanvas:draw()
     end
 end
 
-function InfiniteCanvas:brush(x, y, brush)
+function InfiniteCanvas:brush(x, y, brush, options)
     local gx, gy, px, py = self.blocks:gridCoords(math.floor(x), math.floor(y))
 
     local bw, bh = brush:getDimensions()
